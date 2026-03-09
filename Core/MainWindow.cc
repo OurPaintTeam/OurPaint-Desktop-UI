@@ -88,7 +88,7 @@ void MainWindow::initUI()
 void MainWindow::openTabPage(const QString& tabName)
 {
     // Create detached tab window
-    TabPage* tab = new TabPage(nullptr);
+    auto* tab = new TabPage(nullptr);
 
     tab->setAttribute(Qt::WA_DeleteOnClose);
     tab->setObjectName(QStringLiteral("tabPage"));

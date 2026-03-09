@@ -32,12 +32,12 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
-    QWidget* m_contentWidget    = nullptr;
-    QVBoxLayout* m_rootLayout   = nullptr;
-    QStackedWidget* m_pageStack = nullptr;
+    QWidget* m_contentWidget    {nullptr};
+    QVBoxLayout* m_rootLayout   {nullptr};
+    QStackedWidget* m_pageStack {nullptr};
 
-    StartPage* m_startPage      = nullptr;
-    ProjectPage* m_projectPage  = nullptr;
+    StartPage* m_startPage      {nullptr};
+    ProjectPage* m_projectPage  {nullptr};
 
     QVector<TabPage*> m_tabs;
 };
