@@ -11,35 +11,38 @@ class QStackedWidget;
 class QCloseEvent;
 class QString;
 
-class StartPage;
-class ProjectPage;
-class TabPage;
 
-// Main application window
-class MainWindow final : public FramelessWindow
-{
-    Q_OBJECT
+namespace UI {
+    class StartPage;
+    class ProjectPage;
+    class TabPage;
 
-public:
-    explicit MainWindow(QWidget* parent = nullptr);
-    ~MainWindow() override;
 
-public slots:
-    void openTabPage(const QString& tabName);
+    // Main application window
+    class MainWindow final : public FramelessWindow {
+        Q_OBJECT
 
-protected:
-    void initUI() override;
-    void closeEvent(QCloseEvent* event) override;
+    public:
+        explicit MainWindow(QWidget* parent = nullptr);
+        ~MainWindow() override;
 
-private:
-    QWidget* m_contentWidget    {nullptr};
-    QVBoxLayout* m_rootLayout   {nullptr};
-    QStackedWidget* m_pageStack {nullptr};
+    public slots:
+        void openTabPage(const QString& tabName);
 
-    StartPage* m_startPage      {nullptr};
-    ProjectPage* m_projectPage  {nullptr};
+    protected:
+        void initUI() override;
+        void closeEvent(QCloseEvent* event) override;
 
-    QVector<TabPage*> m_tabs;
-};
+    private:
+        QWidget* contentWidget_{nullptr};
+        QVBoxLayout* rootLayout_{nullptr};
+        QStackedWidget* pageStack_{nullptr};
+
+        StartPage* startPage_{nullptr};
+        ProjectPage* projectPage_{nullptr};
+
+        QVector<TabPage*> tabs_;
+    };
+} // namespace UI
 
 #endif // OURPAINT_DESKTOP_UI_MAINWINDOW_H

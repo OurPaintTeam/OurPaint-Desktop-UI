@@ -3,8 +3,8 @@
 #include <QMouseEvent>
 
 #ifdef Q_OS_WIN
-#include <windows.h>
 #include <dwmapi.h>
+#include <windows.h>
 
 #pragma comment(lib, "dwmapi.lib")
 
@@ -14,29 +14,27 @@
 #endif
 
 
-namespace
-{
+namespace {
+    // Drag area height
+    constexpr qint32 TITLE_HEIGHT = 32;
 
-// Drag area height
-constexpr qint32 TITLE_HEIGHT = 32;
-
-// Resize border size
-constexpr qint32 RESIZE_BORDER = 8;
+    // Resize border size
+    constexpr qint32 RESIZE_BORDER = 8;
 
 #ifdef Q_OS_WIN
-constexpr DWORD DWMWA_WINDOW_CORNER_PREFERENCE = 33;
-constexpr DWORD DWMWCP_ROUND = 2;
+    constexpr DWORD DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+    constexpr DWORD DWMWCP_ROUND = 2;
 #endif
-
 }
 
 
-FramelessWindow::FramelessWindow(QWidget* parent)
-    : QMainWindow(parent)
-{
+UI::FramelessWindow::FramelessWindow(QWidget* parent)
+    : QMainWindow(parent) {
     setObjectName(QStringLiteral("frameless"));
     setStyleSheet(QStringLiteral("background:#978897;"));
-    resize(960, 540);
+    constexpr int sizeW = 960;
+    constexpr int sizeY = 960;
+    resize(sizeW, sizeY);
 
 #ifdef Q_OS_WIN
     // Enable rounded corners
@@ -55,46 +53,36 @@ FramelessWindow::FramelessWindow(QWidget* parent)
 
 
 #ifdef Q_OS_WIN
-bool FramelessWindow::nativeEvent(const QByteArray&,
-                                  void* message,
-                                  qintptr* result)
-{
-    MSG* msg = static_cast<MSG*>(message);
-
-    switch (msg->message)
-    {
-        case WM_NCCALCSIZE:
-        {
-            if (msg->wParam)
-            {
+bool UI::FramelessWindow::nativeEvent(const QByteArray&,
+                                      void* message,
+                                      qintptr* result) {
+    switch (const auto* msg = static_cast<MSG*>(message); msg->message) {
+        case WM_NCCALCSIZE: {
+            if (msg->wParam) {
                 *result = 0;
                 return true;
             }
             break;
         }
 
-        case WM_NCHITTEST:
-        {
+        case WM_NCHITTEST: {
             const POINT pt
             {
                 GET_X_LPARAM(msg->lParam),
                 GET_Y_LPARAM(msg->lParam)
             };
 
-            RECT rect {};
+            RECT rect{};
             GetWindowRect(reinterpret_cast<HWND>(winId()), &rect);
 
             // Top resize
-            if (pt.y < rect.top + RESIZE_BORDER)
-            {
-                if (pt.x < rect.left + RESIZE_BORDER)
-                {
+            if (pt.y < rect.top + RESIZE_BORDER) {
+                if (pt.x < rect.left + RESIZE_BORDER) {
                     *result = HTTOPLEFT;
                     return true;
                 }
 
-                if (pt.x > rect.right - RESIZE_BORDER)
-                {
+                if (pt.x > rect.right - RESIZE_BORDER) {
                     *result = HTTOPRIGHT;
                     return true;
                 }
@@ -104,16 +92,13 @@ bool FramelessWindow::nativeEvent(const QByteArray&,
             }
 
             // Bottom resize
-            if (pt.y > rect.bottom - RESIZE_BORDER)
-            {
-                if (pt.x < rect.left + RESIZE_BORDER)
-                {
+            if (pt.y > rect.bottom - RESIZE_BORDER) {
+                if (pt.x < rect.left + RESIZE_BORDER) {
                     *result = HTBOTTOMLEFT;
                     return true;
                 }
 
-                if (pt.x > rect.right - RESIZE_BORDER)
-                {
+                if (pt.x > rect.right - RESIZE_BORDER) {
                     *result = HTBOTTOMRIGHT;
                     return true;
                 }
@@ -122,32 +107,28 @@ bool FramelessWindow::nativeEvent(const QByteArray&,
                 return true;
             }
 
-            if (pt.x < rect.left + RESIZE_BORDER)
-            {
+            if (pt.x < rect.left + RESIZE_BORDER) {
                 *result = HTLEFT;
                 return true;
             }
 
-            if (pt.x > rect.right - RESIZE_BORDER)
-            {
+            if (pt.x > rect.right - RESIZE_BORDER) {
                 *result = HTRIGHT;
                 return true;
             }
 
             const QPoint global(pt.x, pt.y);
-            const QPoint local = mapFromGlobal(global);
+            const auto local = mapFromGlobal(global);
 
             // Allow interaction with children
             if (const QWidget* child = childAt(local);
-                child && child != this)
-            {
+                child && child != this) {
                 *result = HTCLIENT;
                 return true;
             }
 
             // Drag zone
-            if (local.y() < TITLE_HEIGHT)
-            {
+            if (local.y() < TITLE_HEIGHT) {
                 *result = HTCAPTION;
                 return true;
             }
@@ -165,37 +146,32 @@ bool FramelessWindow::nativeEvent(const QByteArray&,
 #endif
 
 
-void FramelessWindow::mousePressEvent(QMouseEvent* event)
-{
+void UI::FramelessWindow::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton &&
-        event->pos().y() < TITLE_HEIGHT)
-    {
+        event->pos().y() < TITLE_HEIGHT) {
         // Start drag
-        m_isDragging = true;
+        isDragging_ = true;
 
-        m_dragOffset =
-            event->globalPosition().toPoint() -
-            frameGeometry().topLeft();
-
-        event->accept();
-    }
-}
-
-
-void FramelessWindow::mouseMoveEvent(QMouseEvent* event)
-{
-    if (m_isDragging &&
-        (event->buttons() & Qt::LeftButton))
-    {
-        move(event->globalPosition().toPoint() - m_dragOffset);
+        dragOffset_ =
+                event->globalPosition().toPoint() -
+                frameGeometry().topLeft();
 
         event->accept();
     }
 }
 
 
-void FramelessWindow::mouseReleaseEvent(QMouseEvent*)
-{
+void UI::FramelessWindow::mouseMoveEvent(QMouseEvent* event) {
+    if (isDragging_ &&
+        (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - dragOffset_);
+
+        event->accept();
+    }
+}
+
+
+void UI::FramelessWindow::mouseReleaseEvent(QMouseEvent*) {
     // Stop drag
-    m_isDragging = false;
+    isDragging_ = false;
 }
