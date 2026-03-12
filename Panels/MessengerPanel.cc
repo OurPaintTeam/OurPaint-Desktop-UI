@@ -2,8 +2,7 @@
 
 
 UI::MessengerPanel::MessengerPanel(QWidget* parent)
-    : QWidget(parent) {
-    layout_ = new QHBoxLayout(this);
+    : QWidget(parent), layout_(new QHBoxLayout(this)) {
     layout_->setContentsMargins(0, 0, 0, 0);
 
     setAttribute(Qt::WA_StyledBackground, true);

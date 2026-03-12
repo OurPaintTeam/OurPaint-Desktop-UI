@@ -1,7 +1,7 @@
 #include "ProjectPage.h"
 
 #include "CommandConsole.h"
-#include "QTPainter.h"
+#include "PainterWidget.h"
 #include "SideMenu.h"
 #include "TabBar.h"
 #include "ToolBar.h"
@@ -75,7 +75,7 @@ void UI::ProjectPage::initUI() {
     painterLayout_->setContentsMargins(PADDING_HORIZONTAL, 0, PADDING_HORIZONTAL, PADDING_BOTTOM);
     painterLayout_->setSpacing(LAYOUT_SPACING);
 
-    painter_ = new QTPainter(painterWrapper_);
+    painter_ = new PainterWidget(painterWrapper_);
     painter_->setObjectName(QStringLiteral("painter"));
     painterLayout_->addWidget(painter_);
 

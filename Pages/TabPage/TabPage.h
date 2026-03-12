@@ -9,9 +9,9 @@
 
 
 namespace UI {
+    class PainterWidget;
     class TopBarTab;
     class ToolBar;
-    class QTPainter;
     class CommandConsole;
     class SideTool;
 
@@ -51,7 +51,7 @@ namespace UI {
         SideTool* rightTool_{nullptr};
 
         ToolBar* toolBar_{nullptr};
-        QTPainter* painter_{nullptr};
+        PainterWidget* painter_{nullptr};
         CommandConsole* console_{nullptr};
     };
 }

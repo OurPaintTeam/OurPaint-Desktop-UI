@@ -14,7 +14,7 @@ namespace UI {
     class TopBarProject;
     class TabBar;
     class ToolBar;
-    class QTPainter;
+    class PainterWidget;
     class CommandConsole;
     class SideMenu;
     class ContainerWidget;
@@ -53,7 +53,7 @@ namespace UI {
         TopBarProject* topBar_     {nullptr};
         TabBar* tabBar_            {nullptr};
         ToolBar* topToolBar_       {nullptr};
-        QTPainter* painter_        {nullptr};
+        PainterWidget* painter_        {nullptr};
         CommandConsole* commandConsole_ {nullptr};
         SideMenu* leftColumn_           {nullptr};
         SideMenu* rightColumn_          {nullptr};
