@@ -3,55 +3,56 @@
 
 #include "FramelessWindow.h"
 
-class QWidget;
-class QVBoxLayout;
-class QHBoxLayout;
-class QString;
+#include <QHBoxLayout>
+#include <QString>
+#include <QWidget>
 
-class TopBarTab;
-class ToolBar;
-class QTPainter;
-class CommandConsole;
-class SideTool;
 
-// Detached CAD workspace tab
-class TabPage final : public FramelessWindow
-{
-    Q_OBJECT
+namespace UI {
+    class TopBarTab;
+    class ToolBar;
+    class QTPainter;
+    class CommandConsole;
+    class SideTool;
 
-public:
-    explicit TabPage(QWidget* parent = nullptr);
-    ~TabPage() override;
+
+    // Detached CAD workspace tab
+    class TabPage final : public FramelessWindow {
+        Q_OBJECT
+
+    public:
+        explicit TabPage(QWidget* parent = nullptr);
+        ~TabPage() override;
 
     signals:
         void returnTab(const QString& tabName);
 
-protected:
-    void initUI() override;
+    protected:
+        void initUI() override;
 
-private:
-    // Layouts
-    QVBoxLayout* m_mainLayout    {nullptr};
-    QHBoxLayout* m_rootLayout    {nullptr};
-    QVBoxLayout* m_centerLayout  {nullptr};
-    QVBoxLayout* m_painterLayout {nullptr};
-    QHBoxLayout* m_consoleLayout {nullptr};
+    private:
+        // Layouts
+        QVBoxLayout* mainLayout_{nullptr};
+        QHBoxLayout* rootLayout_{nullptr};
+        QVBoxLayout* centerLayout_{nullptr};
+        QVBoxLayout* painterLayout_{nullptr};
+        QHBoxLayout* consoleLayout_{nullptr};
 
-    // Wrapper widgets
-    QWidget* centralWidget      {nullptr};
-    QWidget* m_mainArea         {nullptr};
-    QWidget* m_centerStack      {nullptr};
-    QWidget* m_painterWrapper   {nullptr};
-    QWidget* m_consoleWrapper   {nullptr};
+        // Wrapper widgets
+        QWidget* centralWidget_{nullptr};
+        QWidget* mainArea_{nullptr};
+        QWidget* centerStack_{nullptr};
+        QWidget* painterWrapper_{nullptr};
+        QWidget* consoleWrapper_{nullptr};
 
-    // UI elements
-    TopBarTab* m_topBar   {nullptr};
-    SideTool* m_leftTool  {nullptr};
-    SideTool* m_rightTool {nullptr};
+        // UI elements
+        TopBarTab* topBar_{nullptr};
+        SideTool* leftTool_{nullptr};
+        SideTool* rightTool_{nullptr};
 
-    ToolBar* m_toolBar        {nullptr};
-    QTPainter* m_painter      {nullptr};
-    CommandConsole* m_console {nullptr};
-};
-
+        ToolBar* toolBar_{nullptr};
+        QTPainter* painter_{nullptr};
+        CommandConsole* console_{nullptr};
+    };
+}
 #endif // OURPAINT_DESKTOP_UI_TABPAGE_H

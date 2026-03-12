@@ -1,13 +1,12 @@
 #ifndef OURPAINT_DESKTOP_UI_TOPBARTAB_H
 #define OURPAINT_DESKTOP_UI_TOPBARTAB_H
 
+#include <QLabel>
+
 #include "TopBar.h"
 
 namespace UI {
     class SideTool;
-    class QLabel;
-    class QPushButton;
-
 
     // Top bar for detached Tab
     class TopBarTab final : public TopBar {

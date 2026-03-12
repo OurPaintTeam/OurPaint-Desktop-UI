@@ -9,6 +9,7 @@
 UI::TopBarTab::TopBarTab(QWidget* parent)
     : TopBar(parent) {
     createTabWidgets();
+    setObjectName(QStringLiteral("topbattab"));
 }
 
 
@@ -35,10 +36,11 @@ void UI::TopBarTab::createTabWidgets() {
     btnRight_ = createPanelButton();
     btnRight_->setObjectName(QStringLiteral("btnRight"));
 
-    layout_->insertWidget(0, title);
-    layout_->insertWidget(1, btnLeft);
-    layout_->insertWidget(2, btnRight);
-    layout_->setObjectName(QStringLiteral("m_layout"));
+    auto* layout = getLayout();
+    layout->insertWidget(0, title_);
+    layout->insertWidget(1, btnLeft_);
+    layout->insertWidget(2, btnRight_);
+    layout->setObjectName(QStringLiteral("m_layout"));
 
     connect(btnLeft_, &HideOpenPanelButton::toggled, this, [this] {
         if (leftTool_) {
