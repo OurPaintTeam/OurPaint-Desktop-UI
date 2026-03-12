@@ -3,32 +3,34 @@
 
 #include "TopBar.h"
 
-class SideTool;
-class QLabel;
-class QPushButton;
+namespace UI {
+    class SideTool;
+    class QLabel;
+    class QPushButton;
 
-// Top bar for detached Tab
-class TopBarTab final : public TopBar
-{
-    Q_OBJECT
 
-public:
-    explicit TopBarTab(QWidget* parent = nullptr);
-    ~TopBarTab() override = default;
+    // Top bar for detached Tab
+    class TopBarTab final : public TopBar {
+        Q_OBJECT
 
-    void setLeftTool(SideTool* tool);
-    void setRightTool(SideTool* tool);
+    public:
+        explicit TopBarTab(QWidget* parent = nullptr);
+        ~TopBarTab() override = default;
 
-private:
-    // UI elements
-    QLabel* title       {nullptr};
-    SideTool* leftTool  {nullptr};
-    SideTool* rightTool {nullptr};
+        void setLeftTool(SideTool* tool);
+        void setRightTool(SideTool* tool);
 
-    QPushButton* btnLeft  {nullptr};
-    QPushButton* btnRight {nullptr};
+    private:
+        // UI elements
+        QLabel* title_{nullptr};
+        SideTool* leftTool_{nullptr};
+        SideTool* rightTool_{nullptr};
 
-    void createTabWidgets();
-};
+        QPushButton* btnLeft_{nullptr};
+        QPushButton* btnRight_{nullptr};
+
+        void createTabWidgets();
+    };
+}
 
 #endif // OURPAINT_DESKTOP_UI_TOPBARTAB_H

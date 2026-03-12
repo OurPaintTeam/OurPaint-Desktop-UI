@@ -1,60 +1,61 @@
 #include "TopBarProject.h"
 
-#include "TabBar.h"
-#include "SideMenu.h"
 #include "HideOpenPanelButton.h"
 #include "SettingsWidget.h"
+#include "SideMenu.h"
+#include "TabBar.h"
 
 #include <QPushButton>
 
-TopBarProject::TopBarProject(QWidget* parent)
-    : TopBar(parent)
-{
+
+UI::TopBarProject::TopBarProject(QWidget* parent)
+    : TopBar(parent) {
     setObjectName(QStringLiteral("TopBarProject"));
     createProjectButtons();
 }
 
-void TopBarProject::setTabBar(TabBar* bar)
-{
-    tabBar = bar;
+
+void UI::TopBarProject::setTabBar(TabBar* bar) {
+    tabBar_ = bar;
 }
 
-void TopBarProject::setLeftMenu(SideMenu* menu)
-{
-    leftMenu = menu;
-    if (leftMenu) {
-        leftMenu->setObjectName(QStringLiteral("leftMenu"));
+
+void UI::TopBarProject::setLeftMenu(SideMenu* menu) {
+    leftMenu_ = menu;
+    if (leftMenu_) {
+        leftMenu_->setObjectName(QStringLiteral("leftMenu"));
     }
 }
 
-void TopBarProject::setRightMenu(SideMenu* menu)
-{
-    rightMenu = menu;
-    if (rightMenu) {
-        rightMenu->setObjectName(QStringLiteral("rightMenu"));
+
+void UI::TopBarProject::setRightMenu(SideMenu* menu) {
+    rightMenu_ = menu;
+    if (rightMenu_) {
+        rightMenu_->setObjectName(QStringLiteral("rightMenu"));
     }
 }
 
-void TopBarProject::createProjectButtons()
-{
+
+void UI::TopBarProject::createProjectButtons() {
     // Tabs toggle button
-    btnTabs = createPanelButton();
-    btnTabs->setObjectName(QStringLiteral("btnTabs"));
+    btnTabs_ = createPanelButton();
+    btnTabs_->setObjectName(QStringLiteral("btnTabs"));
 
     // Left panel toggle
-    btnLeft = createPanelButton();
-    btnLeft->setObjectName(QStringLiteral("btnLeft"));
+    btnLeft_ = createPanelButton();
+    btnLeft_->setObjectName(QStringLiteral("btnLeft"));
 
     // Right panel toggle
-    btnRight = createPanelButton();
-    btnRight->setObjectName(QStringLiteral("btnRight"));
+    btnRight_ = createPanelButton();
+    btnRight_->setObjectName(QStringLiteral("btnRight"));
 
     // Settings button
-    btnSettings = new QPushButton(QStringLiteral("⚙"), this);
-    btnSettings->setObjectName(QStringLiteral("btnSettings"));
-    btnSettings->setFixedSize(32, 32);
-    btnSettings->setFocusPolicy(Qt::NoFocus);
-    btnSettings->setStyleSheet(QStringLiteral(R"(
+    btnSettings_ = new QPushButton(QStringLiteral("⚙"), this);
+    btnSettings_->setObjectName(QStringLiteral("btnSettings"));
+    constexpr auto btnSize = QSize(32, 32);
+    btnSettings_->setFixedSize(btnSize);
+    btnSettings_->setFocusPolicy(Qt::NoFocus);
+    btnSettings_->setStyleSheet(QStringLiteral(R"(
         QPushButton {
             background: transparent;
             color: white;
@@ -67,32 +68,33 @@ void TopBarProject::createProjectButtons()
     )"));
 
     // Add buttons to layout
-    m_layout->insertWidget(0, btnTabs);
-    m_layout->insertWidget(1, btnLeft);
-    m_layout->insertWidget(2, btnRight);
-    m_layout->insertWidget(3, btnSettings);
+    auto* layout = getLayout();
+    layout->insertWidget(0, btnTabs_);
+    layout->insertWidget(1, btnLeft_);
+    layout->insertWidget(2, btnRight_);
+    layout->insertWidget(3, btnSettings_);
 
     // Connect signals
-    connect(btnTabs, &HideOpenPanelButton::toggled, this, [this]() {
-        if (tabBar) {
-            tabBar->setVisible(!tabBar->isVisible());
+    connect(btnTabs_, &HideOpenPanelButton::toggled, this, [this]() {
+        if (tabBar_) {
+            tabBar_->setVisible(!tabBar_->isVisible());
         }
     });
 
-    connect(btnLeft, &HideOpenPanelButton::toggled, this, [this]() {
-        if (leftMenu) {
-            leftMenu->setVisible(!leftMenu->isVisible());
+    connect(btnLeft_, &HideOpenPanelButton::toggled, this, [this]() {
+        if (leftMenu_) {
+            leftMenu_->setVisible(!leftMenu_->isVisible());
         }
     });
 
-    connect(btnRight, &HideOpenPanelButton::toggled, this, [this]() {
-        if (rightMenu) {
-            rightMenu->setVisible(!rightMenu->isVisible());
+    connect(btnRight_, &HideOpenPanelButton::toggled, this, [this]() {
+        if (rightMenu_) {
+            rightMenu_->setVisible(!rightMenu_->isVisible());
         }
     });
 
-    connect(btnSettings, &QPushButton::clicked, this, [this]() {
-        const auto settings = new SettingsWidget(this);
+    connect(btnSettings_, &QPushButton::clicked, this, [this]() {
+        auto *const settings = new SettingsWidget(this);
         settings->setAttribute(Qt::WA_DeleteOnClose);
         settings->setObjectName(QStringLiteral("settingsWidget"));
         settings->show();

@@ -1,54 +1,54 @@
 #include "TopBarTab.h"
 
-#include "SideTool.h"
 #include "HideOpenPanelButton.h"
+#include "SideTool.h"
 
 #include <QLabel>
 
-TopBarTab::TopBarTab(QWidget* parent)
-    : TopBar(parent)
-{
+
+UI::TopBarTab::TopBarTab(QWidget* parent)
+    : TopBar(parent) {
     createTabWidgets();
 }
 
-void TopBarTab::setLeftTool(SideTool* tool)
-{
-    leftTool = tool;
-    leftTool->setObjectName(QStringLiteral("leftTool"));
+
+void UI::TopBarTab::setLeftTool(SideTool* tool) {
+    leftTool_ = tool;
+    leftTool_->setObjectName(QStringLiteral("leftTool"));
 }
 
-void TopBarTab::setRightTool(SideTool* tool)
-{
-    rightTool = tool;
-    rightTool->setObjectName(QStringLiteral("rightTool"));
+
+void UI::TopBarTab::setRightTool(SideTool* tool) {
+    rightTool_ = tool;
+    rightTool_->setObjectName(QStringLiteral("rightTool"));
 }
 
-void TopBarTab::createTabWidgets()
-{
-    title = new QLabel(QStringLiteral("OurPaint"), this);
-    title->setStyleSheet(QStringLiteral("color: #D8D8F6; font-weight: bold;"));
-    title->setObjectName(QStringLiteral("titleOurPaint"));
 
-    btnLeft  = createPanelButton();
-    btnLeft->setObjectName(QStringLiteral("btnLeft"));
+void UI::TopBarTab::createTabWidgets() {
+    title_ = new QLabel(QStringLiteral("OurPaint"), this);
+    title_->setStyleSheet(QStringLiteral("color: #D8D8F6; font-weight: bold;"));
+    title_->setObjectName(QStringLiteral("titleOurPaint"));
 
-    btnRight = createPanelButton();
-    btnRight->setObjectName(QStringLiteral("btnRight"));
+    btnLeft_ = createPanelButton();
+    btnLeft_->setObjectName(QStringLiteral("btnLeft"));
 
-    m_layout->insertWidget(0, title);
-    m_layout->insertWidget(1, btnLeft);
-    m_layout->insertWidget(2, btnRight);
-    m_layout->setObjectName(QStringLiteral("m_layout"));
+    btnRight_ = createPanelButton();
+    btnRight_->setObjectName(QStringLiteral("btnRight"));
 
-    connect(btnLeft, &HideOpenPanelButton::toggled, this, [this] {
-        if (leftTool) {
-            leftTool->setVisible(!leftTool->isVisible());
+    layout_->insertWidget(0, title);
+    layout_->insertWidget(1, btnLeft);
+    layout_->insertWidget(2, btnRight);
+    layout_->setObjectName(QStringLiteral("m_layout"));
+
+    connect(btnLeft_, &HideOpenPanelButton::toggled, this, [this] {
+        if (leftTool_) {
+            leftTool_->setVisible(!leftTool_->isVisible());
         }
     });
 
-    connect(btnRight, &HideOpenPanelButton::toggled, this, [this] {
-        if (rightTool) {
-            rightTool->setVisible(!rightTool->isVisible());
+    connect(btnRight_, &HideOpenPanelButton::toggled, this, [this] {
+        if (rightTool_) {
+            rightTool_->setVisible(!rightTool_->isVisible());
         }
     });
 }
