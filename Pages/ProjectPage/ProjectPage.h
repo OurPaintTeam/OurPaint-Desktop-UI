@@ -9,58 +9,60 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QString;
 
-class TopBar;
-class TopBarProject;
-class TabBar;
-class ToolBar;
-class QTPainter;
-class CommandConsole;
-class SideMenu;
-class ContainerWidget;
+namespace UI {
+    class TopBar;
+    class TopBarProject;
+    class TabBar;
+    class ToolBar;
+    class QTPainter;
+    class CommandConsole;
+    class SideMenu;
+    class ContainerWidget;
 
-// Main in-window CAD workspace
-class ProjectPage final : public QWidget
-{
-    Q_OBJECT
+    // Main in-window CAD workspace
+    class ProjectPage final : public QWidget
+    {
+        Q_OBJECT
 
-public:
-    explicit ProjectPage(QWidget* parent = nullptr);
-    ~ProjectPage() override = default;
+    public:
+        explicit ProjectPage(QWidget* parent = nullptr);
+        ~ProjectPage() override = default;
 
-    signals:
-        void requestOpenTabPage(const QString& fileName);
-    void requestCloseProject();
+        signals:
+            void requestOpenTabPage(const QString& fileName);
+        void requestCloseProject();
 
-private:
-    void initUI();
+    private:
+        void initUI();
 
-private:
-    // Layouts
-    QVBoxLayout* m_mainLayout           {nullptr};
-    QHBoxLayout* m_rootContentLayout    {nullptr};
-    QVBoxLayout* m_centerLayout         {nullptr};
-    QVBoxLayout* m_painterLayout        {nullptr};
-    QHBoxLayout* m_commandConsoleLayout {nullptr};
+    private:
+        // Layouts
+        QVBoxLayout* mainLayout_           {nullptr};
+        QHBoxLayout* rootContentLayout_    {nullptr};
+        QVBoxLayout* centerLayout_         {nullptr};
+        QVBoxLayout* painterLayout_        {nullptr};
+        QHBoxLayout* commandConsoleLayout_ {nullptr};
 
-    // Widgets
-    QWidget* m_mainArea              {nullptr};
-    QWidget* m_centerStack           {nullptr};
-    QWidget* m_painterWrapper        {nullptr};
-    QWidget* m_commandConsoleWrapper {nullptr};
+        // Widgets
+        QWidget* mainArea_              {nullptr};
+        QWidget* centerStack_           {nullptr};
+        QWidget* painterWrapper_        {nullptr};
+        QWidget* commandConsoleWrapper_ {nullptr};
 
-    // UI elements
-    TopBarProject* m_topBar     {nullptr};
-    TabBar* m_tabBar            {nullptr};
-    ToolBar* m_topToolBar       {nullptr};
-    QTPainter* m_painter        {nullptr};
-    CommandConsole* m_commandConsole {nullptr};
-    SideMenu* m_leftColumn           {nullptr};
-    SideMenu* m_rightColumn          {nullptr};
+        // UI elements
+        TopBarProject* topBar_     {nullptr};
+        TabBar* tabBar_            {nullptr};
+        ToolBar* topToolBar_       {nullptr};
+        QTPainter* painter_        {nullptr};
+        CommandConsole* commandConsole_ {nullptr};
+        SideMenu* leftColumn_           {nullptr};
+        SideMenu* rightColumn_          {nullptr};
 
-    ContainerWidget* messengerContainer {nullptr};
-    QPushButton* messengerButton        {nullptr};
-    ContainerWidget* infoContainer      {nullptr};
-    QPushButton* infoButton             {nullptr};
-};
+        ContainerWidget* messengerContainer_ {nullptr};
+        QPushButton* messengerButton_        {nullptr};
+        ContainerWidget* infoContainer_      {nullptr};
+        QPushButton* infoButton_             {nullptr};
+    };
+} // namespace UI
 
 #endif // OURPAINT_DESKTOP_UI_PROJECTPAGE_H

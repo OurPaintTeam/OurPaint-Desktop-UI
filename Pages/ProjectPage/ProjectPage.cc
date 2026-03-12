@@ -1,146 +1,144 @@
 #include "ProjectPage.h"
 
-#include "TopBarProject.h"
+#include "CommandConsole.h"
+#include "QTPainter.h"
+#include "SideMenu.h"
 #include "TabBar.h"
 #include "ToolBar.h"
-#include "QTPainter.h"
-#include "CommandConsole.h"
-#include "SideMenu.h"
+#include "TopBarProject.h"
 
-#include <QVBoxLayout>
-#include <QPushButton>
 #include <QSizePolicy>
+#include <QVBoxLayout>
 
-namespace
-{
-constexpr qint32 LAYOUT_MARGIN = 0;
-constexpr qint32 LAYOUT_SPACING = 0;
-constexpr qint32 PADDING_HORIZONTAL = 10;
-constexpr qint32 PADDING_BOTTOM = 10;
-}
+#include "DraggleContainer.h"
 
-ProjectPage::ProjectPage(QWidget* parent)
-    : QWidget(parent)
-{
+namespace {
+    constexpr qint32 LAYOUT_MARGIN = 0;
+    constexpr qint32 LAYOUT_SPACING = 0;
+    constexpr qint32 PADDING_HORIZONTAL = 10;
+    constexpr qint32 PADDING_BOTTOM = 10;
+} // namespace
+
+
+UI::ProjectPage::ProjectPage(QWidget* parent)
+    : QWidget(parent) {
     setObjectName(QStringLiteral("projectPage"));
     setStyleSheet(QStringLiteral("background: #978897;"));
     initUI();
 }
 
-void ProjectPage::initUI()
-{
+
+void UI::ProjectPage::initUI() {
     // Main vertical layout
-    m_mainLayout = new QVBoxLayout(this);
-    m_mainLayout->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
-    m_mainLayout->setSpacing(LAYOUT_SPACING);
+    mainLayout_ = new QVBoxLayout(this);
+    mainLayout_->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
+    mainLayout_->setSpacing(LAYOUT_SPACING);
 
     // Main area container
-    m_mainArea = new QWidget(this);
-    m_mainArea->setObjectName(QStringLiteral("mainArea"));
+    mainArea_ = new QWidget(this);
+    mainArea_->setObjectName(QStringLiteral("mainArea"));
 
-    m_rootContentLayout = new QHBoxLayout(m_mainArea);
-    m_rootContentLayout->setObjectName(QStringLiteral("m_rootContentLayout"));
-    m_rootContentLayout->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
-    m_rootContentLayout->setSpacing(LAYOUT_SPACING);
+    rootContentLayout_ = new QHBoxLayout(mainArea_);
+    rootContentLayout_->setObjectName(QStringLiteral("rootContentLayout"));
+    rootContentLayout_->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
+    rootContentLayout_->setSpacing(LAYOUT_SPACING);
 
-    m_mainLayout->addWidget(m_mainArea);
+    mainLayout_->addWidget(mainArea_);
 
     // Center column
-    m_centerStack = new QWidget(m_mainArea);
-    m_centerStack->setObjectName(QStringLiteral("centerStack"));
+    centerStack_ = new QWidget(mainArea_);
+    centerStack_->setObjectName(QStringLiteral("centerStack"));
 
-    m_centerLayout = new QVBoxLayout(m_centerStack);
-    m_centerLayout->setObjectName(QStringLiteral("m_centerLayout"));
-    m_centerLayout->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
-    m_centerLayout->setSpacing(LAYOUT_SPACING);
+    centerLayout_ = new QVBoxLayout(centerStack_);
+    centerLayout_->setObjectName(QStringLiteral("centerLayout"));
+    centerLayout_->setContentsMargins(LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN, LAYOUT_MARGIN);
+    centerLayout_->setSpacing(LAYOUT_SPACING);
 
     // Top tab bar
-    m_tabBar = new TabBar(m_centerStack);
-    m_tabBar->setObjectName(QStringLiteral("tabBar"));
-    connect(m_tabBar, &TabBar::openTabWindow, this, &ProjectPage::requestOpenTabPage);
+    tabBar_ = new TabBar(centerStack_);
+    tabBar_->setObjectName(QStringLiteral("tabBar"));
+    connect(tabBar_, &TabBar::openTabWindow, this, &ProjectPage::requestOpenTabPage);
 
     // Top toolbar
-    m_topToolBar = new ToolBar(m_centerStack);
-    m_topToolBar->setObjectName(QStringLiteral("topToolBar"));
-    m_centerLayout->addWidget(m_tabBar);
-    m_centerLayout->addWidget(m_topToolBar);
+    topToolBar_ = new ToolBar(centerStack_);
+    topToolBar_->setObjectName(QStringLiteral("topToolBar"));
+    centerLayout_->addWidget(tabBar_);
+    centerLayout_->addWidget(topToolBar_);
 
     // Painter area
-    m_painterWrapper = new QWidget(m_centerStack);
-    m_painterWrapper->setObjectName(QStringLiteral("painterWrapper"));
-    m_painterWrapper->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    painterWrapper_ = new QWidget(centerStack_);
+    painterWrapper_->setObjectName(QStringLiteral("painterWrapper"));
+    painterWrapper_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    m_painterLayout = new QVBoxLayout(m_painterWrapper);
-    m_painterLayout->setObjectName(QStringLiteral("m_painterLayout"));
-    m_painterLayout->setContentsMargins(PADDING_HORIZONTAL, 0, PADDING_HORIZONTAL, PADDING_BOTTOM);
-    m_painterLayout->setSpacing(LAYOUT_SPACING);
+    painterLayout_ = new QVBoxLayout(painterWrapper_);
+    painterLayout_->setObjectName(QStringLiteral("painterLayout"));
+    painterLayout_->setContentsMargins(PADDING_HORIZONTAL, 0, PADDING_HORIZONTAL, PADDING_BOTTOM);
+    painterLayout_->setSpacing(LAYOUT_SPACING);
 
-    m_painter = new QTPainter(m_painterWrapper);
-    m_painter->setObjectName(QStringLiteral("painter"));
-    m_painterLayout->addWidget(m_painter);
+    painter_ = new QTPainter(painterWrapper_);
+    painter_->setObjectName(QStringLiteral("painter"));
+    painterLayout_->addWidget(painter_);
 
-    m_centerLayout->addWidget(m_painterWrapper, 1);
+    centerLayout_->addWidget(painterWrapper_, 1);
 
     // Command console
-    m_commandConsoleWrapper = new QWidget(m_centerStack);
-    m_commandConsoleWrapper->setObjectName(QStringLiteral("commandConsoleWrapper"));
+    commandConsoleWrapper_ = new QWidget(centerStack_);
+    commandConsoleWrapper_->setObjectName(QStringLiteral("commandConsoleWrapper"));
 
-    m_commandConsoleLayout = new QHBoxLayout(m_commandConsoleWrapper);
-    m_commandConsoleLayout->setContentsMargins(PADDING_HORIZONTAL, 0, PADDING_HORIZONTAL, 0);
-    m_commandConsoleLayout->setSpacing(LAYOUT_SPACING);
+    commandConsoleLayout_ = new QHBoxLayout(commandConsoleWrapper_);
+    commandConsoleLayout_->setContentsMargins(PADDING_HORIZONTAL, 0, PADDING_HORIZONTAL, 0);
+    commandConsoleLayout_->setSpacing(LAYOUT_SPACING);
 
-    m_commandConsole = new CommandConsole(m_commandConsoleWrapper);
-    m_commandConsole->setObjectName(QStringLiteral("commandConsole"));
-    m_commandConsoleLayout->addWidget(m_commandConsole);
+    commandConsole_ = new CommandConsole(commandConsoleWrapper_);
+    commandConsole_->setObjectName(QStringLiteral("commandConsole"));
+    commandConsoleLayout_->addWidget(commandConsole_);
 
-    m_centerLayout->addWidget(m_commandConsoleWrapper);
+    centerLayout_->addWidget(commandConsoleWrapper_);
 
     // Side columns
-    m_leftColumn = new SideMenu(this);
-    m_leftColumn->setObjectName(QStringLiteral("leftColumn"));
+    leftColumn_ = new SideMenu(this);
+    leftColumn_->setObjectName(QStringLiteral("leftColumn"));
 
-    m_rightColumn = new SideMenu(this);
-    m_rightColumn->setObjectName(QStringLiteral("rightColumn"));
+    rightColumn_ = new SideMenu(this);
+    rightColumn_->setObjectName(QStringLiteral("rightColumn"));
 
-    m_topBar = new TopBarProject(this);
-    m_topBar->setObjectName(QStringLiteral("topBarProject"));
-    m_mainLayout->insertWidget(0, m_topBar);
+    topBar_ = new TopBarProject(this);
+    topBar_->setObjectName(QStringLiteral("topBarProject"));
+    mainLayout_->insertWidget(0, topBar_);
 
     // Side info/messenger containers
-    infoContainer = new ContainerWidget(ContainerType::Side, Qt::Vertical);
-    infoContainer->setObjectName(QStringLiteral("infoContainer"));
-    infoButton = infoContainer->addButton(QStringLiteral("I"));
-    infoButton->setObjectName(QStringLiteral("infoButton"));
+    infoContainer_ = new ContainerWidget(ContainerType::Side, Qt::Vertical);
+    infoContainer_->setObjectName(QStringLiteral("infoContainer"));
+    infoButton_ = infoContainer_->addButton(QStringLiteral("I"));
+    infoButton_->setObjectName(QStringLiteral("infoButton"));
 
-    messengerContainer = new ContainerWidget(ContainerType::Side, Qt::Vertical);
-    messengerContainer->setObjectName(QStringLiteral("messengerContainer"));
+    messengerContainer_ = new ContainerWidget(ContainerType::Side, Qt::Vertical);
+    messengerContainer_->setObjectName(QStringLiteral("messengerContainer"));
 
-    messengerButton = messengerContainer->addButton(QStringLiteral("M"));
-    messengerButton->setObjectName(QStringLiteral("messengerButton"));
+    messengerButton_ = messengerContainer_->addButton(QStringLiteral("M"));
+    messengerButton_->setObjectName(QStringLiteral("messengerButton"));
 
-    connect(infoButton, &QPushButton::clicked, this, [this]() {
-        if (infoContainer->currentSlot() == m_leftColumn->slotWidget()) {
-            m_leftColumn->openInfPanel();
-        }
-        else {
-            m_rightColumn->openInfPanel();
-        }
-    });
-
-    connect(messengerButton, &QPushButton::clicked, this, [this]() {
-        if (messengerContainer->currentSlot() == m_leftColumn->slotWidget()) {
-            m_leftColumn->openMesPanel();
-        }
-        else {
-            m_rightColumn->openMesPanel();
+    connect(infoButton_, &QPushButton::clicked, this, [this]() {
+        if (infoContainer_->currentSlot() == leftColumn_->slotWidget()) {
+            leftColumn_->openInfPanel();
+        } else {
+            rightColumn_->openInfPanel();
         }
     });
 
-    m_leftColumn->addContainer(infoContainer);
-    m_leftColumn->addContainer(messengerContainer);
+    connect(messengerButton_, &QPushButton::clicked, this, [this]() {
+        if (messengerContainer_->currentSlot() == leftColumn_->slotWidget()) {
+            leftColumn_->openMesPanel();
+        } else {
+            rightColumn_->openMesPanel();
+        }
+    });
+
+    leftColumn_->addContainer(infoContainer_);
+    leftColumn_->addContainer(messengerContainer_);
 
     // Assemble root layout
-    m_rootContentLayout->addWidget(m_leftColumn);
-    m_rootContentLayout->addWidget(m_centerStack, 1);
-    m_rootContentLayout->addWidget(m_rightColumn);
+    rootContentLayout_->addWidget(leftColumn_);
+    rootContentLayout_->addWidget(centerStack_, 1);
+    rootContentLayout_->addWidget(rightColumn_);
 }
