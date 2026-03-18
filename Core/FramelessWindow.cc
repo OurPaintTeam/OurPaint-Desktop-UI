@@ -1,5 +1,7 @@
 #include "FramelessWindow.h"
 
+#include <QApplication>
+#include <QFile>
 #include <QMouseEvent>
 
 #ifdef Q_OS_WIN
@@ -25,20 +27,24 @@ namespace {
     constexpr DWORD DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     constexpr DWORD DWMWCP_ROUND = 2;
 #endif
-}
+} // namespace
 
 
 UI::FramelessWindow::FramelessWindow(QWidget* parent)
     : QMainWindow(parent) {
-    setObjectName(QStringLiteral("frameless"));
-    setStyleSheet(QStringLiteral("background:#978897;"));
+    setObjectName(QStringLiteral("FramelessWindow"));
+    setWindowTitle("OurPaint");
+    setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
+    QApplication::setQuitOnLastWindowClosed(true);
     constexpr int sizeW = 960;
-    constexpr int sizeY = 960;
-    resize(sizeW, sizeY);
+    constexpr int sizeY = 540;
+    constexpr auto size = QSize(sizeW, sizeY);
+    resize(size);
+
 
 #ifdef Q_OS_WIN
     // Enable rounded corners
-    const auto hwnd = reinterpret_cast<HWND>(winId());
+    auto* const hwnd = reinterpret_cast<HWND>(winId());
 
     constexpr DWORD corner = DWMWCP_ROUND;
 
@@ -52,10 +58,10 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent)
 }
 
 
-#ifdef Q_OS_WIN
 bool UI::FramelessWindow::nativeEvent(const QByteArray&,
                                       void* message,
                                       qintptr* result) {
+#ifdef Q_OS_WIN
     switch (const auto* msg = static_cast<MSG*>(message); msg->message) {
         case WM_NCCALCSIZE: {
             if (msg->wParam) {
@@ -140,10 +146,9 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray&,
         default:
             break;
     }
-
+#endif
     return QMainWindow::nativeEvent({}, message, result);
 }
-#endif
 
 
 void UI::FramelessWindow::mousePressEvent(QMouseEvent* event) {
@@ -151,6 +156,7 @@ void UI::FramelessWindow::mousePressEvent(QMouseEvent* event) {
         event->pos().y() < TITLE_HEIGHT) {
         // Start drag
         isDragging_ = true;
+        setCursor(Qt::ClosedHandCursor);
 
         dragOffset_ =
                 event->globalPosition().toPoint() -
@@ -174,4 +180,5 @@ void UI::FramelessWindow::mouseMoveEvent(QMouseEvent* event) {
 void UI::FramelessWindow::mouseReleaseEvent(QMouseEvent*) {
     // Stop drag
     isDragging_ = false;
+    setCursor(Qt::ArrowCursor);
 }

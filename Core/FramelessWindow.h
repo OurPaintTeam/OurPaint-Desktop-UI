@@ -2,9 +2,8 @@
 #define OURPAINT_DESKTOP_UI_FRAMELESSWINDOW_H
 
 #include <QMainWindow>
-#include <QPoint>
 
-
+class QPoint;
 class QMouseEvent;
 
 namespace UI {
@@ -31,8 +30,8 @@ namespace UI {
 
     private:
         QPoint dragOffset_{};
-        bool isDragging_ = false;
+        bool isDragging_{false};
     };
-}
+} // namespace UI
 
 #endif // OURPAINT_DESKTOP_UI_FRAMELESSWINDOW_H
