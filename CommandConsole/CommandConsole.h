@@ -13,6 +13,10 @@ namespace UI {
 
     public:
         explicit CommandConsole(QWidget* parent = nullptr);
+        void setLineEditEngine(QLineEdit* lineEdit);
+
+    signals:
+        void sentCommandTriggered(const QString& command);
 
     private:
         QHBoxLayout* layout_{nullptr};
