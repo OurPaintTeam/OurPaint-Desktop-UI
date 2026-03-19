@@ -1,55 +1,32 @@
 #include "SideMenu.h"
 
-#include "DraggleContainer.h"
+#include <QPushButton>
+
 #include "InformationPanel.h"
 #include "MessengerPanel.h"
+#include "ToolsType.h"
+#include "DragDrop/SlotWidget.h"
 
 
 UI::SideMenu::SideMenu(QWidget* parent)
-    : QWidget(parent), stack_(new QStackedLayout(this)), infoPanel_(new UI::InformationPanel(this)),
+    : QWidget(parent), stack_(new QStackedLayout(this)),
+      infoPanel_(new UI::InformationPanel(this)),
       msgPanel_(new UI::MessengerPanel(this)) {
     constexpr auto sizeH = 32;
     setFixedWidth(sizeH);
     setAttribute(Qt::WA_StyledBackground, true);
-    setStyleSheet(R"(
-            QWidget {
-                background: #494850;
-            }
-
-            QWidget#sideSlot {
-                border: 1px dashed #666;
-            }
-
-            QPushButton {
-                background: transparent;
-                border: none;
-                color: #D8D8F6;
-                border-radius: 6px;
-                padding: 6px;
-            }
-
-            QPushButton:hover {
-                background: rgba(255,255,255,0.08);
-            }
-
-            QPushButton:pressed {
-                background: rgba(255,255,255,0.16);
-            }
-        )");
-
 
     stack_->setContentsMargins(0, 0, 0, 0);
     stack_->setSpacing(0);
 
     slot_ = new SlotWidget(
         {
-            UI::ContainerType::Side, UI::ContainerType::Tools, UI::ContainerType::Requirements,
-            UI::ContainerType::Figures
+            UI::ContainerType::Side, UI::ContainerType::Tools
         },
         Qt::Vertical,
         this
     );
-    slot_->setObjectName("sideSlot");
+    setObjectName("SideMenu");
 
     stack_->addWidget(slot_); // Icons
     stack_->addWidget(infoPanel_);

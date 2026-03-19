@@ -1,9 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
 #define OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
 
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QWidget>
+
+class QPushButton;
+class QVBoxLayout;
 
 namespace UI {
     class SettingsWidget final : public QWidget {

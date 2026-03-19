@@ -1,10 +1,17 @@
 #ifndef OURPAINT_DESKTOP_UI_TOOLBAR_H
 #define OURPAINT_DESKTOP_UI_TOOLBAR_H
 
-#include <QHBoxLayout>
-#include <QStackedWidget>
-#include <QWheelEvent>
 #include <QWidget>
+
+class QHBoxLayout;
+class QPushButton;
+class QStackedWidget;
+class QWheelEvent;
+
+
+namespace UI {
+    class MenuButton;
+} // namespace UI
 
 namespace UI {
     class SlotWidget;
@@ -20,14 +27,74 @@ namespace UI {
 
     public:
         explicit ToolBar(QWidget* parent = nullptr);
+        void showAllElements();
+        void hideAllElements();
+
+    signals:
+        void pointLineDistanceTriggered();
+        void pointOnLineTriggered();
+        void pointPointDistanceTriggered();
+        void coincidentPointsTriggered();
+        void lineCircleDistanceTriggered();
+        void lineOnCircleTriggered();
+        void lineInCircleTriggered();
+        void parallelLinesTriggered();
+        void perpendicularLinesTriggered();
+        void angleBetweenLinesTriggered();
+
+        void pointTriggered();
+        void lineTriggered();
+        void polylineTriggered();
+        void infiniteLineTriggered();
+
+        void circleByDiameterTriggered();
+        void circleTwoPointsTriggered();
+        void ellipseThreePointsTriggered();
+
+        void arcByRadiusTriggered();
+        void arcByDiameterTriggered();
+        void arcByThreePointsTriggered();
+
+        void lineSettingsTriggered();
+        void circleSettingsTriggered();
+        void arcSettingsTriggered();
+
+        void cursorTriggered();
+        void sizeTriggered();
 
     protected:
         void wheelEvent(QWheelEvent* event) override;
 
+    private slots:
+        void handlePrimitiveActionSlot(const QAction* action);
+
     private:
+        void initLayout() const;
+        void initFiguresLane();
+        void initConstraintsLane();
+        void initSignals();
+
         ArcMenu* arcMenu_{nullptr};
         CircleMenu* circleMenu_{nullptr};
         LineMenu* lineMenu_{nullptr};
+
+        QPushButton* cursorTool_{nullptr};
+        QPushButton* sizeTool_{nullptr};
+
+        QPushButton* pointPrimitive_{nullptr};
+        MenuButton* linePrimitive_{nullptr};
+        MenuButton* circlePrimitive_{nullptr};
+        MenuButton* arcPrimitive_{nullptr};
+
+
+        struct ConstraintConfig {
+            QString icon;
+            QString tooltip;
+            std::function<void()> trigger;
+        };
+
+
+        QVector<ConstraintConfig> constraints_;
 
         QHBoxLayout* layout_{nullptr};
         QStackedWidget* stack_{nullptr};

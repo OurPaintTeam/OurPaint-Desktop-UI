@@ -1,9 +1,9 @@
 #ifndef OURPAINT_DESKTOP_UI_SIDETOOL_H
 #define OURPAINT_DESKTOP_UI_SIDETOOL_H
 
-#include <QVBoxLayout>
 #include <QWidget>
 
+class QVBoxLayout;
 
 namespace UI {
     class SlotWidget;

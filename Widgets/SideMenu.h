@@ -1,8 +1,9 @@
 #ifndef OURPAINT_DESKTOP_UI_SIDEMENU_H
 #define OURPAINT_DESKTOP_UI_SIDEMENU_H
 
-#include <QStackedLayout>
 #include <QWidget>
+
+class QStackedLayout;
 
 namespace UI {
     class MessengerPanel;
