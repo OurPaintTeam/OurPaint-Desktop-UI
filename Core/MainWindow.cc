@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 
+#include "NotificationContainer.h"
 #include "ProjectPage.h"
 #include "StartPage.h"
 #include "TabPage.h"
@@ -9,108 +10,201 @@
 #include <QVBoxLayout>
 
 namespace {
-    constexpr qint32 LAYOUT_MARGIN = 0;
-    constexpr qint32 LAYOUT_SPACING = 0;
+    constexpr int MARGIN = 0;
+    constexpr int SPACING = 0;
 } // namespace
 
-using namespace UI;
 
-
-MainWindow::MainWindow(QWidget* parent)
-    : FramelessWindow(parent) {
-    setObjectName(QStringLiteral("mainwindow"));
+UI::MainWindow::MainWindow(QWidget* parent, UI::MainWindow::ProjectData data)
+    : FramelessWindow(parent), projectData_(std::move((data))) {
     initUI();
 }
 
 
-MainWindow::~MainWindow() {
-    // Ensure detached tabs are closed
-    for (TabPage* tab: tabs_) {
-        if (tab != nullptr) {
+UI::MainWindow::~MainWindow() {
+    for (auto* tab: tabs_) {
+        if (tab) {
             tab->close();
         }
     }
+    destroyProjectPage();
+}
 
+
+QString UI::MainWindow::projectPath() const {
+    return projectData_.path;
+}
+
+
+QString UI::MainWindow::projectID() const {
+    return projectData_.id;
+}
+
+
+void UI::MainWindow::setProjectPath(const QString& projectPath) {
+    projectData_.path = projectPath;
+}
+
+
+void UI::MainWindow::setProjectsList(const QVector<QPair<QString, QString> >& projectsList) const {
+    startPage_->setProjectsList(projectsList);
+}
+
+
+void UI::MainWindow::addNotification(const QString& text) const {
+    notificationManager_->addNotification(text);
+}
+
+
+void UI::MainWindow::setQOpenGLPainter(QOpenGLWindow* engine) const {
+    projectPage_->setQOpenGLPainter(engine);
+}
+
+
+void UI::MainWindow::onStartWindowSlot() {
+    projectData_ = {};
+    for (auto* tab: tabs_) {
+        if (tab) {
+            tab->close();
+        }
+    }
     tabs_.clear();
+
+    destroyProjectPage();
+    pageStack_->setCurrentWidget(startPage_);
 }
 
 
-void MainWindow::openTabPage(const QString& tabName) {
-    // Create detached tab window
-    auto* tab = new TabPage(nullptr);
+void UI::MainWindow::onOpenProjectSlot(const UI::MainWindow::ProjectData& data) {
+    projectData_ = data;
+    for (auto* tab: tabs_) {
+        if (tab) {
+            tab->close();
+        }
+    }
+    tabs_.clear();
 
-    tab->setAttribute(Qt::WA_DeleteOnClose);
-    tab->setObjectName(QStringLiteral("tabPage"));
-    tab->setWindowTitle(tabName);
-
-    tabs_.append(tab);
-
-    // Remove pointer when destroyed
-    connect(tab, &QObject::destroyed, this,
-            [this, tab](QObject* /*obj*/) {
-                tabs_.removeAll(tab);
-            }
-    );
-
-    tab->show();
-}
-
-
-void MainWindow::initUI() {
-    // Root widget
-    contentWidget_ = new QWidget(this);
-    contentWidget_->setObjectName(QStringLiteral("mainContent"));
-
-    setCentralWidget(contentWidget_);
-
-    // Root layout
-    rootLayout_ = new QVBoxLayout(contentWidget_);
-    rootLayout_->setObjectName(QStringLiteral("mainLayout"));
-    rootLayout_->setContentsMargins(
-        LAYOUT_MARGIN,
-        LAYOUT_MARGIN,
-        LAYOUT_MARGIN,
-        LAYOUT_MARGIN
-    );
-    rootLayout_->setSpacing(LAYOUT_SPACING);
-
-    // Page stack
-    pageStack_ = new QStackedWidget(contentWidget_);
-    pageStack_->setObjectName(QStringLiteral("appStack"));
-
-    rootLayout_->addWidget(pageStack_);
-
-    // Pages
-    startPage_ = new StartPage(pageStack_);
-    startPage_->setObjectName(QStringLiteral("startPage"));
-
-    projectPage_ = new ProjectPage(pageStack_);
-    projectPage_->setObjectName(QStringLiteral("projectPage"));
-
-    // Forward tab request
-    connect(
-        projectPage_,
-        &ProjectPage::requestOpenTabPage,
-        this,
-        &MainWindow::openTabPage
-    );
-
-    pageStack_->addWidget(startPage_);
-    pageStack_->addWidget(projectPage_);
-
+    destroyProjectPage();
+    createProjectPage();
     pageStack_->setCurrentWidget(projectPage_);
 }
 
 
-void MainWindow::closeEvent(QCloseEvent* event) {
-    // Close all detached tabs
+void UI::MainWindow::addTabSlot(const QString& name) const {
+    if (projectPage_) {
+        projectPage_->onAddTabSlot(name);
+    }
+}
+
+
+void UI::MainWindow::deleteTabSlot(const QString& name) const {
+    if (projectPage_) {
+        projectPage_->onDeleteTabSlot(name);
+    }
+}
+
+
+void UI::MainWindow::onRenameTabSlot(const QString& oldName, const QString& newName) const {
+    if (projectPage_) {
+        projectPage_->onRenameTabSlot(oldName, newName);
+    }
+}
+
+
+void UI::MainWindow::openTabPageSlot(const QString& tabName) {
+    auto* tab = new TabPage(nullptr);
+    tab->setAttribute(Qt::WA_DeleteOnClose);
+    tab->setWindowTitle(tabName);
+    tabs_.append(tab);
+
+    connect(tab, &QObject::destroyed, this, [this, tab]() { tabs_.removeAll(tab); });
+    tab->show();
+}
+
+
+void UI::MainWindow::initUI() {
+    contentWidget_ = new QWidget(this);
+    setCentralWidget(contentWidget_);
+
+    rootLayout_ = new QVBoxLayout(contentWidget_);
+    rootLayout_->setContentsMargins(MARGIN, MARGIN, MARGIN, MARGIN);
+    rootLayout_->setSpacing(SPACING);
+
+    pageStack_ = new QStackedWidget(contentWidget_);
+    rootLayout_->addWidget(pageStack_);
+
+    // always exists
+    startPage_ = new StartPage(pageStack_);
+    pageStack_->addWidget(startPage_);
+    pageStack_->setCurrentWidget(startPage_);
+
+    notificationManager_ = new NotificationContainer(this);
+
+    // signals
+    connect(startPage_, &StartPage::openProjectInThisWindowTriggered,
+            this, &UI::MainWindow::openProjectThisWindowTriggered);
+
+    connect(startPage_, &StartPage::createProjectInThisWindowTriggered,
+            this, &UI::MainWindow::createProjectThisWindowTriggered);
+
+    connect(startPage_, &StartPage::renameProjectTriggered,
+            this, &UI::MainWindow::renameProjectTriggered);
+
+    connect(startPage_, &StartPage::deleteProjectTriggered,
+            this, &UI::MainWindow::deleteProjectTriggered);
+}
+
+
+void UI::MainWindow::closeEvent(QCloseEvent* event) {
     for (auto* tab: tabs_) {
-        if (tab != nullptr) {
+        if (tab) {
             tab->close();
         }
     }
-
     tabs_.clear();
-
     FramelessWindow::closeEvent(event);
+}
+
+
+void UI::MainWindow::createProjectPage() {
+    if (projectPage_) {
+        return;
+    }
+
+    projectPage_ = new ProjectPage(pageStack_);
+    pageStack_->addWidget(projectPage_);
+
+
+    connect(projectPage_, &ProjectPage::goToStartWindowTriggered,
+            this, &UI::MainWindow::goToStartWindowTriggered);
+    connect(projectPage_, &ProjectPage::openTabWindowTriggered,
+            this, &UI::MainWindow::openTabPageSlot);
+    connect(projectPage_, &ProjectPage::createFileTriggered,
+            this, &UI::MainWindow::createFileTriggered);
+    connect(projectPage_, &ProjectPage::openFileTriggered,
+            this, &UI::MainWindow::openFileTriggered);
+    connect(projectPage_, &ProjectPage::renameTabTriggered,
+            this, &UI::MainWindow::renameTabTriggered);
+    connect(projectPage_, &ProjectPage::removeTabTriggered,
+            this, &UI::MainWindow::removeTabTriggered);
+
+    connect(projectPage_, &ProjectPage::openProjectThisWindowTriggered,
+            this, &UI::MainWindow::openProjectThisWindowTriggered);
+    connect(projectPage_, &ProjectPage::createProjectThisWindowTriggered,
+            this, &UI::MainWindow::createProjectThisWindowTriggered);
+    connect(projectPage_, &ProjectPage::openNewWindowOpenProjectTriggered,
+            this, &UI::MainWindow::openNewWindowOpenProjectTriggered);
+    connect(projectPage_, &ProjectPage::openNewWindowCreateProjectTriggered,
+            this, &UI::MainWindow::openNewWindowCreateProjectTriggered);
+}
+
+
+void UI::MainWindow::destroyProjectPage() {
+    if (!projectPage_) {
+        return;
+    }
+
+    pageStack_->removeWidget(projectPage_);
+    projectPage_->deleteLater();
+    projectPage_ = nullptr;
 }
