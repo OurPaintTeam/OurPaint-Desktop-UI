@@ -4,13 +4,14 @@
 #include <QSurfaceFormat>
 
 #include "CommandConsole.h"
-#include "DraggleContainer.h"
+#include "ContainerWidget.h"
 #include "InputWidget.h"
 #include "NavigationWidget.h"
 #include "PainterWidget.h"
 #include "SideMenu.h"
 #include "TabBar.h"
 #include "ToolBar.h"
+#include "ToolsType.h"
 #include "TopBarProject.h"
 
 namespace {

@@ -2,8 +2,12 @@
 
 #include <QApplication>
 #include <QDrag>
+#include <QHBoxLayout>
 #include <QMimeData>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QStyle>
+#include <QToolButton>
 
 
 namespace {
@@ -23,13 +27,10 @@ UI::TabWidget::TabWidget(const QString& name, QWidget* parent)
 
     layout_->setContentsMargins(K_TAB_HORIZONTAL_PADDING_PX, 0, K_TAB_HORIZONTAL_PADDING_PX, 0);
     layout_->setSpacing(K_TAB_LAYOUT_SPACING_PX);
-
-    nameButton_->setStyleSheet("background: transparent; border: none;");
     nameButton_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     closeButton_->setText("✕");
     closeButton_->setFixedWidth(K_CLOSE_BUTTON_WIDTH_PX);
-    closeButton_->setStyleSheet("background: transparent; border: none;");
     closeButton_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     layout_->addWidget(nameButton_);
@@ -38,14 +39,14 @@ UI::TabWidget::TabWidget(const QString& name, QWidget* parent)
     applyInactiveStyle();
 
     connect(nameButton_, &QPushButton::clicked, this, [this]() {
-        emit clicked(this);
+        emit clickedTriggered(this);
     });
 
     connect(closeButton_, &QToolButton::clicked, this, [this]() {
-        emit closeRequested(this);
+        emit closeRequestedTriggered(this);
     });
 
-    setObjectName(QStringLiteral("TabWidget"));
+    setObjectName(QStringLiteral("TabWidgetActive"));
 }
 
 
@@ -54,8 +55,8 @@ QString UI::TabWidget::getName() const {
 }
 
 
-QString UI::TabWidget::name() const {
-    return name_;
+void UI::TabWidget::setName(const QString& name) {
+    name_ = name;
 }
 
 
@@ -83,85 +84,36 @@ void UI::TabWidget::mouseMoveEvent(QMouseEvent* e) {
         return;
     }
 
-    auto* drag = new QDrag(this);
-    auto* mime = new QMimeData;
+    auto drag = std::make_unique<QDrag>(this);
+    auto mime = std::make_unique<QMimeData>();
 
     mime->setData(K_TAB_MIME_TYPE, QByteArray::number(reinterpret_cast<quintptr>(this)));
-    drag->setMimeData(mime);
+    drag->setMimeData(mime.release());
 
     if (const auto action = drag->exec(Qt::MoveAction);
         action == Qt::IgnoreAction) {
-        emit draggedOut(this);
+        emit draggedOutTriggered(this);
     }
 }
 
 
 void UI::TabWidget::applyInactiveStyle() {
-    // Container background.
-    setStyleSheet(
-        "background-color: #615760;"
-        "border-top-left-radius: 5px;"
-        "border-top-right-radius: 5px;"
-        "border: none;"
-    );
+    nameButton_->setObjectName("NameButtonTabInActive");
+    closeButton_->setObjectName("CloseButtonTabInActive");
+    setObjectName(QStringLiteral("TabWidgetInActive"));
 
-    // Title button.
-    nameButton_->setStyleSheet(R"(
-        QPushButton {
-            background: transparent;
-            border: none;
-            color: #D8D8F6;
-            font-size: 9pt;
-        }
-        QPushButton:hover {
-            color: #FFFFFF;
-        }
-    )");
-
-    // Close button.
-    closeButton_->setStyleSheet(R"(
-        QToolButton {
-            background: transparent;
-            border: none;
-            color: #D8D8F6;
-        }
-        QToolButton:hover {
-            color: #FFFFFF;
-        }
-    )");
+    style()->unpolish(this);
+    style()->polish(this);
+    update();
 }
 
 
 void UI::TabWidget::applyActiveStyle() {
-    setStyleSheet(
-        "background-color: #978897;"
-        "border-top-left-radius: 5px;"
-        "border-top-right-radius: 5px;"
-        "border-bottom: 2px solid #978897;"
-        "border: none;"
-    );
+    nameButton_->setObjectName("NameButtonTabActive");
+    closeButton_->setObjectName("CloseButtonTabActive");
+    setObjectName(QStringLiteral("TabWidgetActive"));
 
-    nameButton_->setStyleSheet(R"(
-        QPushButton {
-            background: transparent;
-            border: none;
-            color: #D8D8F6;
-            font-size: 9pt;
-            font-weight: bold;
-        }
-        QPushButton:hover {
-            color: #FFFFFF;
-        }
-    )");
-
-    closeButton_->setStyleSheet(R"(
-        QToolButton {
-            background: transparent;
-            border: none;
-            color: #D8D8F6;
-        }
-        QToolButton:hover {
-            color: #FFFFFF;
-        }
-    )");
+    style()->unpolish(this);
+    style()->polish(this);
+    update();
 }

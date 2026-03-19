@@ -1,11 +1,11 @@
 #ifndef OURPAINT_DESKTOP_UI_TABWIDGET_H
 #define OURPAINT_DESKTOP_UI_TABWIDGET_H
 
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QToolButton>
 #include <QWidget>
 
+class QHBoxLayout;
+class QPushButton;
+class QToolButton;
 
 namespace UI {
     class TabWidget final : public QWidget {
@@ -14,13 +14,13 @@ namespace UI {
     public:
         explicit TabWidget(const QString& name, QWidget* parent = nullptr);
         [[nodiscard]] QString getName() const;
-        [[nodiscard]] QString name() const;
+        void setName(const QString& name);
         void setActive(bool active);
 
     signals:
-        void clicked(UI::TabWidget* tab);
-        void draggedOut(UI::TabWidget* tab);
-        void closeRequested(UI::TabWidget* tab);
+        void clickedTriggered(UI::TabWidget* tab);
+        void draggedOutTriggered(UI::TabWidget* tab);
+        void closeRequestedTriggered(UI::TabWidget* tab);
 
     protected:
         void mousePressEvent(QMouseEvent* e) override;

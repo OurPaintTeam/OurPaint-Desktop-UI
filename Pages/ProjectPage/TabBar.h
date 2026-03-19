@@ -2,11 +2,11 @@
 #define OURPAINT_DESKTOP_UI_TABBAR_H
 
 
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QScrollArea>
 #include <QWidget>
 
+class QHBoxLayout;
+class QPushButton;
+class QScrollArea;
 
 namespace UI {
     class TabWidget;
@@ -18,14 +18,27 @@ namespace UI {
 
     public:
         explicit TabBar(QWidget* parent = nullptr);
-
         void addTab(const QString& name);
-
-    public slots:
-        void setActiveTab(UI::TabWidget* tab);
+        [[nodiscard]] bool isEmptyTab() const;
 
     signals:
-        void openTabWindow(const QString& tab);
+        void renameTabTriggered(const QString& oldName, const QString& newName);
+        void removeTabTriggered(const QString& name);
+        void createTabTriggered(const QString& name);
+        void setActiveTabTriggered(const QString& name);
+        void openTabWindowTriggered(const QString& tab);
+        void allTabsCloseTriggered();
+
+    public slots:
+        void renameTab(const QString& oldName, const QString& newName);
+        void deleteTabSlot(const QString& name);
+        void openTabSlot(const QString& name);
+        void createTabSlot(const QString& name);
+        UI::TabWidget* closeTabOnNameSlot(const QString& name);
+
+    private slots:
+        void setActiveTabSlot(UI::TabWidget* tab);
+        void closeTabOnPtrSlot(UI::TabWidget* tab);
 
     protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
@@ -43,7 +56,6 @@ namespace UI {
         TabWidget* activeTab_{nullptr};
 
         void createPlusButton();
-        void removeTab(TabWidget* tab);
     };
 } // namespace UI
 
