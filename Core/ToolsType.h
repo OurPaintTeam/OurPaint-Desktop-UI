@@ -4,6 +4,12 @@
 #include <QMetaType>
 
 namespace UI {
+    enum class ContainerType {
+        Tools,
+        Side
+    };
+
+
     enum class PrimitiveType {
         Line,
         Polyline,
