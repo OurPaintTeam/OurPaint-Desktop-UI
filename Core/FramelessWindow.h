@@ -31,6 +31,9 @@ namespace UI {
     private:
         QPoint dragOffset_{};
         bool isDragging_{false};
+
+        static QString loadStyle(const QString& path);
+        static QString loadStyles(const QStringList& files);
     };
 } // namespace UI
 

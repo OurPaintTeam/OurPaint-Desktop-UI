@@ -35,6 +35,22 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent)
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
+
+    const auto style = loadStyles({
+        ":/Styles/app.qss",
+        ":/Styles/buttons.qss",
+        ":/Styles/menu.qss",
+        ":/Styles/tooltip.qss",
+        ":/Styles/window.qss"
+    });
+
+    if (style.isEmpty()) {
+        qWarning() << "No styles loaded!";
+    } else {
+        setStyleSheet(style);
+    }
+
+
     QApplication::setQuitOnLastWindowClosed(true);
     constexpr int sizeW = 960;
     constexpr int sizeY = 540;
@@ -55,6 +71,39 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent)
         sizeof(corner)
     );
 #endif
+}
+
+
+void UI::FramelessWindow::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton &&
+        event->pos().y() < TITLE_HEIGHT) {
+        // Start drag
+        isDragging_ = true;
+        setCursor(Qt::ClosedHandCursor);
+
+        dragOffset_ =
+                event->globalPosition().toPoint() -
+                frameGeometry().topLeft();
+
+        event->accept();
+    }
+}
+
+
+void UI::FramelessWindow::mouseMoveEvent(QMouseEvent* event) {
+    if (isDragging_ &&
+        (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPosition().toPoint() - dragOffset_);
+
+        event->accept();
+    }
+}
+
+
+void UI::FramelessWindow::mouseReleaseEvent(QMouseEvent*) {
+    // Stop drag
+    isDragging_ = false;
+    setCursor(Qt::ArrowCursor);
 }
 
 
@@ -151,34 +200,26 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray&,
 }
 
 
-void UI::FramelessWindow::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton &&
-        event->pos().y() < TITLE_HEIGHT) {
-        // Start drag
-        isDragging_ = true;
-        setCursor(Qt::ClosedHandCursor);
-
-        dragOffset_ =
-                event->globalPosition().toPoint() -
-                frameGeometry().topLeft();
-
-        event->accept();
+QString UI::FramelessWindow::loadStyle(const QString& path) {
+    QFile file(path);
+    if (!file.exists()) {
+        qWarning() << "Resource not found:" << path;
+        return "";
     }
+
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        qWarning() << "Failed to open style file:" << path;
+        return "";
+    }
+
+    return QString::fromUtf8(file.readAll());
 }
 
 
-void UI::FramelessWindow::mouseMoveEvent(QMouseEvent* event) {
-    if (isDragging_ &&
-        (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPosition().toPoint() - dragOffset_);
-
-        event->accept();
+QString UI::FramelessWindow::loadStyles(const QStringList& files) {
+    QString style;
+    for (const auto& file: files) {
+        style += loadStyle(file);
     }
-}
-
-
-void UI::FramelessWindow::mouseReleaseEvent(QMouseEvent*) {
-    // Stop drag
-    isDragging_ = false;
-    setCursor(Qt::ArrowCursor);
+    return style;
 }
