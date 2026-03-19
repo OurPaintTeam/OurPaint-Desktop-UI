@@ -28,7 +28,7 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
     constexpr auto w = 270;
     setMinimumWidth(w);
 
-    constexpr auto m = 270;
+    constexpr auto m = 10;
     mainLayout_->setContentsMargins(m, m, m, m);
     constexpr auto s = 8;
     mainLayout_->setSpacing(s);
