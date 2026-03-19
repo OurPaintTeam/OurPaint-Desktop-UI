@@ -5,6 +5,7 @@
 
 #include "CadViewportWindow.h"
 #include "MainWindow.h"
+#include "CustomConsole.h"
 
 
 UI::UIManager::UIManager() {
@@ -19,6 +20,7 @@ void UI::UIManager::openNewWindowOpenProjectSlot(const QString& projectPath) {
         auto* newWindow = createWindow(nullptr, {data.path, data.id});
         newWindow->onOpenProjectSlot({data.path, data.id});
         newWindow->setQOpenGLPainter(new CadViewportWindow());
+        newWindow->setCommandConsoleEngine(new CustomConsole());
         for (const auto& t: data.tabs) {
             newWindow->addTabSlot(t);
         }
@@ -34,6 +36,7 @@ void UI::UIManager::openNewWindowCreateProjectSlot(const QString& projectPath) {
         auto* newWindow = createWindow(nullptr, {projectPath, projectId});
         newWindow->onOpenProjectSlot({projectPath, projectId});
         newWindow->setQOpenGLPainter(new CadViewportWindow());
+        newWindow->setCommandConsoleEngine(new CustomConsole());
         newWindow->addNotification("✨ Project created in new window: " + projectName);
     }
 }
@@ -43,6 +46,7 @@ void UI::UIManager::openProjectThisWindowSlot(UI::MainWindow* window, const QStr
     if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({data.path, data.id});
         window->setQOpenGLPainter(new CadViewportWindow());
+        window->setCommandConsoleEngine(new CustomConsole());
         for (const auto& t: data.tabs) {
             window->addTabSlot(t);
         }
@@ -56,6 +60,7 @@ void UI::UIManager::createProjectThisWindowSlot(UI::MainWindow* window, const QS
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({projectPath, projectId});
         window->setQOpenGLPainter(new CadViewportWindow());
+        window->setCommandConsoleEngine(new CustomConsole());
         window->addNotification("✨ Project created: " + projectName);
     } else {
         window->addNotification("❌ Failed to create project: " + projectName);

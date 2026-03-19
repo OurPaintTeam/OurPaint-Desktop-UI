@@ -61,6 +61,11 @@ void UI::MainWindow::setQOpenGLPainter(QOpenGLWindow* engine) const {
 }
 
 
+void UI::MainWindow::setCommandConsoleEngine(QLineEdit* engine) const {
+    projectPage_->setCommandConsoleEngine(engine);
+}
+
+
 void UI::MainWindow::onStartWindowSlot() {
     projectData_ = {};
     for (auto* tab: tabs_) {

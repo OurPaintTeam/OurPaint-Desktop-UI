@@ -3,6 +3,7 @@
 
 #include "FramelessWindow.h"
 
+class QLineEdit;
 class QOpenGLWindow;
 class QWidget;
 class QVBoxLayout;
@@ -39,6 +40,7 @@ namespace UI {
         void addNotification(const QString& text) const;
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
+        void setCommandConsoleEngine(QLineEdit* engine) const;
 
     signals:
         void goToStartWindowTriggered();
