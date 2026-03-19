@@ -1,56 +1,67 @@
 #include "TopBarTab.h"
 
-#include "HideOpenPanelButton.h"
 #include "SideTool.h"
 
 #include <QLabel>
+
+#include "../../CommandConsole/CommandConsole.h"
 
 
 UI::TopBarTab::TopBarTab(QWidget* parent)
     : TopBar(parent) {
     createTabWidgets();
-    setObjectName(QStringLiteral("topbattab"));
+    setObjectName(QStringLiteral("TopBarTab"));
 }
 
 
 void UI::TopBarTab::setLeftTool(SideTool* tool) {
     leftTool_ = tool;
-    leftTool_->setObjectName(QStringLiteral("leftTool"));
 }
 
 
 void UI::TopBarTab::setRightTool(SideTool* tool) {
     rightTool_ = tool;
-    rightTool_->setObjectName(QStringLiteral("rightTool"));
+}
+
+
+void UI::TopBarTab::setCommandConsole(UI::CommandConsole* console) {
+    commandConsole_ = console;
 }
 
 
 void UI::TopBarTab::createTabWidgets() {
     title_ = new QLabel(QStringLiteral("OurPaint"), this);
-    title_->setStyleSheet(QStringLiteral("color: #D8D8F6; font-weight: bold;"));
-    title_->setObjectName(QStringLiteral("titleOurPaint"));
+    title_->setObjectName(QStringLiteral("TitleOurPaint"));
 
-    btnLeft_ = createPanelButton();
-    btnLeft_->setObjectName(QStringLiteral("btnLeft"));
+    btnConsole_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/console.svg"));
+    btnConsole_->setToolTip("Show/size console");
 
-    btnRight_ = createPanelButton();
-    btnRight_->setObjectName(QStringLiteral("btnRight"));
+    btnLeft_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/left.svg"));
+    btnLeft_->setToolTip("Show/size left.svg panel");
 
-    auto* layout = getLayout();
-    layout->insertWidget(0, title_);
-    layout->insertWidget(1, btnLeft_);
-    layout->insertWidget(2, btnRight_);
-    layout->setObjectName(QStringLiteral("m_layout"));
+    btnRight_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/right.svg"));
+    btnRight_->setToolTip("Show/size right panel");
 
-    connect(btnLeft_, &HideOpenPanelButton::toggled, this, [this] {
+    addLeftWidget(title_);
+    addCenterWidget(btnLeft_);
+    addCenterWidget(btnRight_);
+    addCenterWidget(btnConsole_);
+
+    connect(btnLeft_, &QPushButton::clicked, this, [this] {
         if (leftTool_) {
             leftTool_->setVisible(!leftTool_->isVisible());
         }
     });
 
-    connect(btnRight_, &HideOpenPanelButton::toggled, this, [this] {
+    connect(btnRight_, &QPushButton::clicked, this, [this] {
         if (rightTool_) {
             rightTool_->setVisible(!rightTool_->isVisible());
+        }
+    });
+
+    connect(btnConsole_, &QPushButton::clicked, this, [this] {
+        if (commandConsole_) {
+            commandConsole_->setVisible(!commandConsole_->isVisible());
         }
     });
 }

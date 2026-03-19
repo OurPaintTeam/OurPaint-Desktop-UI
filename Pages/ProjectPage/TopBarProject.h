@@ -7,8 +7,6 @@
 class QPushButton;
 class QToolButton;
 
-#include "ProjectMenu.h"
-
 namespace UI {
     class CommandConsole;
     class TabBar;
@@ -16,6 +14,7 @@ namespace UI {
     class CollaborationMenu;
     class MenuButton;
     class VersionControlMenu;
+    class ProjectMenu;
 
 
     // Top bar for Project workspace

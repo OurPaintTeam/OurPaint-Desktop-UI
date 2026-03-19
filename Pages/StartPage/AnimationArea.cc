@@ -1,16 +1,15 @@
 #include "AnimationArea.h"
+#include "AnimationWidget.h"
 
-#include <QHBoxLayout>
 
 UI::AnimationArea::AnimationArea(QWidget* parent)
-    : QWidget(parent), layout_(new QHBoxLayout(this)) {
+    : QWidget(parent),
+      layout_(new QHBoxLayout(this)),
+      animationWidget_(new AnimationWidget(this)) {
     layout_->setContentsMargins(0, 0, 0, 0);
 
+    setObjectName("AnimationArea");
     setAttribute(Qt::WA_StyledBackground, true);
 
-    setStyleSheet(R"(
-        background: pink;
-        border: none;
-        border-right: 1px solid #3e3d42;
-    )");
+    layout_->addWidget(animationWidget_);
 }

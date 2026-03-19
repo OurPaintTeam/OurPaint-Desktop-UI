@@ -1,7 +1,7 @@
 #include "TabPage.h"
 
 #include "CommandConsole.h"
-#include "../../Painter/PainterWidget.h"
+#include "PainterWidget.h"
 #include "SideTool.h"
 #include "ToolBar.h"
 #include "TopBarTab.h"
@@ -10,18 +10,16 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-namespace
-{
-constexpr qint32 LAYOUT_MARGIN = 0;
-constexpr qint32 LAYOUT_SPACING = 0;
-constexpr qint32 PADDING_HORIZONTAL = 10;
-constexpr qint32 PADDING_BOTTOM = 10;
+namespace {
+    constexpr qint32 LAYOUT_MARGIN = 0;
+    constexpr qint32 LAYOUT_SPACING = 0;
+    constexpr qint32 PADDING_HORIZONTAL = 10;
+    constexpr qint32 PADDING_BOTTOM = 10;
 } // namespace
 
 
 UI::TabPage::TabPage(QWidget* parent)
-    : FramelessWindow(parent)
-{
+    : FramelessWindow(parent) {
     setObjectName(QStringLiteral("TabPage"));
     setAttribute(Qt::WA_StyledBackground, true);
     TabPage::initUI();
@@ -31,8 +29,7 @@ UI::TabPage::TabPage(QWidget* parent)
 UI::TabPage::~TabPage() = default;
 
 
-void UI::TabPage::initUI()
-{
+void UI::TabPage::initUI() {
     // Central widget
     centralWidget_ = new QWidget(this);
     setCentralWidget(centralWidget_);
@@ -94,6 +91,7 @@ void UI::TabPage::initUI()
     consoleLayout_->setSpacing(LAYOUT_SPACING);
 
     console_ = new CommandConsole(consoleWrapper_);
+    connect(console_, &CommandConsole::sentCommandTriggered, this, &TabPage::sentCommandTriggered);
     consoleLayout_->addWidget(console_);
 
     centerLayout_->addWidget(consoleWrapper_);

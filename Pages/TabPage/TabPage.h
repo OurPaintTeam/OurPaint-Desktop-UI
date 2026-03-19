@@ -3,9 +3,10 @@
 
 #include "FramelessWindow.h"
 
-#include <QHBoxLayout>
-#include <QString>
-#include <QWidget>
+class QVBoxLayout;
+class QHBoxLayout;
+class QString;
+class QWidget;
 
 
 namespace UI {
@@ -26,6 +27,7 @@ namespace UI {
 
     signals:
         void returnTab(const QString& tabName);
+        void sentCommandTriggered(const QString& command);
 
     protected:
         void initUI() override;
@@ -54,5 +56,5 @@ namespace UI {
         PainterWidget* painter_{nullptr};
         CommandConsole* console_{nullptr};
     };
-}
+} // namespace UI
 #endif // OURPAINT_DESKTOP_UI_TABPAGE_H

@@ -1,8 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_STARTPAGE_H
 #define OURPAINT_DESKTOP_UI_STARTPAGE_H
 
-#include <QVBoxLayout>
 #include <QWidget>
+
+class QHBoxLayout;
+class QVBoxLayout;
 
 namespace UI {
     class TopBarStart;
@@ -16,6 +18,16 @@ namespace UI {
 
     public:
         explicit StartPage(QWidget* parent = nullptr);
+        void setProjectsList(const QVector<QPair<QString, QString>>& projects) const;
+
+    public slots:
+        void onOpenProjectSlot();
+        void onCreateProjectSlot();
+    signals:
+        void openProjectInThisWindowTriggered(const QString& projectPath);
+        void createProjectInThisWindowTriggered(const QString& projectPath);
+        void renameProjectTriggered(const QString& newName, const QString& path);
+        void deleteProjectTriggered(const QString& path);
 
     private:
         void initUI();

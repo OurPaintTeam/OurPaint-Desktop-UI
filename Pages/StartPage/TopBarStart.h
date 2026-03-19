@@ -1,7 +1,7 @@
 #ifndef OURPAINT_DESKTOP_UI_TOPBARSTART_H
 #define OURPAINT_DESKTOP_UI_TOPBARSTART_H
 
-#include <QLabel>
+class QLabel;
 
 #include "TopBar.h"
 
