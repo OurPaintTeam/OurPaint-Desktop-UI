@@ -36,9 +36,11 @@ namespace UI {
         FsResult getProjectIdByPath(const QString& fullPath, QString& outProjectId) const;
         FsResult createProject(const QString& fullPath, QString& outProjectId) const;
         FsResult openProjectById(const QString& projectId, ProjectData& outData) const;
+        FsResult openProjectByPath(const QString& fullPath, ProjectData& outData) const;
         FsResult openFile(const QString& filePath, FileData& outData) const;
         FsResult removeProjectById(const QString& projectId) const;
-        FsResult renameProjectById(const QString& projectId, const QString& newName) const;
+        FsResult renameProjectById(const QString& projectId, const QString& newName, ProjectData& outData) const;
+        FsResult renameProjectByPath(const QString& fullPath, const QString& newName, ProjectData& outData) const;
         FsResult createTab(const QString& projectId, const QString& tabName) const;
         FsResult removeTab(const QString& projectId, const QString& tabName) const;
         FsResult renameTab(const QString& projectId, const QString& oldName, const QString& newName) const;

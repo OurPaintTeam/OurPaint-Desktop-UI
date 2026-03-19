@@ -113,57 +113,208 @@ UI::FileSystem::FsResult UI::FileSystem::createProject(const QString& fullPath, 
 }
 
 
-UI::FileSystem::FsResult UI::FileSystem::openProjectById(const QString& projectId, ProjectData& outData) const {
+UI::FileSystem::FsResult UI::FileSystem::openProjectById(const QString& projectId,
+                                                         ProjectData& outData) const {
     auto projects = loadProjects();
 
     for (const auto& p: projects) {
         if (p.id == projectId) {
             const auto systemPath = toSystemPath(p.path);
-            const auto metaFile = toSystemPath(systemPath + "/.ourpaint");
-            QFile meta(metaFile);
+            const auto metaFilePath = toSystemPath(systemPath + "/.ourpaint");
 
+            if (!QDir(systemPath).exists()) {
+                return FsResult::NotFound;
+            }
+
+            if (!QFile::exists(metaFilePath)) {
+                return FsResult::NotFound;
+            }
+
+            QFile meta(metaFilePath);
             if (!meta.open(QIODevice::ReadOnly)) {
                 return FsResult::IoError;
             }
 
             QXmlStreamReader xml(&meta);
-            outData.tabs.clear();
-            outData.name.clear();
+            QString metaId;
 
             while (!xml.atEnd()) {
                 xml.readNext();
-                if (xml.isStartElement()) {
-                    if (xml.name() == "name") {
-                        outData.name = xml.readElementText();
-                    }
+                if (xml.isStartElement() && xml.name() == "id") {
+                    metaId = xml.readElementText();
                 }
-            }
-
-            if (xml.hasError()) {
-                meta.close();
-                return FsResult::IoError;
             }
 
             meta.close();
 
+            if (xml.hasError()) {
+                return FsResult::IoError;
+            }
+
+            if (metaId.isEmpty()) {
+                metaId = projectId;
+            }
+
+            const auto realName = extractProjectNameFromPath(systemPath);
+
+            {
+                QFile metaWrite(metaFilePath);
+                if (metaWrite.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    QXmlStreamWriter writer(&metaWrite);
+                    writer.setAutoFormatting(true);
+                    writer.writeStartDocument();
+                    writer.writeStartElement("project");
+                    writer.writeTextElement("id", metaId);
+                    writer.writeTextElement("name", realName);
+                    writer.writeStartElement("tabs");
+                    writer.writeEndElement();
+                    writer.writeEndElement();
+                    writer.writeEndDocument();
+                    metaWrite.close();
+                }
+            }
+
+            renameProjectInXml(metaId,
+                               toStoragePath(systemPath),
+                               realName);
+
+            outData.tabs.clear();
+
             const QDir dir(systemPath);
             auto files = dir.entryInfoList(QStringList() << "*.ourp", QDir::Files);
+
             for (const auto& f: files) {
                 outData.tabs.append(f.completeBaseName());
             }
 
-            outData.id = projectId;
-            outData.path = toDisplayPath(p.path);
-
-            if (outData.name.isEmpty()) {
-                outData.name = extractProjectNameFromPath(systemPath);
-            }
+            outData.id = metaId;
+            outData.name = realName;
+            outData.path = toDisplayPath(systemPath);
 
             return FsResult::Ok;
         }
     }
 
     return FsResult::NotFound;
+}
+
+
+UI::FileSystem::FsResult UI::FileSystem::openProjectByPath(const QString& fullPath,
+                                                           ProjectData& outData) const {
+    const auto systemPath = toSystemPath(fullPath);
+    const auto metaFilePath = toSystemPath(systemPath + "/.ourpaint");
+
+    if (!QDir(systemPath).exists()) {
+        return FsResult::NotFound;
+    }
+
+    if (!QFile::exists(metaFilePath)) {
+        return FsResult::NotFound;
+    }
+
+    QFile meta(metaFilePath);
+    if (!meta.open(QIODevice::ReadOnly)) {
+        return FsResult::IoError;
+    }
+
+    QXmlStreamReader xml(&meta);
+
+    QString projectId;
+
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement() && xml.name() == "id") {
+            projectId = xml.readElementText();
+        }
+    }
+
+    meta.close();
+
+    if (xml.hasError()) {
+        return FsResult::IoError;
+    }
+
+    if (projectId.isEmpty()) {
+        projectId = generateProjectId();
+    }
+
+    const auto realName = extractProjectNameFromPath(systemPath);
+
+    {
+        QFile metaWrite(metaFilePath);
+        if (metaWrite.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            QXmlStreamWriter writer(&metaWrite);
+            writer.setAutoFormatting(true);
+            writer.writeStartDocument();
+            writer.writeStartElement("project");
+            writer.writeTextElement("id", projectId);
+            writer.writeTextElement("name", realName);
+            writer.writeStartElement("tabs");
+            writer.writeEndElement();
+            writer.writeEndElement();
+            writer.writeEndDocument();
+            metaWrite.close();
+        }
+    }
+
+    auto projects = loadProjects();
+    bool found = false;
+
+    QVector<ProjectData> updated;
+    const auto comparablePath = toComparablePath(systemPath);
+
+    for (const auto& p: projects) {
+        if (toComparablePath(p.path) == comparablePath) {
+            auto upd = p;
+            upd.name = realName;
+            upd.path = toStoragePath(systemPath);
+            updated.append(upd);
+            found = true;
+        } else {
+            updated.append(p);
+        }
+    }
+
+    if (!found) {
+        addProject(realName, toStoragePath(systemPath), projectId);
+    } else {
+        QFile file(projectsXml_);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return FsResult::IoError;
+        }
+
+        QXmlStreamWriter xml(&file);
+        xml.setAutoFormatting(true);
+        xml.writeStartDocument();
+        xml.writeStartElement("projects");
+
+        for (const auto& p: updated) {
+            xml.writeStartElement("project");
+            xml.writeAttribute("id", p.id);
+            xml.writeAttribute("name", p.name);
+            xml.writeAttribute("path", toStoragePath(p.path));
+            xml.writeEndElement();
+        }
+
+        xml.writeEndElement();
+        xml.writeEndDocument();
+        file.close();
+    }
+
+    outData.tabs.clear();
+
+    const QDir dir(systemPath);
+    auto files = dir.entryInfoList(QStringList() << "*.ourp", QDir::Files);
+
+    for (const auto& f: files) {
+        outData.tabs.append(f.completeBaseName());
+    }
+
+    outData.id = projectId;
+    outData.name = realName;
+    outData.path = toDisplayPath(systemPath);
+
+    return FsResult::Ok;
 }
 
 
@@ -228,7 +379,9 @@ UI::FileSystem::FsResult UI::FileSystem::removeProjectById(const QString& projec
 }
 
 
-UI::FileSystem::FsResult UI::FileSystem::renameProjectById(const QString& projectId, const QString& newName) const {
+UI::FileSystem::FsResult UI::FileSystem::renameProjectById(const QString& projectId,
+                                                           const QString& newName,
+                                                           ProjectData& outData) const {
     if (newName.isEmpty() || newName.contains('/') || newName.contains('\\')) {
         return FsResult::IoError;
     }
@@ -247,14 +400,15 @@ UI::FileSystem::FsResult UI::FileSystem::renameProjectById(const QString& projec
         return FsResult::NotFound;
     }
 
-    const auto baseDir = QFileInfo(toSystemPath(oldPath)).absolutePath();
+    const auto oldSystemPath = toSystemPath(oldPath);
+    const auto baseDir = QFileInfo(oldSystemPath).absolutePath();
     const auto newSystemPath = toSystemPath(baseDir + "/" + newName);
 
     if (QDir(newSystemPath).exists()) {
         return FsResult::AlreadyExists;
     }
 
-    if (!QDir().rename(toSystemPath(oldPath), newSystemPath)) {
+    if (!QDir().rename(oldSystemPath, newSystemPath)) {
         return FsResult::IoError;
     }
 
@@ -273,7 +427,151 @@ UI::FileSystem::FsResult UI::FileSystem::renameProjectById(const QString& projec
         meta.close();
     }
 
-    return renameProjectInXml(projectId, toStoragePath(newSystemPath), newName);
+    const auto res = renameProjectInXml(projectId,
+                                        toStoragePath(newSystemPath),
+                                        newName);
+    if (res != FsResult::Ok) {
+        return res;
+    }
+
+    outData.tabs.clear();
+
+    const QDir dir(newSystemPath);
+    auto files = dir.entryInfoList(QStringList() << "*.ourp", QDir::Files);
+
+    for (const auto& f: files) {
+        outData.tabs.append(f.completeBaseName());
+    }
+
+    outData.id = projectId;
+    outData.name = newName;
+    outData.path = toDisplayPath(newSystemPath);
+
+    return FsResult::Ok;
+}
+
+
+UI::FileSystem::FsResult UI::FileSystem::renameProjectByPath(const QString& fullPath,
+                                                             const QString& newName,
+                                                             ProjectData& outData) const {
+    if (newName.isEmpty() || newName.contains('/') || newName.contains('\\')) {
+        return FsResult::IoError;
+    }
+
+    const auto oldSystemPath = toSystemPath(fullPath);
+
+    if (!QDir(oldSystemPath).exists()) {
+        return FsResult::NotFound;
+    }
+
+    const auto baseDir = QFileInfo(oldSystemPath).absolutePath();
+    const auto newSystemPath = toSystemPath(baseDir + "/" + newName);
+
+    if (QDir(newSystemPath).exists()) {
+        return FsResult::AlreadyExists;
+    }
+
+    QString projectId;
+    QFile oldMeta(toSystemPath(oldSystemPath + "/.ourpaint"));
+
+    if (oldMeta.open(QIODevice::ReadOnly)) {
+        QXmlStreamReader xml(&oldMeta);
+
+        while (!xml.atEnd()) {
+            xml.readNext();
+            if (xml.isStartElement() && xml.name() == "id") {
+                projectId = xml.readElementText();
+            }
+        }
+
+        oldMeta.close();
+    }
+
+    if (projectId.isEmpty()) {
+        projectId = generateProjectId();
+    }
+
+    if (!QDir().rename(oldSystemPath, newSystemPath)) {
+        return FsResult::IoError;
+    }
+
+    QFile meta(toSystemPath(newSystemPath + "/.ourpaint"));
+    if (meta.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QXmlStreamWriter writer(&meta);
+        writer.setAutoFormatting(true);
+        writer.writeStartDocument();
+        writer.writeStartElement("project");
+        writer.writeTextElement("id", projectId);
+        writer.writeTextElement("name", newName);
+        writer.writeStartElement("tabs");
+        writer.writeEndElement();
+        writer.writeEndElement();
+        writer.writeEndDocument();
+        meta.close();
+    }
+
+    auto projects = loadProjects();
+    bool found = false;
+
+    QVector<ProjectData> updated;
+    const auto oldComparable = toComparablePath(oldSystemPath);
+
+    for (const auto& p: projects) {
+        if (toComparablePath(p.path) == oldComparable) {
+            auto upd = p;
+            upd.name = newName;
+            upd.path = toStoragePath(newSystemPath);
+            updated.append(upd);
+            found = true;
+        } else {
+            updated.append(p);
+        }
+    }
+
+    if (!found) {
+        const auto res = addProject(newName, toStoragePath(newSystemPath), projectId);
+        if (res != FsResult::Ok) {
+            return res;
+        }
+    } else {
+        QFile file(projectsXml_);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return FsResult::IoError;
+        }
+
+        QXmlStreamWriter xml(&file);
+        xml.setAutoFormatting(true);
+        xml.writeStartDocument();
+        xml.writeStartElement("projects");
+
+        for (const auto& p: updated) {
+            xml.writeStartElement("project");
+            xml.writeAttribute("id", p.id);
+            xml.writeAttribute("name", p.name);
+            xml.writeAttribute("path", toStoragePath(p.path));
+            xml.writeEndElement();
+        }
+
+        xml.writeEndElement();
+        xml.writeEndDocument();
+        file.close();
+    }
+
+    // --- СОБИРАЕМ DATA ---
+    outData.tabs.clear();
+
+    const QDir dir(newSystemPath);
+    auto files = dir.entryInfoList(QStringList() << "*.ourp", QDir::Files);
+
+    for (const auto& f: files) {
+        outData.tabs.append(f.completeBaseName());
+    }
+
+    outData.id = projectId;
+    outData.name = newName;
+    outData.path = toDisplayPath(newSystemPath);
+
+    return FsResult::Ok;
 }
 
 
@@ -392,6 +690,8 @@ QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjects() const {
 
             const auto rawPath = xml.attributes().value("path").toString();
             data.path = toComparablePath(rawPath);
+
+            list.append(data);
         }
     }
 
