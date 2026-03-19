@@ -1,0 +1,90 @@
+QMenu {
+    background-color: #3f3e46;
+    border: none;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+QMenu::item {
+    background: transparent;
+    padding: 6px 6px 6px 6px;  /* top right bottom left */
+}
+
+QMenu::item:selected {
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+    margin: 6px 8px;
+}
+
+QMenu::icon {
+    padding-left: 8px;
+}
+
+
+
+
+/* === Кастомное меню === */
+#CustomMenu,
+#ArcMenu,
+#LineMenu,
+#CircleMenu,
+#CollaborationMenu,
+#VersionControlMenu,
+#ProjectMenu {
+    background-color: #3f3e46;
+    color: #D8D8F6;
+    border: none;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+#CustomMenu QMenu::item,
+#ArcMenu QMenu::item,
+#LineMenu QMenu::item,
+#CircleMenu QMenu::item,
+#CollaborationMenu QMenu::item,
+#VersionControlMenu QMenu::item,
+#ProjectMenu QMenu::item {
+    background: transparent;
+    padding: 6px 24px 6px 20px;
+}
+
+#CustomMenu QMenu::item:selected,
+#ArcMenu QMenu::item:selected,
+#LineMenu QMenu::item:selected,
+#CircleMenu QMenu::item:selected,
+#CollaborationMenu QMenu::item:selected,
+#VersionControlMenu QMenu::item:selected,
+#ProjectMenu QMenu::item:selected {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+}
+
+#CustomMenu QMenu::separator,
+#ArcMenu QMenu::separator,
+#LineMenu QMenu::separator,
+#CircleMenu QMenu::separator,
+#CollaborationMenu QMenu::separator,
+#VersionControlMenu QMenu::separator,
+#ProjectMenu QMenu::separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 6px 8px;
+}
+
+/* === Кнопки меню === */
+#MenuButton,#HelpButton {
+    background: transparent;
+    color: #D8D8F6;
+    border: none;
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 6px;      /* закругление кнопки */
+    font: 12px "Segoe UI";
+    font: bold;
+}

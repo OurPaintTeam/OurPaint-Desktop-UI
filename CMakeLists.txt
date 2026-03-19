@@ -8,7 +8,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL)
+
+
+set(GLAD_DIR "${CMAKE_SOURCE_DIR}/glad")
+
+add_library(glad STATIC
+        "${GLAD_DIR}/glad.c"
+)
+target_include_directories(glad PUBLIC "${GLAD_DIR}")
 
 # ---------- Core ----------
 set(CORE
@@ -16,6 +24,14 @@ set(CORE
         Core/MainWindow.h
         Core/FramelessWindow.cc
         Core/FramelessWindow.h
+        Core/ToolsType.h
+)
+
+set(COMMAND_CONSOLE
+        CommandConsole/CommandConsole.cc
+        CommandConsole/CommandConsole.h
+        CommandConsole/CustomConsole.cc
+        CommandConsole/CustomConsole.h
 )
 
 # ---------- Widgets ----------
@@ -24,12 +40,6 @@ set(WIDGETS
         Widgets/CentralWidget.h
         Widgets/ToolBar.cc
         Widgets/ToolBar.h
-        Widgets/PainterWidget.cc
-        Widgets/PainterWidget.h
-        Widgets/CommandConsole.cc
-        Widgets/CommandConsole.h
-        Widgets/TabBar.cc
-        Widgets/TabBar.h
         Widgets/SideMenu.cc
         Widgets/SideMenu.h
         Widgets/SideTool.cc
@@ -38,6 +48,10 @@ set(WIDGETS
         Widgets/SettingsWidget.h
         Widgets/TopBar.cc
         Widgets/TopBar.h
+        Widgets/NotificationContainer.cc
+        Widgets/NotificationContainer.h
+        Widgets/NotificationWidget.cc
+        Widgets/NotificationWidget.h
 )
 
 # ---------- Panels ----------
@@ -50,6 +64,10 @@ set(PANELS
 
 # ---------- Menus ----------
 set(MENUS
+        Menus/MenuButton.cc
+        Menus/MenuButton.h
+        Menus/CustomMenu.cc
+        Menus/CustomMenu.h
         Menus/ProjectMenu.cc
         Menus/ProjectMenu.h
         Menus/CollaborationMenu.cc
@@ -65,17 +83,14 @@ set(MENUS
 )
 
 # ---------- Controls ----------
-set(CONTROLS
-        Controls/MenuButton.cc
-        Controls/MenuButton.h
-        Controls/CustomMenu.cc
-        Controls/CustomMenu.h
-        Controls/HideOpenPanelButton.cc
-        Controls/HideOpenPanelButton.h
-        Controls/TabWidget.cc
-        Controls/TabWidget.h
-        Controls/DraggleContainer.cc
-        Controls/DraggleContainer.h
+set(DRAG
+        DragDrop/RotatedLabel.cc
+        DragDrop/RotatedLabel.h
+        DragDrop/DraggleButton.cc
+        DragDrop/DraggleButton.h
+        DragDrop/SlotWidget.cc
+        DragDrop/SlotWidget.h
+        DragDrop/ContainerWidget.cc
 )
 
 # ---------- UI ----------
@@ -88,6 +103,10 @@ set(UI_START
         Pages/StartPage/AnimationArea.h
         Pages/StartPage/ProjectsListWidget.cc
         Pages/StartPage/ProjectsListWidget.h
+        Pages/StartPage/AnimationWidget.cc
+        Pages/StartPage/AnimationWidget.h
+        Pages/StartPage/ProjectButton.cc
+        Pages/StartPage/ProjectButton.h
 )
 
 set(UI_PROJECT
@@ -95,6 +114,11 @@ set(UI_PROJECT
         Pages/ProjectPage/ProjectPage.h
         Pages/ProjectPage/TopBarProject.cc
         Pages/ProjectPage/TopBarProject.h
+        Pages/ProjectPage/TabWidget.cc
+        Pages/ProjectPage/TabWidget.h
+        Pages/ProjectPage/TabBar.cc
+        Pages/ProjectPage/TabBar.h
+        Pages/ProjectPage/NavigationWidget.cc
 )
 
 set(UI_TAB
@@ -103,32 +127,78 @@ set(UI_TAB
         Pages/TabPage/TopBarTab.cc
         Pages/TabPage/TopBarTab.h
 )
+
+set(POP_UP
+        PopUp/InputWidget.cc
+        PopUp/InputWidget.h
+)
+
+set(FILE_SYSTEM
+        FileSystem/FileSystem.cc
+        FileSystem/FileSystem.h
+)
+
+set(PAINTER
+        Painter/PainterWidget.cc
+        Painter/PainterWidget.h
+)
+
+set(QOPENGL
+        Painter/QOpenGL/CadViewportWindow.cc
+        Painter/QOpenGL/OpenGLRenderer.cc
+)
+
 set(Resources
         resources.qrc
+        Core/UIManager.cc
+        Core/UIManager.h
+        CommandConsole/CustomConsole.cc
+        CommandConsole/CustomConsole.h
 )
+
 add_executable(OurPaint-Desktop-UI
         main.cc
+        ${COMMAND_CONSOLE}
+        ${QOPENGL}
+        ${PAINTER}
         ${CORE}
         ${WIDGETS}
         ${PANELS}
         ${MENUS}
-        ${CONTROLS}
+        ${DRAG}
         ${UI_START}
         ${UI_PROJECT}
         ${UI_TAB}
+        ${POP_UP}
+        ${FILE_SYSTEM}
         ${Resources}
 )
 
 target_include_directories(OurPaint-Desktop-UI PRIVATE
         .
         Core
+        CommandConsole
         Widgets
         Panels
         Menus
-        Controls
+        DragDrop
+        PopUp
+        FileSystem
+        Painter
+        Painter/QOpenGL
         Pages/StartPage
         Pages/ProjectPage
         Pages/TabPage
 )
 
-target_link_libraries(OurPaint-Desktop-UI PRIVATE Qt6::Widgets dwmapi)
+
+
+
+target_link_libraries(OurPaint-Desktop-UI PRIVATE
+        Qt6::Widgets
+        dwmapi
+        glad
+        Qt6::Core
+        Qt6::OpenGLWidgets
+        Qt6::OpenGL
+)

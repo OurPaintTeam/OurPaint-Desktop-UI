@@ -1,0 +1,323 @@
+QPushButton {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #D8D8F6;
+}
+
+QPushButton:hover {
+    background: rgba(255,255,255,0.7);
+}
+
+    QPushButton:pressed {
+        background: rgba(255,255,255,0.16);
+    }
+
+QPushButton#CloseApplication:hover {
+    background: #c42b1c;
+}
+
+
+
+/* =========================
+   PROJECT BUTTON
+========================= */
+
+#ProjectButton
+{
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    border-radius: 6px;
+}
+
+#ProjectButton:hover
+{
+    background-color: #4b4a55;
+}
+
+#ProjectButton:pressed
+{
+    background-color: #3f3e47;
+}
+
+
+
+
+/* =========================
+   CREATE BUTTON (+)
+========================= */
+
+#createButtonStartWindow
+{
+    background-color: #D8D8F6;
+    border: 1px solid #3e3d42;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #3e3d42;
+}
+
+#createButtonStartWindow:hover
+{
+    background-color: #e7e7ff;
+}
+
+#createButtonStartWindow:pressed
+{
+    background-color: #c7c7e6;
+}
+
+
+
+/* === Специальные кнопки === */
+
+/* Go to Start */
+#startButton_ {
+}
+
+/* Create File */
+#createFileButton_ {
+}
+
+/* Create Project */
+#createProjectButton_ {
+}
+
+/* Close Application */
+#closeButton_ {
+    background-color: #6b3a3a;
+}
+
+#closeButton_:hover {
+    background-color: #8b4a4a;
+}
+
+#closeButton_:pressed {
+    background-color: #5a2f2f;
+}
+
+
+
+
+/* === Общий стиль кнопок === */
+#buttonPlaneNavigationPage QPushButton {
+    background-color: #615760;           /* как TabWidgetInActive */
+    color: #D8D8F6;
+    border: none;
+    border-radius: 6px;
+
+    padding: 8px 16px;
+    min-width: 180px;
+    min-height: 32px;
+
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* === Hover === */
+#buttonPlaneNavigationPage QPushButton:hover {
+    background-color: #7a6f79;           /* как PlusButtonTab:hover */
+    color: #FFFFFF;
+}
+
+/* === Pressed === */
+#buttonPlaneNavigationPage QPushButton:pressed {
+    background-color: #4f4e57;
+}
+
+
+
+
+/* === Кнопка OK === */
+#InputWidgetOkButton {
+    background-color: #615760;  /* как у TabWidgetInActive */
+    color: #D8D8F6;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-weight: bold;
+    font-size: 12px;
+    min-width: 60px;
+}
+
+#InputWidgetOkButton:hover {
+    background-color: #7a6f79;  /* как у PlusButtonTab:hover */
+    color: #FFFFFF;
+}
+
+#InputWidgetOkButton:pressed {
+    background-color: #494850;  /* как у панелей */
+}
+
+/* === Дополнительно: если нужен placeholder text в QLineEdit === */
+#InputWidgetLineEdit::placeholder {
+    color: #978897;  /* основной фон приложения, для контраста */
+    font-style: italic;
+}
+/* === CheckBox === */
+#InputWidgetCheckBox {
+    color: #D8D8F6;
+    font-size: 12px;
+    spacing: 6px;
+    padding-left: 2px;
+}
+
+/* индикатор */
+#InputWidgetCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+
+    background-color: #494850;
+    border: 1px solid #3e3d42;
+    border-radius: 3px;
+}
+
+/* hover */
+#InputWidgetCheckBox::indicator:hover {
+    background-color: #4f4e57;
+    border: 1px solid #7a6f79;
+}
+
+/* checked */
+#InputWidgetCheckBox::indicator:checked {
+    background-color: #615760;
+    border: 1px solid #7a6f79;
+}
+
+/* checked hover */
+#InputWidgetCheckBox::indicator:checked:hover {
+    background-color: #7a6f79;
+}
+
+#InputWidgetCheckBox::indicator:checked {
+    image: url(:/Assets/icons/showHidePanels/check.svg);
+    background-color: #615760;
+    border: 1px solid #7a6f79;
+}
+
+
+
+
+/* === Кнопка закрытия === */
+#InputWidgetCloseButton {
+    background-color: transparent;
+    color: #D8D8F6;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#InputWidgetCloseButton:hover {
+    background-color: rgba(255, 255, 255, 0.12);  /* как у MenuButton:hover */
+    color: #FFFFFF;
+}
+
+#InputWidgetCloseButton:pressed {
+    background-color: rgba(255, 255, 255, 0.16);  /* как у MenuButton:pressed */
+}
+
+
+
+
+
+
+/* === InputWidget (Popup окно ввода) === */
+#InputWidget {
+    border: 1px solid #3e3d42;
+    border-radius: 8px;
+}
+
+/* === Заголовок окна === */
+#InputWidgetTitleBar {
+    background-color: transparent;
+    border-bottom: 2px solid #29293d;
+}
+
+#InputWidgetTitleLabel {
+    color: #D8D8F6;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+
+
+#SideTool QPushButton {
+    background: transparent;
+    border: none;
+    color: #D8D8F6;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+#SideTool QPushButton:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+#SideTool QPushButton:pressed {
+    background: rgba(255,255,255,0.16);
+}
+
+
+
+#SettingsWidget QPushButton {
+    background: transparent;
+    color: #D8D8F6;
+    border: none;
+    font-size: 16px;
+}
+
+#SettingsWidget QPushButton:hover {
+    background: rgba(255,255,255,0.12);
+    border-radius: 6px;
+}
+
+#ButtonSettings{
+ background: transparent;
+            color: white;
+            border: none;
+            border-radius: 6px;
+}
+
+#ButtonSettings:hover{
+       background: rgba(255,255,255,0.15);
+}
+
+
+
+
+#NameButtonTabActive:hover{
+    color: #FFFFFF;
+}
+
+#CloseButtonTabActive{
+             background: transparent;
+              border: none;
+              color: #D8D8F6;
+}
+
+#CloseButtonTabActive:hover{
+    color: #FFFFFF;
+}
+
+
+#NameButtonTabInActive:hover{
+    color: #FFFFFF;
+}
+
+#CloseButtonTabInActive{
+            background: transparent;
+            border: none;
+            color: #D8D8F6;
+}
+
+#CloseButtonTabInActive:hover{
+    color: #FFFFFF;
+}
+
+
+
+#PlusButtonTab:hover{
+background-color: #7a6f79;
+}

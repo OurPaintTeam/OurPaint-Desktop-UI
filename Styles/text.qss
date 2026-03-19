@@ -1,0 +1,122 @@
+
+#ProjectName
+{
+    font-size: 14px;
+    font-weight: bold;
+    color: #D8D8F6;
+}
+
+#ProjectPath
+{
+    font-size: 11px;
+    color: #bcbcd4;
+}
+
+
+
+
+/* =========================
+   INPUT FIELD
+========================= */
+
+#openPanel QLineEdit
+{
+    background-color: #D8D8F6;
+    border: 1px solid #3e3d42;
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #3e3d42;
+    font-size: 12px;
+}
+
+#openPanel QLineEdit:hover
+{
+    border: 1px solid #7a6f79;
+}
+
+#openPanel QLineEdit:focus
+{
+    border: 1px solid #7a6f79;
+}
+
+
+
+
+/* === Текстовая метка === */
+#InputWidgetLabel {
+    color: #D8D8F6;
+    font-size: 14px;
+    font: bold;
+    padding-left: 4px;
+    padding-top: 4px;
+}
+
+/* === Поле ввода === */
+#InputWidgetLineEdit {
+    background-color: #494850;  /* как у панелей */
+    color: #D8D8F6;
+    border: 1px solid #3e3d42;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    selection-background-color: #615760;  /* цвет выделения текста */
+}
+
+#InputWidgetLineEdit:focus {
+    border: 1px solid #7a6f79;  /* как у PlusButtonTab:hover */
+    background-color: #4f4e57;
+}
+
+#InputWidgetLineEdit:hover {
+    background-color: #4f4e57;
+}
+
+
+#TitleOurPaint {
+color: #D8D8F6;
+font-weight: bold;
+ font-size: 16px;
+ }
+
+
+
+#MenuButton::menu-indicator {
+    image: none;              /* убираем стрелку меню */
+}
+
+#HelpButton:hover,
+#MenuButton:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;       /* закругление при hover */
+}
+
+#HelpButton:pressed,
+#HelpButton:checked,
+#MenuButton:pressed,
+#MenuButton:checked {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 6px;       /* закругление при нажатии */
+}
+
+
+
+
+/* === Текстовые и заголовочные элементы === */
+#RotatedLabel {
+    border: 1px dashed #666;
+    background-color: transparent;
+    color: #D8D8F6;
+    font: bold 12px "Segoe UI"; /* исправлено font */
+}
+
+#TitleOurPaint {
+    color: #D8D8F6;
+    font-weight: bold;
+    font-size: 14px;
+    padding-left: 6px;
+}
+
+#CustomConsole {
+    border: none;
+    background-color: transparent;
+}

@@ -1,0 +1,15 @@
+/* Global colors */
+* {
+    color: #D8D8F6;
+    font-family: "Segoe UI";
+    font-size: 12px;
+}
+
+/* Tooltips */
+QToolTip {
+    background: #5f5e69;
+    color: #D8D8F6;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+}

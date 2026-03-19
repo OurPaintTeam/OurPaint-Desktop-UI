@@ -1,0 +1,42 @@
+
+QScrollBar:vertical
+{
+    background: #4a545c; /* чуть темнее панели */
+    width: 8px;
+    margin: 0px;
+    border-radius: 5px;
+}
+
+/* отключаем стрелки */
+QScrollBar::add-line:vertical
+{
+    height: 0px;
+}
+
+QScrollBar::sub-line:vertical
+{
+    height: 0px;
+}
+
+
+
+/* области выше и ниже ползунка */
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical
+{
+    background: transparent;
+}
+
+
+/* ползунок */
+QScrollBar::handle:vertical
+{
+    background: #D8D8F6;
+    border-radius: 4px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover
+{
+    background: #ffffff;
+}

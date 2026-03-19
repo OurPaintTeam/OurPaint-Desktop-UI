@@ -1,0 +1,210 @@
+/* === Основное окно === */
+#FramelessWindow,
+#MainContent,
+#ProjectPage,#TabPage {
+    background-color: #978897; /* основной фон приложения */
+}
+
+/* === Верхняя панель и боковое меню === */
+#TopBar,
+#TopBarProject,
+#TopBarStart,#TopBarTab{
+    background-color: #494850; /* темный фон панелей */
+    border-bottom: 1px solid #3e3d42; /* тонкая граница снизу #262222 */
+}
+
+#SideMenu {
+ background-color: #494850;
+}
+
+/* === Панели информации и мессенджера === */
+#InformationPanel,
+#MessangerPanel,
+#ProjectListWidget {
+    background-color: #494850; /* выравниваем цвет со слотами и меню */
+    border: none;
+    border-right: 1px solid #3e3d42; /* разделение с соседними элементами */
+    border-left: 1px solid #3e3d42;
+}
+
+
+#CommandLineEdit
+{
+        background-color: transparent;
+        color: #D8D8F6;
+        border: none;
+
+        padding-left: 6px;
+        padding-right: 6px;
+
+        font-size: 14px;
+
+        padding-top: 1px;     /* уменьшай если нужно выше */
+        padding-bottom: 1px;  /* минимальный отступ снизу */
+}
+
+#CommandConsole{
+        background-color: #3e3d3d;
+        border: 1px solid black;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+}
+
+#CommandEnter{
+            background-color: transparent;
+            color: #D8D8F6;
+            border: none;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        #CommandEnter:hover {
+            background-color: rgba(255, 255, 255, 20);
+        }
+        #CommandEnter:pressed {
+            background-color: rgba(255, 255, 255, 40);
+        }
+
+#AnimationArea{
+        background: pink;
+        border: none;
+        border-right: 1px solid #3e3d42;
+}
+
+#CenterStack{
+background: transparent;
+}
+
+#TabBarVScroll,
+#TabBarHScroll,
+#ViewportScrollAreaTabBar,
+#ScrollAreaTabBar,
+#TabBarLayout,
+#TabBarMainLayout,
+#TabBarWidget,
+#TabBar {
+           background-color: transparent;
+       }
+
+#TabBarWidget{
+        background: #38373f;
+        border-bottom: 1px solid #3e3d42;
+        border-left: 1px solid #3e3d42;
+        border-right: 1px solid #3e3d42;
+}
+
+
+
+#PlusButtonTab{
+         background-color: #615760;
+         color: #D8D8F6;
+         border: none;
+         border-top-left-radius: 5px;
+         border-top-right-radius: 5px;
+}
+
+
+
+#TabWidgetInActive{
+      background-color: #615760;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border: none;
+}
+
+#NameButtonTabInActive{
+            background: transparent;
+            border: none;
+            color: #D8D8F6;
+            font-size: 9pt;
+}
+
+
+#TabWidgetActive {
+    background-color: #978897;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 2px solid #978897;
+    border: none;
+}
+
+#NameButtonTabActive{
+      background: transparent;
+            border: none;
+            color: #D8D8F6;
+            font-size: 9pt;
+            font-weight: bold;
+}
+
+#SettingsWidget {
+    background: #3f3e46;
+    border-radius: 10px;
+}
+
+
+#ToolBar,#ToolBarStack, #FirstLaneWidgetTabBar,#ContainerWidget,#SlotWidget,#SecondLaneWidgetTabBar {
+ background: transparent;
+ }
+
+#SideTool {
+    background: transparent;
+}
+
+
+#PainterWidget{
+ background: #ffffff;
+}
+
+
+
+/* === Navigation Page === */
+#NavigationPage {
+    background: transparent;
+}
+
+/* === Плоскость кнопок === */
+#buttonPlaneNavigationPage {
+    background-color: #494850;           /* как панели */
+    border: 1px solid #3e3d42;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+
+
+
+
+/* =========================
+   LEFT PANEL
+========================= */
+
+#openPanel
+{
+    background-color: #5f5e69;
+    border-right: 1px solid #3e3d42;
+}
+
+/* линия */
+#projectsLine
+{
+    background-color: #D8D8F6;
+    max-height: 2px;
+}
+
+
+
+
+/* =========================
+   SCROLL AREA
+========================= */
+
+#projectsScrollArea
+{
+    border: none;
+    background: transparent;
+}
+
+#projectsScrollContent
+{
+    background: transparent;
+}
+

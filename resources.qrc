@@ -1,0 +1,72 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Assets/icons/window/minimize.png</file>
+        <file>Assets/icons/window/maximize.png</file>
+        <file>Assets/icons/window/close.png</file>
+
+
+
+        <file>Assets/icons/primitives/point.png</file>
+
+        <file>Assets/icons/primitives/line.png</file>
+        <file>Assets/icons/primitives/polyline.svg</file>
+        <file>Assets/icons/primitives/infiniteLine.svg</file>
+
+        <file>Assets/icons/primitives/circleByDiameter.png</file>
+        <file>Assets/icons/primitives/circleTwoPoints.svg</file>
+        <file>Assets/icons/primitives/ellipseThreePoints.svg</file>
+
+        <file>Assets/icons/primitives/arcByRadius.png</file>
+        <file>Assets/icons/primitives/arcDiameter.svg</file>
+        <file>Assets/icons/primitives/arc3points.svg</file>
+
+
+
+        <file>Assets/icons/tools/cursorTool.png</file>
+        <file>Assets/icons/tools/selectionTool.png</file>
+        <file>Assets/icons/tools/sizeTool.svg</file>
+        <file>Assets/icons/tools/settings.svg</file>
+
+        <!-- Constraints icons -->
+        <file>Assets/icons/constraints/lineCircleDist.svg</file>
+        <file>Assets/icons/constraints/lineInCircle.svg</file>
+        <file>Assets/icons/constraints/lineLineAngle.svg</file>
+        <file>Assets/icons/constraints/lineLineParallel.svg</file>
+        <file>Assets/icons/constraints/lineLinePerpendicular.svg</file>
+        <file>Assets/icons/constraints/lineOnCircle.svg</file>
+        <file>Assets/icons/constraints/pointLineDist.svg</file>
+        <file>Assets/icons/constraints/pointOnLine.svg</file>
+        <file>Assets/icons/constraints/pointOnPoint.svg</file>
+        <file>Assets/icons/constraints/pointPointDist.svg</file>
+
+        <file>Assets/icons/showHidePanels/right.svg</file>
+        <file>Assets/icons/showHidePanels/console.svg</file>
+        <file>Assets/icons/showHidePanels/left.svg</file>
+        <file>Assets/icons/showHidePanels/tab.svg</file>
+        <file>Assets/icons/showHidePanels/check.svg</file>
+
+        <file>Assets/icons/panel/info.png</file>
+        <file>Assets/icons/panel/message.png</file>
+
+
+        <file>Assets/icons/menus/fileCreate.ico</file>
+        <file>Assets/icons/menus/fileOpen.ico</file>
+        <file>Assets/icons/menus/projectCreate.ico</file>
+        <file>Assets/icons/menus/projectOpen.ico</file>
+
+
+        <file>Assets/icons/console/enter.ico</file>
+
+        <file>Assets/logo/logo2.ico</file>
+    </qresource>
+
+    <qresource prefix="/">
+        <file>Styles/app.qss</file>
+        <file>Styles/buttons.qss</file>
+        <file>Styles/menu.qss</file>
+        <file>Styles/tooltip.qss</file>
+        <file>Styles/window.qss</file>
+        <file>Styles/text.qss</file>
+        <file>Styles/scroll.qss</file>
+    </qresource>
+</RCC>
