@@ -3,6 +3,7 @@
 #include <QFileInfo>
 #include <QPointer>
 
+#include "CadViewportWindow.h"
 #include "MainWindow.h"
 
 
@@ -14,16 +15,10 @@ UI::UIManager::UIManager() {
 
 
 void UI::UIManager::openNewWindowOpenProjectSlot(const QString& projectPath) {
-    ;
-
-    QString projectId;
-    if (fs_.getProjectIdByPath(projectPath, projectId) != UI::FileSystem::FsResult::Ok) {
-        return;
-    }
-
-    if (UI::FileSystem::ProjectData data; fs_.openProjectById(projectId, data) == UI::FileSystem::FsResult::Ok) {
+    if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         auto* newWindow = createWindow(nullptr, {data.path, data.id});
         newWindow->onOpenProjectSlot({data.path, data.id});
+        newWindow->setQOpenGLPainter(new CadViewportWindow());
         for (const auto& t: data.tabs) {
             newWindow->addTabSlot(t);
         }
@@ -38,21 +33,16 @@ void UI::UIManager::openNewWindowCreateProjectSlot(const QString& projectPath) {
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         auto* newWindow = createWindow(nullptr, {projectPath, projectId});
         newWindow->onOpenProjectSlot({projectPath, projectId});
+        newWindow->setQOpenGLPainter(new CadViewportWindow());
         newWindow->addNotification("✨ Project created in new window: " + projectName);
     }
 }
 
 
 void UI::UIManager::openProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const {
-    QString projectId;
-    if (fs_.getProjectIdByPath(projectPath, projectId) != UI::FileSystem::FsResult::Ok) {
-        const auto errorMsg = "❌ Project not found: " + QFileInfo(projectPath).fileName();
-        window->addNotification(errorMsg);
-        return;
-    }
-
-    if (UI::FileSystem::ProjectData data; fs_.openProjectById(projectId, data) == UI::FileSystem::FsResult::Ok) {
+    if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({data.path, data.id});
+        window->setQOpenGLPainter(new CadViewportWindow());
         for (const auto& t: data.tabs) {
             window->addTabSlot(t);
         }
@@ -65,6 +55,7 @@ void UI::UIManager::createProjectThisWindowSlot(UI::MainWindow* window, const QS
     const auto projectName = QFileInfo(projectPath).fileName();
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({projectPath, projectId});
+        window->setQOpenGLPainter(new CadViewportWindow());
         window->addNotification("✨ Project created: " + projectName);
     } else {
         window->addNotification("❌ Failed to create project: " + projectName);
@@ -72,7 +63,7 @@ void UI::UIManager::createProjectThisWindowSlot(UI::MainWindow* window, const QS
 }
 
 
-void UI::UIManager::openFileSlot(UI::MainWindow* window, const QString& filePath) const {
+void UI::UIManager::openFileSlot(const UI::MainWindow* window, const QString& filePath) const {
     if (UI::FileSystem::FileData data; fs_.openFile(filePath, data) == UI::FileSystem::FsResult::Ok) {
         window->addTabSlot(data.tabName);
         window->addNotification("📄 File opened: " + data.tabName);
@@ -83,7 +74,7 @@ void UI::UIManager::openFileSlot(UI::MainWindow* window, const QString& filePath
 }
 
 
-void UI::UIManager::renameTabSlot(UI::MainWindow* window, const QString& oldName, const QString& newName) const {
+void UI::UIManager::renameTabSlot(const UI::MainWindow* window, const QString& oldName, const QString& newName) const {
     const auto projectId = window->projectID();
     if (projectId.isEmpty()) {
         window->addNotification("❌ Cannot rename tab: no active project");
@@ -99,7 +90,7 @@ void UI::UIManager::renameTabSlot(UI::MainWindow* window, const QString& oldName
 }
 
 
-void UI::UIManager::removeTabSlot(UI::MainWindow* window, const QString& tabName) const {
+void UI::UIManager::removeTabSlot(const UI::MainWindow* window, const QString& tabName) const {
     const auto projectId = window->projectID();
     if (projectId.isEmpty()) {
         window->addNotification("❌ Cannot remove tab: no active project");
@@ -115,7 +106,7 @@ void UI::UIManager::removeTabSlot(UI::MainWindow* window, const QString& tabName
 }
 
 
-void UI::UIManager::createFileSlot(UI::MainWindow* window, const QString& fileName) const {
+void UI::UIManager::createFileSlot(const UI::MainWindow* window, const QString& fileName) const {
     const auto projectId = window->projectID();
     if (projectId.isEmpty()) {
         window->addNotification("❌ Cannot create file: no active project");
@@ -139,23 +130,10 @@ void UI::UIManager::goToStartWindowSlot(UI::MainWindow* window) const {
 
 
 void UI::UIManager::renameProjectSlot(UI::MainWindow* window, const QString& newName, const QString& path) const {
-    QString projectId;
-    if (fs_.getProjectIdByPath(path, projectId) != UI::FileSystem::FsResult::Ok) {
-        window->addNotification("❌ Project not found: " + QFileInfo(path).fileName());
-        return;
-    }
-
     const auto oldName = QFileInfo(path).fileName();
-    if (fs_.renameProjectById(projectId, newName) == UI::FileSystem::FsResult::Ok) {
+    if (FileSystem::ProjectData data; fs_.renameProjectByPath(path, newName,data) == UI::FileSystem::FsResult::Ok) {
         window->setProjectsList(fs_.projects());
-
-        if (window->projectPath() == path || window->projectID() == projectId) {
-            if (UI::FileSystem::ProjectData data;
-                fs_.getProjectDataById(projectId, data) == UI::FileSystem::FsResult::Ok) {
-                window->setProjectPath(data.path);
-            }
-        }
-
+        window->setProjectPath(data.path);
         window->addNotification("✏️ Project renamed: " + oldName + " → " + newName);
     } else {
         window->addNotification("❌ Failed to rename project: " + oldName);
