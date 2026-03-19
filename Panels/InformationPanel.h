@@ -1,8 +1,8 @@
 #ifndef OURPAINT_DESKTOP_UI_INFORMATIONPANEL_H
 #define OURPAINT_DESKTOP_UI_INFORMATIONPANEL_H
 
-#include <QHBoxLayout>
-#include <QPushButton>
+class QHBoxLayout;
+class QPushButton;
 #include <QWidget>
 
 namespace UI {

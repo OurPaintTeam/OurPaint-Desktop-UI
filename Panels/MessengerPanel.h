@@ -1,8 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_MESSENGERPANEL_H
 #define OURPAINT_DESKTOP_UI_MESSENGERPANEL_H
-#include <QHBoxLayout>
-#include <QPushButton>
+
 #include <QWidget>
+
+class QHBoxLayout;
+class QPushButton;
 
 namespace UI {
     class MessengerPanel final : public QWidget {
