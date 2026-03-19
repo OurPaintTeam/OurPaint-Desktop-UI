@@ -10,6 +10,10 @@ namespace UI {
     public:
         explicit CollaborationMenu(QWidget* parent = nullptr);
 
+    signals:
+        void openTriggered();
+        void closeTriggered();
+
     private:
         QAction* close_{nullptr};
         QAction* open_{nullptr};

@@ -10,13 +10,8 @@ namespace UI {
 
     public:
         explicit ArcMenu(QWidget* parent = nullptr);
-        [[nodiscard]] QAction* defaultAction() const;
-
-    signals:
-        void actionSelected(QAction* action);
 
     private:
-        QAction* defaultAction_{nullptr};
         QAction* arcCenter_{nullptr};
         QAction* arc3Points_{nullptr};
         QAction* arcRadius_{nullptr};

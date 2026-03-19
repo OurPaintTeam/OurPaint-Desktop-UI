@@ -13,23 +13,26 @@ namespace UI {
         void setInitialFromMenu();
         void bindMenu(QMenu* menu);
         void setDraw(bool draw);
-        void setLeftClick(bool acceptLeftClick);
-        void setRightClick(bool acceptRightClick);
+        void setOpenLeftClick(bool acceptLeftClick);
+        void setChange(bool acceptChange);
+    signals:
+        void leftClickedTriggered(const QAction* action);
 
     protected:
         void paintEvent(QPaintEvent* event) override;
         void mousePressEvent(QMouseEvent* e) override;
+        void wheelEvent(QWheelEvent* event) override;
 
     private:
+        void applyAction(const QAction* action);
+
         QMenu* menu_{nullptr};
         bool draw_{true};
-        bool acceptLeftClick_{true};
-        bool acceptRightClick_{true};
-
-    private slots:
-        void onArcActionSelected(const QAction* action);
+        bool openLeftClick_{true};
+        bool acceptChange_{false};
+        const QAction* activeAction_{nullptr};
     };
-}// namespace UI
+} // namespace UI
 
 
 #endif //OURPAINT_DESKTOP_UI_MENUBUTTON_H

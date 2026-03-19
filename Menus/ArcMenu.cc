@@ -1,26 +1,33 @@
 #include "ArcMenu.h"
+
 #include <QAction>
 
+#include "ToolsType.h"
+
+
 UI::ArcMenu::ArcMenu(QWidget* parent)
-    : UI::CustomMenu(parent)
-{
-    arcCenter_  = addAction("A1");
-    arc3Points_ = addAction("A3");
-    arcRadius_  = addAction("AR");
+    : UI::CustomMenu(parent) {
+    arcCenter_ = addAction(QIcon(":/Assets/icons/primitives/arcByRadius.png"), "Arc by radius");
+    arcCenter_->setData(QVariant::fromValue(PrimitiveType::ArcByRadius));
+
+    arc3Points_ = addAction(QIcon(":/Assets/icons/primitives/arcDiameter.svg"), "Arc by diameter");
+    arc3Points_->setData(QVariant::fromValue(PrimitiveType::ArcByDiameter));
+
+    arcRadius_ = addAction(QIcon(":/Assets/icons/primitives/arc3points.svg"), "Arc by 3 point");
+    arcRadius_->setData(QVariant::fromValue(PrimitiveType::ArcThreePoints));
+
     addSeparator();
-    arcSettings_ = addAction("Settings");
+    arcSettings_ = addAction(QIcon(":/Assets/icons/tools/settings.svg"), "Arc settings...");
+    arcSettings_->setData(QVariant::fromValue(PrimitiveType::ArcSettings));
 
-    // первая кнопка по умолчанию
-    defaultAction_ = arcCenter_;
-
-    connect(this, &QMenu::triggered, this, [this](QAction* action) {
-        emit actionSelected(action);
-    });
+    for (auto* a: actions()) {
+        if (!a->isSeparator()) {
+            connect(a, &QAction::triggered, this, [this, a]() {
+                emit actionSelected(a);
+            });
+        }
+    }
 
     setObjectName(QStringLiteral("ArcMenu"));
-}
-
-QAction* UI::ArcMenu::defaultAction() const
-{
-    return defaultAction_;
+    setAttribute(Qt::WA_StyledBackground, true);
 }
