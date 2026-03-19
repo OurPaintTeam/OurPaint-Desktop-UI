@@ -15,6 +15,19 @@ UI::PainterWidget::PainterWidget(QWidget* parent) : QWidget(parent), layout_(new
 
 
 void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
+    // OpenGL setup
+    QSurfaceFormat format;
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    format.setVersion(3, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    constexpr auto depth = 24;
+    constexpr auto stencil = 8;
+    format.setDepthBufferSize(depth);
+    format.setStencilBufferSize(stencil);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+
+    renderWindow->setFormat(format);
+
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
     layout_->addWidget(renderWidget);
