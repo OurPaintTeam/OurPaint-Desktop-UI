@@ -11,6 +11,8 @@
 #include <QPushButton>
 #include <QToolButton>
 
+#include "ProjectMenu.h"
+
 
 UI::TopBarProject::TopBarProject(QWidget* parent)
     : TopBar(parent) {

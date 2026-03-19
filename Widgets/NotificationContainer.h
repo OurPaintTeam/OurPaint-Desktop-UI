@@ -26,7 +26,7 @@ namespace UI {
         bool eventFilter(QObject* obj, QEvent* event) override;
 
     public slots:
-        void removeNotification(NotificationWidget* widget);
+        void removeNotification(UI::NotificationWidget* widget);
 
     private:
         QVBoxLayout* containerLayout_{nullptr};

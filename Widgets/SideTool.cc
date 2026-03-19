@@ -1,5 +1,7 @@
 #include "SideTool.h"
 
+#include <QVBoxLayout>
+
 #include "SlotWidget.h"
 #include "ToolsType.h"
 

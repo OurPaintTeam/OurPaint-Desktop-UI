@@ -1,11 +1,12 @@
 #include "SideMenu.h"
 
 #include <QPushButton>
+#include <QStackedLayout>
 
 #include "InformationPanel.h"
 #include "MessengerPanel.h"
+#include "SlotWidget.h"
 #include "ToolsType.h"
-#include "DragDrop/SlotWidget.h"
 
 
 UI::SideMenu::SideMenu(QWidget* parent)

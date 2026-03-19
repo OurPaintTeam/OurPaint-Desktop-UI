@@ -1,5 +1,6 @@
 #include "AnimationWidget.h"
 
+#include <QLabel>
 #include <QPainter>
 #include <QResizeEvent>
 

@@ -1,5 +1,8 @@
 #include "InformationPanel.h"
 
+#include <QHBoxLayout>
+#include <QPushButton>
+
 
 UI::InformationPanel::InformationPanel(QWidget* parent)
     : QWidget(parent),

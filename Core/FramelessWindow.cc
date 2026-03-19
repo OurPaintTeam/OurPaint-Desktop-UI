@@ -41,7 +41,9 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent)
         ":/Styles/buttons.qss",
         ":/Styles/menu.qss",
         ":/Styles/tooltip.qss",
-        ":/Styles/window.qss"
+        ":/Styles/window.qss",
+        ":/Styles/text.qss",
+        ":/Styles/scroll.qss"
     });
 
     if (style.isEmpty()) {

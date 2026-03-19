@@ -11,10 +11,12 @@
 UI::NotificationContainer::NotificationContainer(QWidget* parent)
     : QWidget(parent),
       layout_(new QVBoxLayout(this)),
-      containerWidget_(new QWidget(this)), scrollArea_(new QScrollArea(this)),
+      containerWidget_(new QWidget(this)),
+    scrollArea_(new QScrollArea(this)),
       hideTimer_(new QTimer(this)) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     layout_->setContentsMargins(0, 0, 0, 0);
+    containerLayout_ = new QVBoxLayout(containerWidget_);
     containerLayout_->setAlignment(Qt::AlignTop);
     containerLayout_->setContentsMargins(0, 0, 0, 0);
     containerWidget_->setLayout(containerLayout_);
@@ -137,15 +139,16 @@ void UI::NotificationContainer::removeNotification(NotificationWidget* widget) {
 
 
 void UI::NotificationContainer::updateContainerSize() {
-    const qsizetype count = notifications_.size();
-    constexpr int widgetHeight = 50;
+    const auto count = notifications_.size();
+    constexpr auto widgetHeight = 50;
+    const auto  result = widgetHeight * count;
 
     if (count <= 3) {
-        containerWidget_->setFixedHeight(count * widgetHeight);
+        containerWidget_->setFixedHeight(result);
         scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        setFixedHeight(count * widgetHeight + 4);
+        setFixedHeight(result + 4);
     } else {
-        containerWidget_->setFixedHeight(count * widgetHeight);
+        containerWidget_->setFixedHeight(result);
         scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         setFixedHeight(3 * widgetHeight + 4);
     }

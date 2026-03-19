@@ -1,6 +1,8 @@
 #include "ToolBar.h"
 
+#include <QHBoxLayout>
 #include <QPushButton>
+#include <QStackedWidget>
 #include <QWheelEvent>
 
 #include "ArcMenu.h"

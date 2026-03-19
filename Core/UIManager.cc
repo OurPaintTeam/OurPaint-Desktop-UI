@@ -4,8 +4,8 @@
 #include <QPointer>
 
 #include "CadViewportWindow.h"
-#include "MainWindow.h"
 #include "CustomConsole.h"
+#include "MainWindow.h"
 
 
 UI::UIManager::UIManager() {

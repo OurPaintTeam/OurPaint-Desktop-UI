@@ -1,4 +1,7 @@
 #include "AnimationArea.h"
+
+#include <QHBoxLayout>
+
 #include "AnimationWidget.h"
 
 

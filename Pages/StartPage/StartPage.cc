@@ -6,6 +6,7 @@
 #include "TopBarStart.h"
 
 #include <QFileDialog>
+#include <QVBoxLayout>
 
 
 UI::StartPage::StartPage(QWidget* parent)

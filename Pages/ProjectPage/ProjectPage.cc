@@ -1,6 +1,7 @@
 #include "ProjectPage.h"
 
 #include <QFileDialog>
+#include <QStackedWidget>
 #include <QSurfaceFormat>
 
 #include "CommandConsole.h"
