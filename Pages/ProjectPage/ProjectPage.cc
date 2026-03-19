@@ -34,6 +34,11 @@ void UI::ProjectPage::setQOpenGLPainter(QOpenGLWindow* engine) const {
 }
 
 
+void UI::ProjectPage::setCommandConsoleEngine(QLineEdit* engine) const {
+    console_->setLineEditEngine(engine);
+}
+
+
 void UI::ProjectPage::initUI() {
     createLayouts();
     createTopBar();
@@ -234,6 +239,7 @@ void UI::ProjectPage::createWorkspace() {
 
     console_ = new CommandConsole(consoleWrapper_);
     consoleLayout_->addWidget(console_);
+    connect(console_, &CommandConsole::sentCommandTriggered, this, &ProjectPage::sentCommandTriggered);
 
     workspaceLayout_->addWidget(consoleWrapper_);
 

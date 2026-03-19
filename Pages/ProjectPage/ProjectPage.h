@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+class QLineEdit;
 class QStackedWidget;
 class QOpenGLWindow;
 class QPushButton;
@@ -27,6 +28,7 @@ namespace UI {
         explicit ProjectPage(QWidget* parent = nullptr);
         ~ProjectPage() override = default;
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
+        void setCommandConsoleEngine(QLineEdit* engine) const;
     signals:
         void openNewWindowCreateProjectTriggered(const QString& projectName);
         void createProjectThisWindowTriggered(const QString& projectName);
@@ -106,6 +108,9 @@ namespace UI {
         void versionPushTriggered();
         void versionPullTriggered();
         void versionCommitTriggered();
+
+        /// Console Command
+        void sentCommandTriggered(const QString& command);
 
     private:
         void initUI();
