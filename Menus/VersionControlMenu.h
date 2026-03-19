@@ -10,6 +10,13 @@ namespace UI {
     public:
         explicit VersionControlMenu(QWidget* parent = nullptr);
 
+    signals:
+        void initTriggered();
+        void createTriggered();
+        void pushTriggered();
+        void pullTriggered();
+        void commitTriggered();
+
     private:
         QAction* init_{nullptr};
         QAction* create_{nullptr};
