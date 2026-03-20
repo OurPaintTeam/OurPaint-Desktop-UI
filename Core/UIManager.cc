@@ -3,6 +3,7 @@
 #include <QFileInfo>
 #include <QLayout>
 #include <QPointer>
+#include <algorithm>
 
 #include "CadViewportWindow.h"
 #include "CustomConsole.h"
@@ -11,8 +12,8 @@
 #include <QFile>
 #include <qiodevice.h>
 
-void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath)
-{
+
+void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning() << "Failed to open file:" << filePath;
@@ -26,8 +27,8 @@ void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath)
 
     std::function<void(QObject*)> recurse = [&](QObject* obj) {
         QString objName = QString("%1_%2")
-            .arg(obj->metaObject()->className())
-            .arg(reinterpret_cast<quintptr>(obj));
+                .arg(obj->metaObject()->className())
+                .arg(reinterpret_cast<quintptr>(obj));
 
         // Label
         QString label = obj->metaObject()->className();
@@ -37,10 +38,10 @@ void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath)
 
         out << "    \"" << objName << "\" [label=\"" << label << "\"];\n";
 
-        for (QObject* child : obj->children()) {
+        for (QObject* child: obj->children()) {
             QString childName = QString("%1_%2")
-                .arg(child->metaObject()->className())
-                .arg(reinterpret_cast<quintptr>(child));
+                    .arg(child->metaObject()->className())
+                    .arg(reinterpret_cast<quintptr>(child));
 
             out << "    \"" << objName << "\" -> \"" << childName << "\";\n";
 
@@ -56,15 +57,29 @@ void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath)
     qDebug() << "Graphviz file generated:" << filePath;
 }
 
+
 //dumpObjectTreeToGraphviz(window, "full_app.dot");
 
 UI::UIManager::UIManager() {
     setlocale(LC_ALL, "");
-     auto* window = createWindow(nullptr, {});
+    const auto* window = createWindow(nullptr, {});
     window->setProjectsList(fs_.projects());
 }
 
-void UI::UIManager::openNewWindowOpenProjectSlot(const QString& projectPath) {
+
+bool UI::UIManager::checkedOpened(const QString& projectPath) const {
+    return std::any_of(mainWindows_.begin(), mainWindows_.end(),
+                       [&](const UI::MainWindow* t) {
+                           return t->projectPath() == projectPath;
+                       });
+}
+
+
+void UI::UIManager::openNewWindowOpenProjectSlot(const UI::MainWindow* window, const QString& projectPath) {
+    if (checkedOpened(projectPath)) {
+        window->addNotification("Проект уже открыт");
+        return;
+    }
     if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         auto* newWindow = createWindow(nullptr, {data.path, data.id});
         newWindow->onOpenProjectSlot({data.path, data.id});
@@ -78,7 +93,12 @@ void UI::UIManager::openNewWindowOpenProjectSlot(const QString& projectPath) {
 }
 
 
-void UI::UIManager::openNewWindowCreateProjectSlot(const QString& projectPath) {
+void UI::UIManager::openNewWindowCreateProjectSlot(const UI::MainWindow* window, const QString& projectPath) {
+    if (checkedOpened(projectPath)) {
+        window->addNotification("Проект уже открыт");
+        return;
+    }
+
     const auto projectName = QFileInfo(projectPath).fileName();
 
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
@@ -92,7 +112,10 @@ void UI::UIManager::openNewWindowCreateProjectSlot(const QString& projectPath) {
 
 
 void UI::UIManager::openProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const {
-    if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
+    if (checkedOpened(projectPath)) {
+        window->addNotification("Проект уже открыт: " + projectPath);
+    } else if (UI::FileSystem::ProjectData data;
+        fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({data.path, data.id});
         window->setQOpenGLPainter(new CadViewportWindow());
         window->setCommandConsoleEngine(new CustomConsole());
@@ -185,7 +208,7 @@ void UI::UIManager::goToStartWindowSlot(UI::MainWindow* window) const {
 
 void UI::UIManager::renameProjectSlot(UI::MainWindow* window, const QString& newName, const QString& path) const {
     const auto oldName = QFileInfo(path).fileName();
-    if (FileSystem::ProjectData data; fs_.renameProjectByPath(path, newName,data) == UI::FileSystem::FsResult::Ok) {
+    if (FileSystem::ProjectData data; fs_.renameProjectByPath(path, newName, data) == UI::FileSystem::FsResult::Ok) {
         window->setProjectsList(fs_.projects());
         window->setProjectPath(data.path);
         window->addNotification("✏️ Project renamed: " + oldName + " → " + newName);
@@ -241,11 +264,19 @@ void UI::UIManager::initSignals(UI::MainWindow& window) {
 
     // --- Open project in new window ---
     QObject::connect(&window, &UI::MainWindow::openNewWindowOpenProjectTriggered,
-                     this, &UI::UIManager::openNewWindowOpenProjectSlot);
+                     this, [this, ptrWindow](const QString& path) {
+                         if (ptrWindow) {
+                             emit openNewWindowOpenProjectSlot(ptrWindow, path);
+                         }
+                     });
 
     // --- Create project in new window ---
     QObject::connect(&window, &UI::MainWindow::openNewWindowCreateProjectTriggered,
-                     this, &UI::UIManager::openNewWindowCreateProjectSlot);
+                     this, [this, ptrWindow](const QString& path) {
+                         if (ptrWindow) {
+                             emit openNewWindowCreateProjectSlot(ptrWindow, path);
+                         }
+                     });
 
     // --- Open project in this window ---
     QObject::connect(&window, &UI::MainWindow::openProjectThisWindowTriggered,

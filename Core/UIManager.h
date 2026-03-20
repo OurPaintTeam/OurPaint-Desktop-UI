@@ -16,9 +16,9 @@ namespace UI {
         QVector<UI::MainWindow*> mainWindows_;
         UI::FileSystem fs_;
 
-        void openNewWindowOpenProjectSlot(const QString& projectPath);
-        void openNewWindowCreateProjectSlot(const QString& projectPath);
-
+        bool checkedOpened(const QString& projectPath) const;
+        void openNewWindowOpenProjectSlot(const UI::MainWindow* window,const QString& projectPath);
+        void openNewWindowCreateProjectSlot(const UI::MainWindow* window,const QString& projectPath);
         void openProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const;
         void createProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const;
         void openFileSlot(const UI::MainWindow* window, const QString& filePath) const;
