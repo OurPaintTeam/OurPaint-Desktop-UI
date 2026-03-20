@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QVBoxLayout>
 
+#include "PathInputWidget.h"
+
 
 UI::StartPage::StartPage(QWidget* parent)
     : QWidget(parent) {
@@ -52,8 +54,7 @@ void UI::StartPage::onOpenProjectSlot() {
 
 
 void UI::StartPage::onCreateProjectSlot() {
-    auto* prompt = new InputWidget("Project Path:", this);
-
+    auto* prompt = new PathInputWidget("Project Path:", this);
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
 

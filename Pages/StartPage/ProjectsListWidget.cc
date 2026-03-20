@@ -14,6 +14,7 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
       panelLayoutPtr_(new QVBoxLayout(openPanelPtr_)), inputContainerPtr_(new QWidget(openPanelPtr_)),
       inputLayoutPtr_(new QHBoxLayout(inputContainerPtr_)),
       projectInput_(new QLineEdit(inputContainerPtr_)),
+      createButtonPtr_(new QPushButton(inputContainerPtr_)), openButtonPtr_(new QPushButton(inputContainerPtr_)),
       linePtr_(new QFrame(openPanelPtr_)),
       scrollAreaPtr_(new QScrollArea(openPanelPtr_)),
       scrollContent_(new QWidget()),
@@ -47,13 +48,13 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
 
     inputLayoutPtr_->addWidget(projectInput_, 1);
 
-    createButtonPtr_ = new QPushButton("+", inputContainerPtr_);
+    createButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/createProject.svg"));
     createButtonPtr_->setObjectName("createButtonStartWindow");
     createButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     createButtonPtr_->setToolTip("Create Project");
     connect(createButtonPtr_, &QPushButton::clicked, this, &ProjectsListWidget::pressCreateButtonTriggered);
 
-    openButtonPtr_ = new QPushButton("o", inputContainerPtr_);
+    openButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/openProjectDark.svg"));
     openButtonPtr_->setObjectName("createButtonStartWindow");
     openButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
     openButtonPtr_->setToolTip("Open Project");

@@ -31,11 +31,11 @@ namespace UI {
         void setCommandConsoleEngine(QLineEdit* engine) const;
         void setDefaultProjectsPath(const QString& projectPath);
     signals:
-        void openNewWindowCreateProjectTriggered(const QString& projectName);
-        void createProjectThisWindowTriggered(const QString& projectName);
+        void openNewWindowCreateProjectTriggered(const QString& projectPath);
+        void createProjectThisWindowTriggered(const QString& projectPath);
 
-        void openNewWindowOpenProjectTriggered(const QString& projectName);
-        void openProjectThisWindowTriggered(const QString& projectName);
+        void openNewWindowOpenProjectTriggered(const QString& projectPath);
+        void openProjectThisWindowTriggered(const QString& projectPath);
         void openFileTriggered(const QString& filePath); // (topBar)
 
         void crateFileTriggered(const QString& fileName);

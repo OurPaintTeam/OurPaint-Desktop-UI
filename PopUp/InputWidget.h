@@ -4,7 +4,6 @@
 #include <QWidget>
 
 class QHBoxLayout;
-class QCheckBox;
 class QLabel;
 class QLineEdit;
 class QPoint;
@@ -12,15 +11,13 @@ class QPushButton;
 class QVBoxLayout;
 
 namespace UI {
-    class InputWidget final : public QWidget {
+    class InputWidget : public QWidget {
         Q_OBJECT
 
     public:
         explicit InputWidget(const QString& promptText, QWidget* parent = nullptr);
 
-        void setCheckBoxQuestion(const QString& question);
         void setDefaultText(const QString& text) const;
-        bool isCheckBoxChecked() const;
 
     signals:
         void inputEnteredTriggered(const QString& text);
@@ -34,12 +31,13 @@ namespace UI {
         void mouseReleaseEvent(QMouseEvent* event) override;
         void paintEvent(QPaintEvent* event) override;
 
+        QVBoxLayout* mainLayout() const;
+        QLineEdit* lineEdit() const;
     private:
         QLabel* label_{nullptr};
         QLineEdit* lineEdit_{nullptr};
         QPushButton* okButton_{nullptr};
         QPushButton* closeButton_{nullptr};
-        QCheckBox* checkBox_{nullptr};
         QHBoxLayout* buttonLayout_{nullptr};
 
         QVBoxLayout* mainLayout_{nullptr};
@@ -53,5 +51,4 @@ namespace UI {
     };
 } // namespace UI
 
-
-#endif //OURPAINT_DESKTOP_UI_INPUTWIDGET_H
+#endif // OURPAINT_DESKTOP_UI_INPUTWIDGET_H

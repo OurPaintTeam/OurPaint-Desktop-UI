@@ -154,6 +154,12 @@ set(Resources
         Core/UIManager.h
         CommandConsole/CustomConsole.cc
         CommandConsole/CustomConsole.h
+        PopUp/ParameterInputWidget.cc
+        PopUp/ParameterInputWidget.h
+        PopUp/NameInputWidget.cc
+        PopUp/NameInputWidget.h
+        PopUp/PathInputWidget.cc
+        PopUp/PathInputWidget.h
 )
 
 add_executable(OurPaint-Desktop-UI

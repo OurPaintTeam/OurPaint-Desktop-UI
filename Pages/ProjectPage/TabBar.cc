@@ -10,6 +10,7 @@
 #include <QSizePolicy>
 
 #include "InputWidget.h"
+#include "NameInputWidget.h"
 #include "TabWidget.h"
 
 
@@ -314,7 +315,7 @@ void UI::TabBar::createPlusButton() {
     plusButton_->setObjectName(QStringLiteral("PlusButtonTab"));
 
     connect(plusButton_, &QPushButton::clicked, this, [this]() {
-        auto* prompt = new InputWidget("Name:", this);
+        auto* prompt = new NameInputWidget("Name:", this);
         const auto globalPos = plusButton_->mapToGlobal(QPoint(0, plusButton_->height()));
 
         prompt->move(globalPos);

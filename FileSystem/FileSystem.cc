@@ -86,8 +86,10 @@ UI::FileSystem::FsResult UI::FileSystem::getProjectIdByPath(const QString& fullP
 UI::FileSystem::FsResult UI::FileSystem::createProject(const QString& fullPath, QString& outProjectId) const {
     const auto systemPath = toSystemPath(fullPath);
 
-    if (QDir(systemPath).exists()) {
-        return FsResult::AlreadyExists;
+    if (const QDir dir(systemPath); !dir.exists()) {
+        if (!dir.mkpath(".")) {
+            return FsResult::IoError;
+        }
     }
 
     const auto name = extractProjectNameFromPath(systemPath);
@@ -98,6 +100,11 @@ UI::FileSystem::FsResult UI::FileSystem::createProject(const QString& fullPath, 
     }
 
     QFile meta(toSystemPath(systemPath + "/.ourpaint"));
+
+    if (meta.exists()) {
+        return FsResult::AlreadyExists;
+    }
+
     if (!meta.open(QIODevice::WriteOnly)) {
         return FsResult::IoError;
     }
@@ -281,7 +288,57 @@ UI::FileSystem::FsResult UI::FileSystem::openProjectByPath(const QString& fullPa
     }
 
     if (!found) {
-        addProject(realName, toStoragePath(systemPath), projectId);
+        QFile file(projectsXml_);
+        if (!file.open(QIODevice::ReadOnly)) {
+            return FsResult::IoError;
+        }
+
+        QXmlStreamReader xmlReader(&file);
+        QVector<ProjectData> existingProjects;
+
+        while (!xmlReader.atEnd()) {
+            xmlReader.readNext();
+            if (xmlReader.isStartElement() && xmlReader.name() == "project") {
+                ProjectData p;
+                p.id = xmlReader.attributes().value("id").toString();
+                p.name = xmlReader.attributes().value("name").toString();
+                p.path = xmlReader.attributes().value("path").toString();
+                existingProjects.append(p);
+            }
+        }
+
+        file.close();
+
+        if (xmlReader.hasError()) {
+            return FsResult::IoError;
+        }
+
+        ProjectData newProj;
+        newProj.id = projectId;
+        newProj.name = realName;
+        newProj.path = toStoragePath(systemPath);
+        existingProjects.append(newProj);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return FsResult::IoError;
+        }
+
+        QXmlStreamWriter xmlWriter(&file);
+        xmlWriter.setAutoFormatting(true);
+        xmlWriter.writeStartDocument();
+        xmlWriter.writeStartElement("projects");
+
+        for (const auto& p : existingProjects) {
+            xmlWriter.writeStartElement("project");
+            xmlWriter.writeAttribute("id", p.id);
+            xmlWriter.writeAttribute("name", p.name);
+            xmlWriter.writeAttribute("path", p.path);
+            xmlWriter.writeEndElement();
+        }
+
+        xmlWriter.writeEndElement();
+        xmlWriter.writeEndDocument();
+        file.close();
     } else {
         QFile file(projectsXml_);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -685,6 +742,11 @@ QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjects() const {
 
     QXmlStreamReader xml(&file);
 
+    QSet<QString> seenIds;
+    QSet<QString> seenPaths;
+
+    bool modified = false;
+
     while (!xml.atEnd()) {
         xml.readNext();
 
@@ -696,11 +758,58 @@ QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjects() const {
             const auto rawPath = xml.attributes().value("path").toString();
             data.path = toComparablePath(rawPath);
 
+            if (data.id.isEmpty() || data.path.isEmpty()) {
+                modified = true;
+                continue;
+            }
+
+            if (seenIds.contains(data.id) || seenPaths.contains(data.path)) {
+                modified = true;
+                continue;
+            }
+
+            if (!QDir(data.path).exists()) {
+                modified = true;
+                continue;
+            }
+
+            seenIds.insert(data.id);
+            seenPaths.insert(data.path);
+
             list.append(data);
         }
     }
 
     file.close();
+
+    if (xml.hasError()) {
+        modified = true;
+    }
+
+    if (modified) {
+        QFile outFile(projectsXml_);
+        if (outFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            QXmlStreamWriter writer(&outFile);
+            writer.setAutoFormatting(true);
+
+            writer.writeStartDocument();
+            writer.writeStartElement("projects");
+
+            for (const auto& p : list) {
+                writer.writeStartElement("project");
+                writer.writeAttribute("id", p.id);
+                writer.writeAttribute("name", p.name);
+                writer.writeAttribute("path", p.path);
+                writer.writeEndElement();
+            }
+
+            writer.writeEndElement();
+            writer.writeEndDocument();
+
+            outFile.close();
+        }
+    }
+
     return list;
 }
 

@@ -1,6 +1,5 @@
 #include "InputWidget.h"
 
-#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -14,7 +13,6 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
       label_(new QLabel(promptText, this)),
       lineEdit_(new QLineEdit(this)),
       closeButton_(new QPushButton(this)),
-      checkBox_(new QCheckBox(this)),
       buttonLayout_(new QHBoxLayout()),
       mainLayout_(new QVBoxLayout(this)),
       headerLayout_(new QHBoxLayout()) {
@@ -57,9 +55,6 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
     lineEdit_->setFixedHeight(h);
     lineEdit_->setFocus();
 
-    checkBox_->setObjectName("InputWidgetCheckBox");
-    checkBox_->hide();
-
     okButton_ = new QPushButton("OK", this);
     okButton_->setObjectName("InputWidgetOkButton");
     constexpr auto h1 = 26;
@@ -71,7 +66,6 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
 
     mainLayout_->addLayout(headerLayout_);
     mainLayout_->addWidget(lineEdit_);
-    mainLayout_->addWidget(checkBox_);
     mainLayout_->addLayout(buttonLayout_);
 
     connect(okButton_, &QPushButton::clicked,
@@ -87,20 +81,8 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
 }
 
 
-void UI::InputWidget::setCheckBoxQuestion(const QString& question) {
-    checkBox_->setText(question);
-    checkBox_->show();
-    adjustSize();
-}
-
-
 void UI::InputWidget::setDefaultText(const QString& text) const {
     lineEdit_->setText(text);
-}
-
-
-bool UI::InputWidget::isCheckBoxChecked() const {
-    return checkBox_->isChecked();
 }
 
 
@@ -111,7 +93,7 @@ void UI::InputWidget::onOkClickedSlot() {
 
 
 void UI::InputWidget::mousePressEvent(QMouseEvent* event) {
-    if (constexpr auto x = 35; event->button() == Qt::LeftButton && event->pos().y() <x) {
+    if (constexpr auto x = 35; event->button() == Qt::LeftButton && event->pos().y() < x) {
         dragging_ = true;
         dragPosition_ = event->globalPosition().toPoint() - frameGeometry().topLeft();
     }
@@ -146,4 +128,14 @@ void UI::InputWidget::paintEvent(QPaintEvent*) {
 
     constexpr auto r = 8;
     painter.drawRoundedRect(rect, r, r);
+}
+
+
+QVBoxLayout* UI::InputWidget::mainLayout() const {
+    return mainLayout_;
+}
+
+
+QLineEdit* UI::InputWidget::lineEdit() const {
+    return lineEdit_;
 }

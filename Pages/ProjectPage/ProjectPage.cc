@@ -7,8 +7,10 @@
 #include "CommandConsole.h"
 #include "ContainerWidget.h"
 #include "InputWidget.h"
+#include "NameInputWidget.h"
 #include "NavigationWidget.h"
 #include "PainterWidget.h"
+#include "PathInputWidget.h"
 #include "SideMenu.h"
 #include "TabBar.h"
 #include "ToolBar.h"
@@ -288,7 +290,7 @@ void UI::ProjectPage::assembleLayout() const {
 
 
 void UI::ProjectPage::createFileSlot() {
-    auto* prompt = new InputWidget("File Name:", this);
+    auto* prompt = new NameInputWidget("File Name:", this);
 
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
@@ -340,7 +342,7 @@ void UI::ProjectPage::openMessengerPanel() const {
 
 
 void UI::ProjectPage::onCreateProjectSlot() {
-    auto* prompt = new InputWidget("Project Path:", this);
+    auto* prompt = new PathInputWidget("Project Path:",this);
     prompt->setCheckBoxQuestion("New Window");
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
@@ -365,7 +367,7 @@ void UI::ProjectPage::onCreateProjectSlot() {
 
 
 void UI::ProjectPage::onOpenProjectSlot() {
-    auto* prompt = new InputWidget("Project Path:", this);
+    auto* prompt = new PathInputWidget("Project Path:",this);
     prompt->setCheckBoxQuestion("New Window");
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();

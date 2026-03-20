@@ -156,7 +156,7 @@ QPushButton#CloseApplication:hover {
     font-style: italic;
 }
 /* === CheckBox === */
-#InputWidgetCheckBox {
+#PathInputWidgetCheckBox {
     color: #D8D8F6;
     font-size: 12px;
     spacing: 6px;
@@ -164,7 +164,7 @@ QPushButton#CloseApplication:hover {
 }
 
 /* индикатор */
-#InputWidgetCheckBox::indicator {
+#PathInputWidgetCheckBox::indicator {
     width: 14px;
     height: 14px;
 
@@ -174,23 +174,23 @@ QPushButton#CloseApplication:hover {
 }
 
 /* hover */
-#InputWidgetCheckBox::indicator:hover {
+#PathInputWidgetCheckBox::indicator:hover {
     background-color: #4f4e57;
     border: 1px solid #7a6f79;
 }
 
 /* checked */
-#InputWidgetCheckBox::indicator:checked {
+#PathInputWidgetCheckBox::indicator:checked {
     background-color: #615760;
     border: 1px solid #7a6f79;
 }
 
 /* checked hover */
-#InputWidgetCheckBox::indicator:checked:hover {
+#PathInputWidgetCheckBox::indicator:checked:hover {
     background-color: #7a6f79;
 }
 
-#InputWidgetCheckBox::indicator:checked {
+#PathInputWidgetCheckBox::indicator:checked {
     image: url(:/Assets/icons/showHidePanels/check.svg);
     background-color: #615760;
     border: 1px solid #7a6f79;

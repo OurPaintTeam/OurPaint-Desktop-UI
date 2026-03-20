@@ -1,19 +1,68 @@
 #include "UIManager.h"
 
 #include <QFileInfo>
+#include <QLayout>
 #include <QPointer>
 
 #include "CadViewportWindow.h"
 #include "CustomConsole.h"
 #include "MainWindow.h"
 
+#include <QFile>
+#include <qiodevice.h>
+
+void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open file:" << filePath;
+        return;
+    }
+
+    QTextStream out(&file);
+
+    out << "digraph QObjectTree {\n";
+    out << "    node [shape=box, style=filled, fillcolor=\"#E3F2FD\"];\n";
+
+    std::function<void(QObject*)> recurse = [&](QObject* obj) {
+        QString objName = QString("%1_%2")
+            .arg(obj->metaObject()->className())
+            .arg(reinterpret_cast<quintptr>(obj));
+
+        // Label
+        QString label = obj->metaObject()->className();
+        if (!obj->objectName().isEmpty()) {
+            label += "\\n(" + obj->objectName() + ")";
+        }
+
+        out << "    \"" << objName << "\" [label=\"" << label << "\"];\n";
+
+        for (QObject* child : obj->children()) {
+            QString childName = QString("%1_%2")
+                .arg(child->metaObject()->className())
+                .arg(reinterpret_cast<quintptr>(child));
+
+            out << "    \"" << objName << "\" -> \"" << childName << "\";\n";
+
+            recurse(child);
+        }
+    };
+
+    recurse(root);
+
+    out << "}\n";
+    file.close();
+
+    qDebug() << "Graphviz file generated:" << filePath;
+}
+
+//dumpObjectTreeToGraphviz(window, "full_app.dot");
 
 UI::UIManager::UIManager() {
     setlocale(LC_ALL, "");
-    const auto* window = createWindow(nullptr, {});
+     auto* window = createWindow(nullptr, {});
     window->setProjectsList(fs_.projects());
 }
-
 
 void UI::UIManager::openNewWindowOpenProjectSlot(const QString& projectPath) {
     if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
@@ -180,6 +229,7 @@ UI::MainWindow* UI::UIManager::createWindow(UI::MainWindow* parent, const UI::Ma
     window->show();
     mainWindows_.push_back(window);
     window->addNotification("Welcome to OurPaint! 🎨");
+    window->setDefaultProjectsPath(fs_.defaultProjectsPath());
     initSignals(*window);
 
     return window;
