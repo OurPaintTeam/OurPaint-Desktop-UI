@@ -46,6 +46,12 @@ void UI::MainWindow::setProjectPath(const QString& projectPath) {
 }
 
 
+void UI::MainWindow::setDefaultProjectsPath(const QString& projectPath) {
+    startPage_->setDefaultProjectsPath(projectPath);
+    defaultProjectPath_ = projectPath;
+}
+
+
 void UI::MainWindow::setProjectsList(const QVector<QPair<QString, QString> >& projectsList) const {
     startPage_->setProjectsList(projectsList);
 }
@@ -178,6 +184,7 @@ void UI::MainWindow::createProjectPage() {
 
     projectPage_ = new ProjectPage(pageStack_);
     pageStack_->addWidget(projectPage_);
+    projectPage_->setDefaultProjectsPath(defaultProjectPath_);
 
 
     connect(projectPage_, &ProjectPage::goToStartWindowTriggered,

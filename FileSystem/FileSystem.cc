@@ -44,6 +44,11 @@ QString UI::FileSystem::defaultRoot() const {
 }
 
 
+QString UI::FileSystem::defaultProjectsPath() const {
+    return toDisplayPath(projectsDir_);
+}
+
+
 QVector<QPair<QString, QString> > UI::FileSystem::projects() const {
     QVector<QPair<QString, QString> > result;
 

@@ -30,11 +30,16 @@ void UI::StartPage::setProjectsList(const QVector<QPair<QString, QString> >& pro
 }
 
 
+void UI::StartPage::setDefaultProjectsPath(const QString& projectPath){
+    defaultProjectsPath_ = projectPath;
+}
+
+
 void UI::StartPage::onOpenProjectSlot() {
     const auto folderPath = QFileDialog::getExistingDirectory(
         this,
         tr("Open File or Project"),
-        QString(),
+        defaultProjectsPath_,
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
     );
 
@@ -55,6 +60,7 @@ void UI::StartPage::onCreateProjectSlot() {
     prompt->move(rect.center().x() - size.width() / 2,
                  rect.center().y() - size.height() / 2);
 
+    prompt->setDefaultText(defaultProjectsPath_);
     prompt->show();
 
     connect(prompt, &InputWidget::inputEnteredTriggered, this, [this,prompt](const QString& text) {

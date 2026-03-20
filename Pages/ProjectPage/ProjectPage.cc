@@ -40,6 +40,11 @@ void UI::ProjectPage::setCommandConsoleEngine(QLineEdit* engine) const {
 }
 
 
+void UI::ProjectPage::setDefaultProjectsPath(const QString& projectPath) {
+    projectDefaultPath_ = projectPath;
+}
+
+
 void UI::ProjectPage::initUI() {
     createLayouts();
     createTopBar();
@@ -342,7 +347,7 @@ void UI::ProjectPage::onCreateProjectSlot() {
 
     prompt->move(rect.center().x() - size.width() / 2,
                  rect.center().y() - size.height() / 2);
-
+    prompt->setDefaultText(projectDefaultPath_);
     prompt->show();
 
     connect(prompt, &InputWidget::inputEnteredTriggered, this, [this,prompt](const QString& text) {
@@ -364,7 +369,7 @@ void UI::ProjectPage::onOpenProjectSlot() {
     prompt->setCheckBoxQuestion("New Window");
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
-
+    prompt->setDefaultText(projectDefaultPath_);
     prompt->move(rect.center().x() - size.width() / 2,
                  rect.center().y() - size.height() / 2);
 
@@ -388,7 +393,7 @@ void UI::ProjectPage::openFileSlot() {
     const auto filePath = QFileDialog::getOpenFileName(
         this,
         tr("Open File or Project"),
-        QString(),
+        projectDefaultPath_,
         tr("Project Files (*.ourp);;All Files (*)")
     );
 

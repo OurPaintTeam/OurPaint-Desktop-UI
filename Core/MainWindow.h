@@ -35,6 +35,7 @@ namespace UI {
         QString projectPath() const;
         QString projectID() const;
         void setProjectPath(const QString& projectPath);
+        void setDefaultProjectsPath(const QString& projectPath);
         void setProjectsList(const QVector<QPair<QString, QString> >& projectsList) const;
 
         void addNotification(const QString& text) const;
@@ -88,6 +89,8 @@ namespace UI {
         ProjectData projectData_{};
 
         NotificationContainer* notificationManager_{nullptr};
+
+        QString defaultProjectPath_;
     };
 } // namespace UI
 

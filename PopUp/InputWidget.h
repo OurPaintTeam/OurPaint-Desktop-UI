@@ -19,6 +19,7 @@ namespace UI {
         explicit InputWidget(const QString& promptText, QWidget* parent = nullptr);
 
         void setCheckBoxQuestion(const QString& question);
+        void setDefaultText(const QString& text) const;
         bool isCheckBoxChecked() const;
 
     signals:

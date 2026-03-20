@@ -19,6 +19,7 @@ namespace UI {
     public:
         explicit StartPage(QWidget* parent = nullptr);
         void setProjectsList(const QVector<QPair<QString, QString>>& projects) const;
+        void setDefaultProjectsPath(const QString& projectPath);
 
     public slots:
         void onOpenProjectSlot();
@@ -39,6 +40,8 @@ namespace UI {
         QVBoxLayout* mainLayout_{nullptr};
         QWidget* mainArea_{nullptr};
         QHBoxLayout* contentLayout_{nullptr};
+
+        QString defaultProjectsPath_;
     };
 } // namespace UI
 

@@ -29,6 +29,7 @@ namespace UI {
         ~ProjectPage() override = default;
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
+        void setDefaultProjectsPath(const QString& projectPath);
     signals:
         void openNewWindowCreateProjectTriggered(const QString& projectName);
         void createProjectThisWindowTriggered(const QString& projectName);
@@ -174,6 +175,8 @@ namespace UI {
 
         QPushButton* messengerButton_{nullptr};
         QPushButton* infoButton_{nullptr};
+
+        QString projectDefaultPath_;
     };
 } // namespace UI
 

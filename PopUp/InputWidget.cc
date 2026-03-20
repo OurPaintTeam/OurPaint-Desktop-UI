@@ -94,6 +94,11 @@ void UI::InputWidget::setCheckBoxQuestion(const QString& question) {
 }
 
 
+void UI::InputWidget::setDefaultText(const QString& text) const {
+    lineEdit_->setText(text);
+}
+
+
 bool UI::InputWidget::isCheckBoxChecked() const {
     return checkBox_->isChecked();
 }

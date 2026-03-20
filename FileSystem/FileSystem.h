@@ -31,6 +31,7 @@ namespace UI {
 
         FileSystem();
         QString defaultRoot() const;
+        QString defaultProjectsPath() const;
         QVector<QPair<QString, QString> > projects() const;
         FsResult getProjectDataById(const QString& projectId, ProjectData& outData) const;
         FsResult getProjectIdByPath(const QString& fullPath, QString& outProjectId) const;
