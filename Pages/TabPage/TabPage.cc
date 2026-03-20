@@ -104,4 +104,62 @@ void UI::TabPage::initUI() {
     topBar_->setCommandConsole(console_);
     topBar_->setLeftTool(leftTool_);
     topBar_->setRightTool(rightTool_);
+
+
+
+    /// Tools - constrains
+    connect(toolBar_, &ToolBar::pointLineDistanceTriggered,
+            this, &UI::TabPage::pointLineDistanceTriggered);
+
+    connect(toolBar_, &ToolBar::pointOnLineTriggered,
+            this, &UI::TabPage::pointOnLineTriggered);
+
+    connect(toolBar_, &ToolBar::pointPointDistanceTriggered,
+            this, &UI::TabPage::pointPointDistanceTriggered);
+
+    connect(toolBar_, &ToolBar::coincidentPointsTriggered,
+            this, &UI::TabPage::coincidentPointsTriggered);
+
+    connect(toolBar_, &ToolBar::lineCircleDistanceTriggered,
+            this, &UI::TabPage::lineCircleDistanceTriggered);
+
+    connect(toolBar_, &ToolBar::lineOnCircleTriggered,
+            this, &UI::TabPage::lineOnCircleTriggered);
+
+    connect(toolBar_, &ToolBar::lineInCircleTriggered,
+            this, &UI::TabPage::lineInCircleTriggered);
+
+    connect(toolBar_, &ToolBar::parallelLinesTriggered,
+            this, &UI::TabPage::parallelLinesTriggered);
+
+    connect(toolBar_, &ToolBar::perpendicularLinesTriggered,
+            this, &UI::TabPage::perpendicularLinesTriggered);
+
+    connect(toolBar_, &ToolBar::angleBetweenLinesTriggered,
+            this, &UI::TabPage::angleBetweenLinesTriggered);
+
+    /// Tools - point
+    connect(toolBar_, &ToolBar::pointTriggered, this, &UI::TabPage::pointTriggered);
+    connect(toolBar_, &ToolBar::lineTriggered, this, &UI::TabPage::lineTriggered);
+    connect(toolBar_, &ToolBar::polylineTriggered, this, &UI::TabPage::polylineTriggered);
+    connect(toolBar_, &ToolBar::infiniteLineTriggered, this, &UI::TabPage::infiniteLineTriggered);
+
+    /// Tools - circle
+    connect(toolBar_, &ToolBar::circleByDiameterTriggered, this, &UI::TabPage::circleByDiameterTriggered);
+    connect(toolBar_, &ToolBar::circleTwoPointsTriggered, this, &UI::TabPage::circleTwoPointsTriggered);
+    connect(toolBar_, &ToolBar::ellipseThreePointsTriggered, this, &UI::TabPage::ellipseThreePointsTriggered);
+
+    /// Tools - arc
+    connect(toolBar_, &ToolBar::arcByRadiusTriggered, this, &UI::TabPage::arcByRadiusTriggered);
+    connect(toolBar_, &ToolBar::arcByDiameterTriggered, this, &UI::TabPage::arcByDiameterTriggered);
+    connect(toolBar_, &ToolBar::arcByThreePointsTriggered, this, &UI::TabPage::arcByThreePointsTriggered);
+
+    /// Tools - line/circle/arc settings
+    connect(toolBar_, &ToolBar::lineSettingsTriggered, this, &UI::TabPage::lineSettingsTriggered);
+    connect(toolBar_, &ToolBar::circleSettingsTriggered, this, &UI::TabPage::circleSettingsTriggered);
+    connect(toolBar_, &ToolBar::arcSettingsTriggered, this, &UI::TabPage::arcSettingsTriggered);
+
+    /// Tools - cursor/size
+    connect(toolBar_, &ToolBar::cursorTriggered, this, &UI::TabPage::cursorTriggered);
+    connect(toolBar_, &ToolBar::sizeTriggered, this, &UI::TabPage::sizeTriggered);
 }

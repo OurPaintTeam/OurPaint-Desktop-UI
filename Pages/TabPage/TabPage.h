@@ -29,6 +29,45 @@ namespace UI {
         void returnTab(const QString& tabName);
         void sentCommandTriggered(const QString& command);
 
+        /// Tools - constrains
+        void pointLineDistanceTriggered();
+        void pointOnLineTriggered();
+        void pointPointDistanceTriggered();
+        void coincidentPointsTriggered();
+        void lineCircleDistanceTriggered();
+        void lineOnCircleTriggered();
+        void lineInCircleTriggered();
+        void parallelLinesTriggered();
+        void perpendicularLinesTriggered();
+        void angleBetweenLinesTriggered();
+
+        /// Tools - point
+        void pointTriggered();
+
+        /// Tools - line
+        void lineTriggered();
+        void polylineTriggered();
+        void infiniteLineTriggered();
+
+        /// Tools - circle
+        void circleByDiameterTriggered();
+        void circleTwoPointsTriggered();
+        void ellipseThreePointsTriggered();
+
+        /// Tools - arc
+        void arcByRadiusTriggered();
+        void arcByDiameterTriggered();
+        void arcByThreePointsTriggered();
+
+        /// Tools - settings
+        void lineSettingsTriggered();
+        void circleSettingsTriggered();
+        void arcSettingsTriggered();
+
+        /// Tools - tool
+        void cursorTriggered();
+        void sizeTriggered();
+
     protected:
         void initUI() override;
 

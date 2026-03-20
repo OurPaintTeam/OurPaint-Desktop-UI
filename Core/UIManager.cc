@@ -75,6 +75,14 @@ bool UI::UIManager::checkedOpened(const QString& projectPath) const {
 }
 
 
+void UI::UIManager::sentCommandFromConsole(const UI::MainWindow* window, const QString& command) {
+}
+
+
+void UI::UIManager::closeApplication(const UI::MainWindow* window, const QString& projectPath) {
+}
+
+
 void UI::UIManager::openNewWindowOpenProjectSlot(const UI::MainWindow* window, const QString& projectPath) {
     if (checkedOpened(projectPath)) {
         window->addNotification("Проект уже открыт");
@@ -247,6 +255,112 @@ void UI::UIManager::deleteSlot(UI::MainWindow* window) {
 }
 
 
+void UI::UIManager::PointLineDistanceSlot(const UI::MainWindow* window) {
+    window->addNotification("Point-Line Distance tool selected");
+}
+
+
+void UI::UIManager::PointOnLineSlot(const UI::MainWindow* window) {
+    window->addNotification("Point on Line tool selected");
+}
+
+
+void UI::UIManager::PointPointDistanceSlot(const UI::MainWindow* window) {
+    window->addNotification("Point-Point Distance tool selected");
+}
+
+
+void UI::UIManager::CoincidentPointsSlot(const UI::MainWindow* window) {
+    window->addNotification("Coincident Points tool selected");
+}
+
+
+void UI::UIManager::LineCircleDistanceSlot(const UI::MainWindow* window) {
+    window->addNotification("Line-Circle Distance tool selected");
+}
+
+
+void UI::UIManager::LineOnCircleSlot(const UI::MainWindow* window) {
+    window->addNotification("Line on Circle tool selected");
+}
+
+
+void UI::UIManager::LineInCircleSlot(const UI::MainWindow* window) {
+    window->addNotification("Line in Circle tool selected");
+}
+
+
+void UI::UIManager::ParallelLinesSlot(const UI::MainWindow* window) {
+    window->addNotification("Parallel Lines tool selected");
+}
+
+
+void UI::UIManager::PerpendicularLinesSlot(const UI::MainWindow* window) {
+    window->addNotification("Perpendicular Lines tool selected");
+}
+
+
+void UI::UIManager::AngleBetweenLinesSlot(const UI::MainWindow* window) {
+    window->addNotification("Angle Between Lines tool selected");
+}
+
+
+void UI::UIManager::PointSlot(const UI::MainWindow* window) { window->addNotification("Point tool selected"); }
+void UI::UIManager::LineSlot(const UI::MainWindow* window) { window->addNotification("Line tool selected"); }
+void UI::UIManager::PolylineSlot(const UI::MainWindow* window) { window->addNotification("Polyline tool selected"); }
+
+
+void UI::UIManager::InfiniteLineSlot(const UI::MainWindow* window) {
+    window->addNotification("Infinite Line tool selected");
+}
+
+
+void UI::UIManager::CircleByDiameterSlot(const UI::MainWindow* window) {
+    window->addNotification("Circle by Diameter tool selected");
+}
+
+
+void UI::UIManager::CircleTwoPointsSlot(const UI::MainWindow* window) {
+    window->addNotification("Circle by Two Points tool selected");
+}
+
+
+void UI::UIManager::EllipseThreePointsSlot(const UI::MainWindow* window) {
+    window->addNotification("Ellipse by Three Points tool selected");
+}
+
+
+void UI::UIManager::ArcByRadiusSlot(const UI::MainWindow* window) {
+    window->addNotification("Arc by Radius tool selected");
+}
+
+
+void UI::UIManager::ArcByDiameterSlot(const UI::MainWindow* window) {
+    window->addNotification("Arc by Diameter tool selected");
+}
+
+
+void UI::UIManager::ArcByThreePointsSlot(const UI::MainWindow* window) {
+    window->addNotification("Arc by Three Points tool selected");
+}
+
+
+void UI::UIManager::LineSettingsSlot(const UI::MainWindow* window) {
+    window->addNotification("Line Settings selected");
+}
+
+
+void UI::UIManager::CircleSettingsSlot(const UI::MainWindow* window) {
+    window->addNotification("Circle Settings selected");
+}
+
+
+void UI::UIManager::ArcSettingsSlot(const UI::MainWindow* window) { window->addNotification("Arc Settings selected"); }
+
+void UI::UIManager::CursorSlot(const UI::MainWindow* window) { window->addNotification("Cursor tool selected"); }
+void UI::UIManager::SizeSlot(const UI::MainWindow* window) { window->addNotification("Size tool selected"); }
+
+
 UI::MainWindow* UI::UIManager::createWindow(UI::MainWindow* parent, const UI::MainWindow::ProjectData& projectData) {
     auto* window = new UI::MainWindow(parent, projectData);
     window->show();
@@ -262,11 +376,19 @@ UI::MainWindow* UI::UIManager::createWindow(UI::MainWindow* parent, const UI::Ma
 void UI::UIManager::initSignals(UI::MainWindow& window) {
     QPointer<UI::MainWindow> ptrWindow(&window);
 
+
+    // Console
+    QObject::connect(&window, &UI::MainWindow::sentCommandTriggered, this, [this, ptrWindow](const QString& command) {
+        if (ptrWindow) {
+            sentCommandFromConsole(ptrWindow, command);
+        }
+    });
+
     // --- Open project in new window ---
     QObject::connect(&window, &UI::MainWindow::openNewWindowOpenProjectTriggered,
                      this, [this, ptrWindow](const QString& path) {
                          if (ptrWindow) {
-                             emit openNewWindowOpenProjectSlot(ptrWindow, path);
+                             openNewWindowOpenProjectSlot(ptrWindow, path);
                          }
                      });
 
@@ -274,7 +396,7 @@ void UI::UIManager::initSignals(UI::MainWindow& window) {
     QObject::connect(&window, &UI::MainWindow::openNewWindowCreateProjectTriggered,
                      this, [this, ptrWindow](const QString& path) {
                          if (ptrWindow) {
-                             emit openNewWindowCreateProjectSlot(ptrWindow, path);
+                             openNewWindowCreateProjectSlot(ptrWindow, path);
                          }
                      });
 
@@ -349,6 +471,98 @@ void UI::UIManager::initSignals(UI::MainWindow& window) {
                              deleteProjectSlot(ptrWindow, path);
                          }
                      });
+
+    // Close
+    QObject::connect(&window, &UI::MainWindow::closeApplication,
+                     this, [this, ptrWindow](const QString& path) {
+                         if (ptrWindow) {
+                             closeApplication(ptrWindow, path);
+                         }
+                     });
+
+
+    // Tools - constrains
+    QObject::connect(&window, &UI::MainWindow::pointLineDistanceTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) PointLineDistanceSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::pointOnLineTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) PointOnLineSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::pointPointDistanceTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) PointPointDistanceSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::coincidentPointsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) CoincidentPointsSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::lineCircleDistanceTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) LineCircleDistanceSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::lineOnCircleTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) LineOnCircleSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::lineInCircleTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) LineInCircleSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::parallelLinesTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) ParallelLinesSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::perpendicularLinesTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) PerpendicularLinesSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::angleBetweenLinesTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) AngleBetweenLinesSlot(ptrWindow);
+    });
+
+    // Tools - point/line
+    QObject::connect(&window, &UI::MainWindow::pointTriggered, this,
+                     [this, ptrWindow]() { if (ptrWindow) PointSlot(ptrWindow); });
+    QObject::connect(&window, &UI::MainWindow::lineTriggered, this,
+                     [this, ptrWindow]() { if (ptrWindow) LineSlot(ptrWindow); });
+    QObject::connect(&window, &UI::MainWindow::polylineTriggered, this,
+                     [this, ptrWindow]() { if (ptrWindow) PolylineSlot(ptrWindow); });
+    QObject::connect(&window, &UI::MainWindow::infiniteLineTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) InfiniteLineSlot(ptrWindow);
+    });
+
+    // Tools - circle
+    QObject::connect(&window, &UI::MainWindow::circleByDiameterTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) CircleByDiameterSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::circleTwoPointsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) CircleTwoPointsSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::ellipseThreePointsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) EllipseThreePointsSlot(ptrWindow);
+    });
+
+    // Tools - arc
+    QObject::connect(&window, &UI::MainWindow::arcByRadiusTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) ArcByRadiusSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::arcByDiameterTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) ArcByDiameterSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::arcByThreePointsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) ArcByThreePointsSlot(ptrWindow);
+    });
+
+    // Tools - settings
+    QObject::connect(&window, &UI::MainWindow::lineSettingsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) LineSettingsSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::circleSettingsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) CircleSettingsSlot(ptrWindow);
+    });
+    QObject::connect(&window, &UI::MainWindow::arcSettingsTriggered, this, [this, ptrWindow]() {
+        if (ptrWindow) ArcSettingsSlot(ptrWindow);
+    });
+
+    // Tools - cursor/size
+    QObject::connect(&window, &UI::MainWindow::cursorTriggered, this,
+                     [this, ptrWindow]() { if (ptrWindow) CursorSlot(ptrWindow); });
+    QObject::connect(&window, &UI::MainWindow::sizeTriggered, this,
+                     [this, ptrWindow]() { if (ptrWindow) SizeSlot(ptrWindow); });
+
 
     // --- Cleanup ---
     QObject::connect(&window, &QObject::destroyed, this, [this](QObject* obj) {

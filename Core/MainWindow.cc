@@ -128,7 +128,76 @@ void UI::MainWindow::openTabPageSlot(const QString& tabName) {
     tab->setWindowTitle(tabName);
     tabs_.append(tab);
 
-    connect(tab, &QObject::destroyed, this, [this, tab]() { tabs_.removeAll(tab); });
+    connect(tab, &QObject::destroyed, this, [this, tab]() {
+        tabs_.removeAll(tab);
+    });
+
+    connect(tab, &TabPage::sentCommandTriggered, this, &UI::MainWindow::sentCommandTriggered);
+
+    /// Tools - constrains
+    connect(tab, &TabPage::pointLineDistanceTriggered,
+            this, &MainWindow::pointLineDistanceTriggered);
+    connect(tab, &TabPage::pointOnLineTriggered,
+            this, &MainWindow::pointOnLineTriggered);
+    connect(tab, &TabPage::pointPointDistanceTriggered,
+            this, &MainWindow::pointPointDistanceTriggered);
+    connect(tab, &TabPage::coincidentPointsTriggered,
+            this, &MainWindow::coincidentPointsTriggered);
+    connect(tab, &TabPage::lineCircleDistanceTriggered,
+            this, &MainWindow::lineCircleDistanceTriggered);
+    connect(tab, &TabPage::lineOnCircleTriggered,
+            this, &MainWindow::lineOnCircleTriggered);
+    connect(tab, &TabPage::lineInCircleTriggered,
+            this, &MainWindow::lineInCircleTriggered);
+    connect(tab, &TabPage::parallelLinesTriggered,
+            this, &MainWindow::parallelLinesTriggered);
+    connect(tab, &TabPage::perpendicularLinesTriggered,
+            this, &MainWindow::perpendicularLinesTriggered);
+    connect(tab, &TabPage::angleBetweenLinesTriggered,
+            this, &MainWindow::angleBetweenLinesTriggered);
+
+    /// Tools - point
+    connect(tab, &TabPage::pointTriggered,
+            this, &MainWindow::pointTriggered);
+
+    /// Tools - line
+    connect(tab, &TabPage::lineTriggered,
+            this, &MainWindow::lineTriggered);
+    connect(tab, &TabPage::polylineTriggered,
+            this, &MainWindow::polylineTriggered);
+    connect(tab, &TabPage::infiniteLineTriggered,
+            this, &MainWindow::infiniteLineTriggered);
+
+    /// Tools - circle
+    connect(tab, &TabPage::circleByDiameterTriggered,
+            this, &MainWindow::circleByDiameterTriggered);
+    connect(tab, &TabPage::circleTwoPointsTriggered,
+            this, &MainWindow::circleTwoPointsTriggered);
+    connect(tab, &TabPage::ellipseThreePointsTriggered,
+            this, &MainWindow::ellipseThreePointsTriggered);
+
+    /// Tools - arc
+    connect(tab, &TabPage::arcByRadiusTriggered,
+            this, &MainWindow::arcByRadiusTriggered);
+    connect(tab, &TabPage::arcByDiameterTriggered,
+            this, &MainWindow::arcByDiameterTriggered);
+    connect(tab, &TabPage::arcByThreePointsTriggered,
+            this, &MainWindow::arcByThreePointsTriggered);
+
+    /// Tools - settings
+    connect(tab, &TabPage::lineSettingsTriggered,
+            this, &MainWindow::lineSettingsTriggered);
+    connect(tab, &TabPage::circleSettingsTriggered,
+            this, &MainWindow::circleSettingsTriggered);
+    connect(tab, &TabPage::arcSettingsTriggered,
+            this, &MainWindow::arcSettingsTriggered);
+
+    /// Tools - tool
+    connect(tab, &TabPage::cursorTriggered,
+            this, &MainWindow::cursorTriggered);
+    connect(tab, &TabPage::sizeTriggered,
+            this, &MainWindow::sizeTriggered);
+
     tab->show();
 }
 
@@ -173,6 +242,7 @@ void UI::MainWindow::closeEvent(QCloseEvent* event) {
         }
     }
     tabs_.clear();
+    emit closeApplication(projectData_.path);
     FramelessWindow::closeEvent(event);
 }
 
@@ -186,6 +256,7 @@ void UI::MainWindow::createProjectPage() {
     pageStack_->addWidget(projectPage_);
     projectPage_->setDefaultProjectsPath(defaultProjectPath_);
 
+    connect(projectPage_, &ProjectPage::sentCommandTriggered, this, &UI::MainWindow::sentCommandTriggered);
 
     connect(projectPage_, &ProjectPage::goToStartWindowTriggered,
             this, &UI::MainWindow::goToStartWindowTriggered);
@@ -208,6 +279,70 @@ void UI::MainWindow::createProjectPage() {
             this, &UI::MainWindow::openNewWindowOpenProjectTriggered);
     connect(projectPage_, &ProjectPage::openNewWindowCreateProjectTriggered,
             this, &UI::MainWindow::openNewWindowCreateProjectTriggered);
+
+    // Tools - constrains
+    connect(projectPage_, &ProjectPage::pointLineDistanceTriggered,
+            this, &MainWindow::pointLineDistanceTriggered);
+    connect(projectPage_, &ProjectPage::pointOnLineTriggered,
+            this, &MainWindow::pointOnLineTriggered);
+    connect(projectPage_, &ProjectPage::pointPointDistanceTriggered,
+            this, &MainWindow::pointPointDistanceTriggered);
+    connect(projectPage_, &ProjectPage::coincidentPointsTriggered,
+            this, &MainWindow::coincidentPointsTriggered);
+    connect(projectPage_, &ProjectPage::lineCircleDistanceTriggered,
+            this, &MainWindow::lineCircleDistanceTriggered);
+    connect(projectPage_, &ProjectPage::lineOnCircleTriggered,
+            this, &MainWindow::lineOnCircleTriggered);
+    connect(projectPage_, &ProjectPage::lineInCircleTriggered,
+            this, &MainWindow::lineInCircleTriggered);
+    connect(projectPage_, &ProjectPage::parallelLinesTriggered,
+            this, &MainWindow::parallelLinesTriggered);
+    connect(projectPage_, &ProjectPage::perpendicularLinesTriggered,
+            this, &MainWindow::perpendicularLinesTriggered);
+    connect(projectPage_, &ProjectPage::angleBetweenLinesTriggered,
+            this, &MainWindow::angleBetweenLinesTriggered);
+
+    // Tools - point
+    connect(projectPage_, &ProjectPage::pointTriggered,
+            this, &MainWindow::pointTriggered);
+
+    // Tools - line
+    connect(projectPage_, &ProjectPage::lineTriggered,
+            this, &MainWindow::lineTriggered);
+    connect(projectPage_, &ProjectPage::polylineTriggered,
+            this, &MainWindow::polylineTriggered);
+    connect(projectPage_, &ProjectPage::infiniteLineTriggered,
+            this, &MainWindow::infiniteLineTriggered);
+
+    // Tools - circle
+    connect(projectPage_, &ProjectPage::circleByDiameterTriggered,
+            this, &MainWindow::circleByDiameterTriggered);
+    connect(projectPage_, &ProjectPage::circleTwoPointsTriggered,
+            this, &MainWindow::circleTwoPointsTriggered);
+    connect(projectPage_, &ProjectPage::ellipseThreePointsTriggered,
+            this, &MainWindow::ellipseThreePointsTriggered);
+
+    // Tools - arc
+    connect(projectPage_, &ProjectPage::arcByRadiusTriggered,
+            this, &MainWindow::arcByRadiusTriggered);
+    connect(projectPage_, &ProjectPage::arcByDiameterTriggered,
+            this, &MainWindow::arcByDiameterTriggered);
+    connect(projectPage_, &ProjectPage::arcByThreePointsTriggered,
+            this, &MainWindow::arcByThreePointsTriggered);
+
+    // Tools - settings
+    connect(projectPage_, &ProjectPage::lineSettingsTriggered,
+            this, &MainWindow::lineSettingsTriggered);
+    connect(projectPage_, &ProjectPage::circleSettingsTriggered,
+            this, &MainWindow::circleSettingsTriggered);
+    connect(projectPage_, &ProjectPage::arcSettingsTriggered,
+            this, &MainWindow::arcSettingsTriggered);
+
+    // Tools - tool
+    connect(projectPage_, &ProjectPage::cursorTriggered,
+            this, &MainWindow::cursorTriggered);
+    connect(projectPage_, &ProjectPage::sizeTriggered,
+            this, &MainWindow::sizeTriggered);
 }
 
 
