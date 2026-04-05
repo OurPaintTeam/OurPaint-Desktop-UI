@@ -5,12 +5,12 @@
 #include <QPointer>
 #include <algorithm>
 
-#include "CadViewportWindow.h"
 #include "CustomConsole.h"
 #include "MainWindow.h"
 
 #include <QFile>
 #include <qiodevice.h>
+#include <QWindow>
 
 
 void dumpObjectTreeToGraphviz(QObject* root, const QString& filePath) {
@@ -91,7 +91,7 @@ void UI::UIManager::openNewWindowOpenProjectSlot(const UI::MainWindow* window, c
     if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         auto* newWindow = createWindow(nullptr, {data.path, data.id});
         newWindow->onOpenProjectSlot({data.path, data.id});
-        newWindow->setQOpenGLPainter(new CadViewportWindow());
+        window->setQWindowRender(new QWindow());
         newWindow->setCommandConsoleEngine(new CustomConsole());
         for (const auto& t: data.tabs) {
             newWindow->addTabSlot(t);
@@ -112,7 +112,7 @@ void UI::UIManager::openNewWindowCreateProjectSlot(const UI::MainWindow* window,
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         auto* newWindow = createWindow(nullptr, {projectPath, projectId});
         newWindow->onOpenProjectSlot({projectPath, projectId});
-        newWindow->setQOpenGLPainter(new CadViewportWindow());
+        window->setQWindowRender(new QWindow());
         newWindow->setCommandConsoleEngine(new CustomConsole());
         newWindow->addNotification("✨ Project created in new window: " + projectName);
     }
@@ -125,7 +125,7 @@ void UI::UIManager::openProjectThisWindowSlot(UI::MainWindow* window, const QStr
     } else if (UI::FileSystem::ProjectData data;
         fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({data.path, data.id});
-        window->setQOpenGLPainter(new CadViewportWindow());
+        window->setQWindowRender(new QWindow());
         window->setCommandConsoleEngine(new CustomConsole());
         for (const auto& t: data.tabs) {
             window->addTabSlot(t);
@@ -139,7 +139,7 @@ void UI::UIManager::createProjectThisWindowSlot(UI::MainWindow* window, const QS
     const auto projectName = QFileInfo(projectPath).fileName();
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         window->onOpenProjectSlot({projectPath, projectId});
-        window->setQOpenGLPainter(new CadViewportWindow());
+        window->setQWindowRender(new QWindow());
         window->setCommandConsoleEngine(new CustomConsole());
         window->addNotification("✨ Project created: " + projectName);
     } else {

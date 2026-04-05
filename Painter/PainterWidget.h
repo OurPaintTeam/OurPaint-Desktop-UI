@@ -13,6 +13,7 @@ namespace UI {
     public:
         explicit PainterWidget(QWidget* parent = nullptr);
         void setQOpenGL(QOpenGLWindow* renderWindow);
+        void setQWindowRender(QWindow* renderWindow);
 
     private:
         QVBoxLayout* layout_{nullptr};

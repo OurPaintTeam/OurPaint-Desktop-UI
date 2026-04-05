@@ -67,6 +67,11 @@ void UI::MainWindow::setQOpenGLPainter(QOpenGLWindow* engine) const {
 }
 
 
+void UI::MainWindow::setQWindowRender(QWindow* engine) const {
+    projectPage_->setQWindowRender(engine);
+}
+
+
 void UI::MainWindow::setCommandConsoleEngine(QLineEdit* engine) const {
     projectPage_->setCommandConsoleEngine(engine);
 }

@@ -41,6 +41,7 @@ namespace UI {
         void addNotification(const QString& text) const;
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
+        void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
 
     signals:

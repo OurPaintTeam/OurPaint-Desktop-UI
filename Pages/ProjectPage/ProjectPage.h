@@ -28,6 +28,7 @@ namespace UI {
         explicit ProjectPage(QWidget* parent = nullptr);
         ~ProjectPage() override = default;
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
+        void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
         void setDefaultProjectsPath(const QString& projectPath);
     signals:

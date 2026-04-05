@@ -11,12 +11,6 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL)
 
 
-set(GLAD_DIR "${CMAKE_SOURCE_DIR}/glad")
-
-add_library(glad STATIC
-        "${GLAD_DIR}/glad.c"
-)
-target_include_directories(glad PUBLIC "${GLAD_DIR}")
 
 # ---------- Core ----------
 set(CORE
@@ -143,10 +137,7 @@ set(PAINTER
         Painter/PainterWidget.h
 )
 
-set(QOPENGL
-        Painter/QOpenGL/CadViewportWindow.cc
-        Painter/QOpenGL/OpenGLRenderer.cc
-)
+
 
 set(Resources
         resources.qrc
@@ -165,7 +156,6 @@ set(Resources
 add_executable(OurPaint-Desktop-UI
         main.cc
         ${COMMAND_CONSOLE}
-        ${QOPENGL}
         ${PAINTER}
         ${CORE}
         ${WIDGETS}
@@ -203,7 +193,6 @@ target_include_directories(OurPaint-Desktop-UI PRIVATE
 target_link_libraries(OurPaint-Desktop-UI PRIVATE
         Qt6::Widgets
         dwmapi
-        glad
         Qt6::Core
         Qt6::OpenGLWidgets
         Qt6::OpenGL
