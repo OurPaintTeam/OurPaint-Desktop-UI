@@ -85,60 +85,15 @@ void UI::ProjectPage::setupConnections() {
     connect(messengerButton_, &QPushButton::clicked, this, &UI::ProjectPage::openMessengerPanel);
 
     /// Tools - constrains
-    connect(toolBar_, &ToolBar::pointLineDistanceTriggered,
-            this, &UI::ProjectPage::pointLineDistanceTriggered);
+    connect(toolBar_, &ToolBar::primitiveTriggered,
+            this, &UI::ProjectPage::primitiveTriggered);
 
-    connect(toolBar_, &ToolBar::pointOnLineTriggered,
-            this, &UI::ProjectPage::pointOnLineTriggered);
+    connect(toolBar_, &ToolBar::constraintTriggered,
+            this, &UI::ProjectPage::constraintTriggered);
 
-    connect(toolBar_, &ToolBar::pointPointDistanceTriggered,
-            this, &UI::ProjectPage::pointPointDistanceTriggered);
+    connect(toolBar_, &ToolBar::toolsTriggered,
+            this, &UI::ProjectPage::toolsTriggered);
 
-    connect(toolBar_, &ToolBar::coincidentPointsTriggered,
-            this, &UI::ProjectPage::coincidentPointsTriggered);
-
-    connect(toolBar_, &ToolBar::lineCircleDistanceTriggered,
-            this, &UI::ProjectPage::lineCircleDistanceTriggered);
-
-    connect(toolBar_, &ToolBar::lineOnCircleTriggered,
-            this, &UI::ProjectPage::lineOnCircleTriggered);
-
-    connect(toolBar_, &ToolBar::lineInCircleTriggered,
-            this, &UI::ProjectPage::lineInCircleTriggered);
-
-    connect(toolBar_, &ToolBar::parallelLinesTriggered,
-            this, &UI::ProjectPage::parallelLinesTriggered);
-
-    connect(toolBar_, &ToolBar::perpendicularLinesTriggered,
-            this, &UI::ProjectPage::perpendicularLinesTriggered);
-
-    connect(toolBar_, &ToolBar::angleBetweenLinesTriggered,
-            this, &UI::ProjectPage::angleBetweenLinesTriggered);
-
-    /// Tools - point
-    connect(toolBar_, &ToolBar::pointTriggered, this, &UI::ProjectPage::pointTriggered);
-    connect(toolBar_, &ToolBar::lineTriggered, this, &UI::ProjectPage::lineTriggered);
-    connect(toolBar_, &ToolBar::polylineTriggered, this, &UI::ProjectPage::polylineTriggered);
-    connect(toolBar_, &ToolBar::infiniteLineTriggered, this, &UI::ProjectPage::infiniteLineTriggered);
-
-    /// Tools - circle
-    connect(toolBar_, &ToolBar::circleByDiameterTriggered, this, &UI::ProjectPage::circleByDiameterTriggered);
-    connect(toolBar_, &ToolBar::circleTwoPointsTriggered, this, &UI::ProjectPage::circleTwoPointsTriggered);
-    connect(toolBar_, &ToolBar::ellipseThreePointsTriggered, this, &UI::ProjectPage::ellipseThreePointsTriggered);
-
-    /// Tools - arc
-    connect(toolBar_, &ToolBar::arcByRadiusTriggered, this, &UI::ProjectPage::arcByRadiusTriggered);
-    connect(toolBar_, &ToolBar::arcByDiameterTriggered, this, &UI::ProjectPage::arcByDiameterTriggered);
-    connect(toolBar_, &ToolBar::arcByThreePointsTriggered, this, &UI::ProjectPage::arcByThreePointsTriggered);
-
-    /// Tools - line/circle/arc settings
-    connect(toolBar_, &ToolBar::lineSettingsTriggered, this, &UI::ProjectPage::lineSettingsTriggered);
-    connect(toolBar_, &ToolBar::circleSettingsTriggered, this, &UI::ProjectPage::circleSettingsTriggered);
-    connect(toolBar_, &ToolBar::arcSettingsTriggered, this, &UI::ProjectPage::arcSettingsTriggered);
-
-    /// Tools - cursor/size
-    connect(toolBar_, &ToolBar::cursorTriggered, this, &UI::ProjectPage::cursorTriggered);
-    connect(toolBar_, &ToolBar::sizeTriggered, this, &UI::ProjectPage::sizeTriggered);
 
     // TopBar - Project
     connect(topBar_, &TopBarProject::createFileTriggered,
@@ -347,7 +302,7 @@ void UI::ProjectPage::openMessengerPanel() const {
 
 
 void UI::ProjectPage::onCreateProjectSlot() {
-    auto* prompt = new PathInputWidget("Project Path:",this);
+    auto* prompt = new PathInputWidget("Project Path:", this);
     prompt->setCheckBoxQuestion("New Window");
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
@@ -372,7 +327,7 @@ void UI::ProjectPage::onCreateProjectSlot() {
 
 
 void UI::ProjectPage::onOpenProjectSlot() {
-    auto* prompt = new PathInputWidget("Project Path:",this);
+    auto* prompt = new PathInputWidget("Project Path:", this);
     prompt->setCheckBoxQuestion("New Window");
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();

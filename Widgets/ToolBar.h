@@ -10,6 +10,9 @@ class QWheelEvent;
 
 
 namespace UI {
+    enum class ToolsType;
+    enum class ConstraintType;
+    enum class PrimitiveType;
     class MenuButton;
 } // namespace UI
 
@@ -31,36 +34,9 @@ namespace UI {
         void hideAllElements();
 
     signals:
-        void pointLineDistanceTriggered();
-        void pointOnLineTriggered();
-        void pointPointDistanceTriggered();
-        void coincidentPointsTriggered();
-        void lineCircleDistanceTriggered();
-        void lineOnCircleTriggered();
-        void lineInCircleTriggered();
-        void parallelLinesTriggered();
-        void perpendicularLinesTriggered();
-        void angleBetweenLinesTriggered();
-
-        void pointTriggered();
-        void lineTriggered();
-        void polylineTriggered();
-        void infiniteLineTriggered();
-
-        void circleByDiameterTriggered();
-        void circleTwoPointsTriggered();
-        void ellipseThreePointsTriggered();
-
-        void arcByRadiusTriggered();
-        void arcByDiameterTriggered();
-        void arcByThreePointsTriggered();
-
-        void lineSettingsTriggered();
-        void circleSettingsTriggered();
-        void arcSettingsTriggered();
-
-        void cursorTriggered();
-        void sizeTriggered();
+        void primitiveTriggered(PrimitiveType& type);
+        void constraintTriggered(ConstraintType& type);
+        void toolsTriggered(ToolsType& type);
 
     protected:
         void wheelEvent(QWheelEvent* event) override;

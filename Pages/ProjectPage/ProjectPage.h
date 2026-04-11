@@ -11,6 +11,9 @@ class QVBoxLayout;
 class QHBoxLayout;
 
 namespace UI {
+    enum class ToolsType;
+    enum class ConstraintType;
+    enum class PrimitiveType;
     class TopBarProject;
     class TabBar;
     class ToolBar;
@@ -53,44 +56,9 @@ namespace UI {
         void createProjectTriggered();
         void closeApplicationTriggered();
 
-        /// Tools - constrains
-        void pointLineDistanceTriggered();
-        void pointOnLineTriggered();
-        void pointPointDistanceTriggered();
-        void coincidentPointsTriggered();
-        void lineCircleDistanceTriggered();
-        void lineOnCircleTriggered();
-        void lineInCircleTriggered();
-        void parallelLinesTriggered();
-        void perpendicularLinesTriggered();
-        void angleBetweenLinesTriggered();
-
-        /// Tools - point
-        void pointTriggered();
-
-        /// Tools - line
-        void lineTriggered();
-        void polylineTriggered();
-        void infiniteLineTriggered();
-
-        /// Tools - circle
-        void circleByDiameterTriggered();
-        void circleTwoPointsTriggered();
-        void ellipseThreePointsTriggered();
-
-        /// Tools - arc
-        void arcByRadiusTriggered();
-        void arcByDiameterTriggered();
-        void arcByThreePointsTriggered();
-
-        /// Tools - settings
-        void lineSettingsTriggered();
-        void circleSettingsTriggered();
-        void arcSettingsTriggered();
-
-        /// Tools - tool
-        void cursorTriggered();
-        void sizeTriggered();
+        void primitiveTriggered(PrimitiveType& type);
+        void constraintTriggered(ConstraintType& type);
+        void toolsTriggered(ToolsType& type);
 
         /// TopBar - Project
         void openProjectTriggered();

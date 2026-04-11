@@ -32,32 +32,9 @@ namespace UI {
         void deleteProjectSlot(UI::MainWindow* window, const QString& path) const;
         void deleteSlot(UI::MainWindow* window);
 
-        // Tools
-        void LineSlot(const UI::MainWindow* window);
-        void PointSlot(const UI::MainWindow* window);
-        void PolylineSlot(const UI::MainWindow* window);
-        void InfiniteLineSlot(const UI::MainWindow* window);
-        void CircleByDiameterSlot(const UI::MainWindow* window);
-        void CircleTwoPointsSlot(const UI::MainWindow* window);
-        void EllipseThreePointsSlot(const UI::MainWindow* window);
-        void ArcByRadiusSlot(const UI::MainWindow* window);
-        void ArcByDiameterSlot(const UI::MainWindow* window);
-        void ArcByThreePointsSlot(const UI::MainWindow* window);
-        void LineSettingsSlot(const UI::MainWindow* window);
-        void CircleSettingsSlot(const UI::MainWindow* window);
-        void ArcSettingsSlot(const UI::MainWindow* window);
-        void CursorSlot(const UI::MainWindow* window);
-        void SizeSlot(const UI::MainWindow* window);
-        void PointLineDistanceSlot(const UI::MainWindow* window);
-        void PointOnLineSlot(const UI::MainWindow* window);
-        void PointPointDistanceSlot(const UI::MainWindow* window);
-        void CoincidentPointsSlot(const UI::MainWindow* window);
-        void LineCircleDistanceSlot(const UI::MainWindow* window);
-        void LineOnCircleSlot(const UI::MainWindow* window);
-        void LineInCircleSlot(const UI::MainWindow* window);
-        void ParallelLinesSlot(const UI::MainWindow* window);
-        void PerpendicularLinesSlot(const UI::MainWindow* window);
-        void AngleBetweenLinesSlot(const UI::MainWindow* window);
+        void primitiveSlot(const UI::MainWindow* window, PrimitiveType& type);
+        void constraintSlot(const UI::MainWindow* window, ConstraintType& type);
+        void toolsSlot(const UI::MainWindow* window, ToolsType& type);
 
         UI::MainWindow* createWindow(UI::MainWindow* parent, const UI::MainWindow::ProjectData& projectData);
         void initSignals(UI::MainWindow& window);

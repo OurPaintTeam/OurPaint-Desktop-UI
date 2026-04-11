@@ -11,6 +11,8 @@ namespace UI {
 
 
     enum class PrimitiveType {
+        Point,
+
         Line,
         Polyline,
         InfiniteLine,
@@ -39,6 +41,12 @@ namespace UI {
         ParallelLines,
         PerpendicularLines,
         AngleBetweenLines
+    };
+
+
+    enum class ToolsType {
+        Cursor,
+        Size
     };
 } // namespace UI
 

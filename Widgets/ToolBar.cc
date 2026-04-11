@@ -70,54 +70,8 @@ void UI::ToolBar::handlePrimitiveActionSlot(const QAction* action) {
         return;
     }
 
-    switch (action->data().value<PrimitiveType>()) {
-        case PrimitiveType::Line:
-            emit lineTriggered();
-            break;
-
-        case PrimitiveType::Polyline:
-            emit polylineTriggered();
-            break;
-
-        case PrimitiveType::InfiniteLine:
-            emit infiniteLineTriggered();
-            break;
-        case PrimitiveType::LineSettings:
-            emit lineSettingsTriggered();
-            break;
-
-        case PrimitiveType::CircleByDiameter:
-            emit circleByDiameterTriggered();
-            break;
-
-        case PrimitiveType::CircleTwoPoints:
-            emit circleTwoPointsTriggered();
-            break;
-
-        case PrimitiveType::EllipseThreePoints:
-            emit ellipseThreePointsTriggered();
-            break;
-        case PrimitiveType::CircleSettings:
-            emit circleSettingsTriggered();
-            break;
-
-
-        case PrimitiveType::ArcByRadius:
-            emit arcByRadiusTriggered();
-            break;
-
-        case PrimitiveType::ArcByDiameter:
-            emit arcByDiameterTriggered();
-            break;
-
-        case PrimitiveType::ArcThreePoints:
-            emit arcByThreePointsTriggered();
-            break;
-        case PrimitiveType::ArcSettings:
-            emit arcSettingsTriggered();
-            break;
-        default: break;
-    }
+    auto type = action->data().value<PrimitiveType>();
+    emit primitiveTriggered(type);
 }
 
 
@@ -195,34 +149,70 @@ void UI::ToolBar::initSignals() {
     constraints_ = {
         {
             ":/Assets/icons/constraints/pointLineDist.svg", "Point – Line Distance",
-            [this] { emit pointLineDistanceTriggered(); }
+            [this] {
+                auto type = ConstraintType::PointLineDistance;
+                emit constraintTriggered(type);
+            }
         },
-        {":/Assets/icons/constraints/pointOnLine.svg", "Point on Line", [this] { emit pointOnLineTriggered(); }},
+        {
+            ":/Assets/icons/constraints/pointOnLine.svg", "Point on Line", [this] {
+                auto type = ConstraintType::PointOnLine;
+                emit constraintTriggered(type);
+            }
+        },
         {
             ":/Assets/icons/constraints/pointPointDist.svg", "Point – Point Distance",
-            [this] { emit pointPointDistanceTriggered(); }
+            [this] {
+                auto type = ConstraintType::PointPointDistance;
+                emit constraintTriggered(type);
+            }
         },
         {
             ":/Assets/icons/constraints/pointOnPoint.svg", "Coincident Points",
-            [this] { emit coincidentPointsTriggered(); }
+            [this] {
+                auto type = ConstraintType::CoincidentPoints;
+                emit constraintTriggered(type);
+            }
         },
         {
             ":/Assets/icons/constraints/lineCircleDist.svg", "Line – Circle Distance",
-            [this] { emit lineCircleDistanceTriggered(); }
+            [this] {
+                auto type = ConstraintType::LineCircleDistance;
+                emit constraintTriggered(type);
+            }
         },
-        {":/Assets/icons/constraints/lineOnCircle.svg", "Line on Circle", [this] { emit lineOnCircleTriggered(); }},
-        {":/Assets/icons/constraints/lineInCircle.svg", "Line Inside Circle", [this] { emit lineInCircleTriggered(); }},
+        {
+            ":/Assets/icons/constraints/lineOnCircle.svg", "Line on Circle", [this] {
+                auto type = ConstraintType::LineOnCircle;
+                emit constraintTriggered(type);
+            }
+        },
+        {
+            ":/Assets/icons/constraints/lineInCircle.svg", "Line Inside Circle", [this] {
+                auto type = ConstraintType::LineInCircle;
+                emit constraintTriggered(type);
+            }
+        },
         {
             ":/Assets/icons/constraints/lineLineParallel.svg", "Parallel Lines",
-            [this] { emit parallelLinesTriggered(); }
+            [this] {
+                auto type = ConstraintType::ParallelLines;
+                emit constraintTriggered(type);
+            }
         },
         {
             ":/Assets/icons/constraints/lineLinePerpendicular.svg", "Perpendicular Lines",
-            [this] { emit perpendicularLinesTriggered(); }
+            [this] {
+                auto type = ConstraintType::PerpendicularLines;
+                emit constraintTriggered(type);
+            }
         },
         {
             ":/Assets/icons/constraints/lineLineAngle.svg", "Angle Between Lines",
-            [this] { emit angleBetweenLinesTriggered(); }
+            [this] {
+                auto type = ConstraintType::AngleBetweenLines;
+                emit constraintTriggered(type);
+            }
         }
     };
 
@@ -257,8 +247,19 @@ void UI::ToolBar::initSignals() {
             this, &ToolBar::handlePrimitiveActionSlot);
 
 
-    connect(pointPrimitive_, &QPushButton::clicked, this, &ToolBar::pointTriggered);
+    connect(pointPrimitive_, &QPushButton::clicked, this, [this]() {
+        auto type = PrimitiveType::Point;
+        emit primitiveTriggered(type);
+    });
 
-    connect(cursorTool_, &QPushButton::clicked, this, &ToolBar::cursorTriggered);
-    connect(sizeTool_, &QPushButton::clicked, this, &ToolBar::sizeTriggered);
+
+    connect(cursorTool_, &QPushButton::clicked, this, [this]() {
+        auto type = ToolsType::Cursor;
+        emit toolsTriggered(type);
+    });
+
+    connect(sizeTool_, &QPushButton::clicked, this, [this]() {
+        auto type = ToolsType::Size;
+        emit toolsTriggered(type);
+    });
 }

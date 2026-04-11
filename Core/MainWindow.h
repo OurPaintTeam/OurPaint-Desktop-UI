@@ -12,6 +12,9 @@ class QCloseEvent;
 class QString;
 
 namespace UI {
+    enum class ToolsType;
+    enum class ConstraintType;
+    enum class PrimitiveType;
     class NotificationContainer;
     class PainterWidget;
     class StartPage;
@@ -65,44 +68,10 @@ namespace UI {
         /// Console
         void sentCommandTriggered(const QString& command);
 
-        /// Tools - constrains
-        void pointLineDistanceTriggered();
-        void pointOnLineTriggered();
-        void pointPointDistanceTriggered();
-        void coincidentPointsTriggered();
-        void lineCircleDistanceTriggered();
-        void lineOnCircleTriggered();
-        void lineInCircleTriggered();
-        void parallelLinesTriggered();
-        void perpendicularLinesTriggered();
-        void angleBetweenLinesTriggered();
+        void primitiveTriggered(PrimitiveType& type);
+        void constraintTriggered(ConstraintType& type);
+        void toolsTriggered(ToolsType& type);
 
-        /// Tools - point
-        void pointTriggered();
-
-        /// Tools - line
-        void lineTriggered();
-        void polylineTriggered();
-        void infiniteLineTriggered();
-
-        /// Tools - circle
-        void circleByDiameterTriggered();
-        void circleTwoPointsTriggered();
-        void ellipseThreePointsTriggered();
-
-        /// Tools - arc
-        void arcByRadiusTriggered();
-        void arcByDiameterTriggered();
-        void arcByThreePointsTriggered();
-
-        /// Tools - settings
-        void lineSettingsTriggered();
-        void circleSettingsTriggered();
-        void arcSettingsTriggered();
-
-        /// Tools - tool
-        void cursorTriggered();
-        void sizeTriggered();
     public slots:
         void onStartWindowSlot();
 
