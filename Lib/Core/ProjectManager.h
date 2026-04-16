@@ -2,7 +2,6 @@
 #define OURPAINT_DESKTOP_UI_PROJECTMANAGER_H
 
 #include <QObject>
-#include <QPair>
 #include <QString>
 #include <QVector>
 

@@ -3,7 +3,6 @@
 
 #include <QBackingStore>
 
-namespace UI {
 
     class RenderEngine : public QWindow {
         Q_OBJECT
@@ -25,6 +24,5 @@ namespace UI {
         QBackingStore backingStore_;
     };
 
-}
 
 #endif

@@ -7,7 +7,6 @@
 class QLineEdit;
 class QWindow;
 
-namespace UI {
     class UIManager final : public QObject {
         Q_OBJECT
 
@@ -35,9 +34,9 @@ namespace UI {
         void deleteProjectSlot(UI::ProjectManager* manager, const QString& path) const;
         void deleteSlot(UI::ProjectManager* manager);
 
-        void primitiveSlot(UI::ProjectManager* manager, PrimitiveType& type);
-        void constraintSlot(UI::ProjectManager* manager, ConstraintType& type);
-        void toolsSlot(UI::ProjectManager* manager, ToolsType& type);
+        void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type);
+        void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type);
+        void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type);
 
         UI::ProjectManager* createProjectManager(const UI::ProjectManager::ProjectData& projectData = {});
         UI::ProjectManager* createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
@@ -45,6 +44,5 @@ namespace UI {
                                                         QLineEdit* consoleEngine);
         void initSignals(UI::ProjectManager& manager);
     };
-} // namespace UI
 
 #endif //OURPAINT_DESKTOP_UI_UIMANAGER_H

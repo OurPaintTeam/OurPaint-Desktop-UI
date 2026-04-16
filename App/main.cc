@@ -5,6 +5,7 @@
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
-    new UI::UIManager();
+    Q_INIT_RESOURCE(resources);
+    new UIManager();
     return QApplication::exec();
 }
