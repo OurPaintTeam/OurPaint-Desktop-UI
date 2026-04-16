@@ -10,27 +10,12 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL)
 
-
-
-# ---------- Core ----------
 set(CORE
         Core/ProjectManager.cc
         Core/ProjectManager.h
         Core/ToolsType.h
-        Core/UIManager.cc
-        Core/UIManager.h
-        Core/RenderEngine.cc
-        Core/RenderEngine.h
 )
 
-set(COMMAND_CONSOLE
-        CommandConsole/CommandConsole.cc
-        CommandConsole/CommandConsole.h
-        CommandConsole/CustomConsole.cc
-        CommandConsole/CustomConsole.h
-)
-
-# ---------- Widgets ----------
 set(WIDGETS
         Widgets/CentralWidget.cc
         Widgets/CentralWidget.h
@@ -50,9 +35,10 @@ set(WIDGETS
         Widgets/NotificationWidget.h
         Widgets/PainterWidget.cc
         Widgets/PainterWidget.h
+        Widgets/CommandConsole.cc
+        Widgets/CommandConsole.h
 )
 
-# ---------- Panels ----------
 set(PANELS
         Panels/MessengerPanel.cc
         Panels/MessengerPanel.h
@@ -60,7 +46,6 @@ set(PANELS
         Panels/InformationPanel.h
 )
 
-# ---------- Menus ----------
 set(MENUS
         Menus/MenuButton.cc
         Menus/MenuButton.h
@@ -80,7 +65,6 @@ set(MENUS
         Menus/LineMenu.h
 )
 
-# ---------- Controls ----------
 set(DRAG
         DragDrop/RotatedLabel.cc
         DragDrop/RotatedLabel.h
@@ -90,7 +74,6 @@ set(DRAG
         DragDrop/SlotWidget.h
         DragDrop/ContainerWidget.cc
 )
-
 
 set(WINDOWS
         Windows/BaseEditorTopBar.cc
@@ -107,7 +90,6 @@ set(WINDOWS
         Windows/BasePage.h
 )
 
-# ---------- UI ----------
 set(UI_START
         Windows/StartWindow/StartWindow.cc
         Windows/StartWindow/StartWindow.h
@@ -164,21 +146,17 @@ set(FILE_SYSTEM
         FileSystem/FileSystem.h
 )
 
-
 set(Resources
-        resources.qrc
+        Styles/resources.qrc
 )
 
-add_executable(OurPaint-Desktop-UI
-        main.cc
-        ${WINDOWS}
-        ${COMMAND_CONSOLE}
-        ${PAINTER}
+add_library(ourpaint_ui STATIC
         ${CORE}
         ${WIDGETS}
         ${PANELS}
         ${MENUS}
         ${DRAG}
+        ${WINDOWS}
         ${UI_START}
         ${UI_PROJECT}
         ${UI_TAB}
@@ -187,7 +165,7 @@ add_executable(OurPaint-Desktop-UI
         ${Resources}
 )
 
-target_include_directories(OurPaint-Desktop-UI PRIVATE
+target_include_directories(ourpaint_ui PUBLIC
         .
         Core
         CommandConsole
@@ -203,13 +181,10 @@ target_include_directories(OurPaint-Desktop-UI PRIVATE
         Windows/TabWindow
 )
 
-
-
-
-target_link_libraries(OurPaint-Desktop-UI PRIVATE
-        Qt6::Widgets
-        dwmapi
+target_link_libraries(ourpaint_ui PUBLIC
         Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
         Qt6::OpenGLWidgets
         Qt6::OpenGL
 )

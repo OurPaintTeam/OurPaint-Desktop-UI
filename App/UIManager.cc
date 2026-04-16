@@ -1,7 +1,6 @@
 #include "UIManager.h"
 
 #include <QFileInfo>
-#include <QWindow>
 #include <algorithm>
 
 #include "CustomConsole.h"

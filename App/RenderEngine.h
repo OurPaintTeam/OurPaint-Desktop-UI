@@ -1,7 +1,6 @@
 #ifndef OURPAINT_DESKTOP_UI_RENDERENGINE_H
 #define OURPAINT_DESKTOP_UI_RENDERENGINE_H
 
-#include <QWindow>
 #include <QBackingStore>
 
 namespace UI {
