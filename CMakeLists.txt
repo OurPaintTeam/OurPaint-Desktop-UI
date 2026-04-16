@@ -14,11 +14,13 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL)
 
 # ---------- Core ----------
 set(CORE
-        Core/MainWindow.cc
-        Core/MainWindow.h
-        Core/FramelessWindow.cc
-        Core/FramelessWindow.h
+        Core/ProjectManager.cc
+        Core/ProjectManager.h
         Core/ToolsType.h
+        Core/UIManager.cc
+        Core/UIManager.h
+        Core/RenderEngine.cc
+        Core/RenderEngine.h
 )
 
 set(COMMAND_CONSOLE
@@ -46,6 +48,8 @@ set(WIDGETS
         Widgets/NotificationContainer.h
         Widgets/NotificationWidget.cc
         Widgets/NotificationWidget.h
+        Widgets/PainterWidget.cc
+        Widgets/PainterWidget.h
 )
 
 # ---------- Panels ----------
@@ -87,64 +91,66 @@ set(DRAG
         DragDrop/ContainerWidget.cc
 )
 
+
+set(WINDOWS
+        Windows/BaseEditorTopBar.cc
+        Windows/BaseEditorTopBar.h
+        Windows/BaseWindow.cc
+        Windows/BaseWindow.h
+        Windows/BaseEditorWindow.cc
+        Windows/BaseEditorWindow.h
+        Windows/FramelessWindow.cc
+        Windows/FramelessWindow.h
+        Windows/BaseEditorPage.cc
+        Windows/BaseEditorPage.h
+        Windows/BasePage.cc
+        Windows/BasePage.h
+)
+
 # ---------- UI ----------
 set(UI_START
-        Pages/StartPage/StartPage.cc
-        Pages/StartPage/StartPage.h
-        Pages/StartPage/TopBarStart.cc
-        Pages/StartPage/TopBarStart.h
-        Pages/StartPage/AnimationArea.cc
-        Pages/StartPage/AnimationArea.h
-        Pages/StartPage/ProjectsListWidget.cc
-        Pages/StartPage/ProjectsListWidget.h
-        Pages/StartPage/AnimationWidget.cc
-        Pages/StartPage/AnimationWidget.h
-        Pages/StartPage/ProjectButton.cc
-        Pages/StartPage/ProjectButton.h
+        Windows/StartWindow/StartWindow.cc
+        Windows/StartWindow/StartWindow.h
+        Windows/StartWindow/StartPage.cc
+        Windows/StartWindow/StartPage.h
+        Windows/StartWindow/TopBarStart.cc
+        Windows/StartWindow/TopBarStart.h
+        Windows/StartWindow/AnimationArea.cc
+        Windows/StartWindow/AnimationArea.h
+        Windows/StartWindow/ProjectsListWidget.cc
+        Windows/StartWindow/ProjectsListWidget.h
+        Windows/StartWindow/AnimationWidget.cc
+        Windows/StartWindow/AnimationWidget.h
+        Windows/StartWindow/ProjectButton.cc
+        Windows/StartWindow/ProjectButton.h
 )
 
 set(UI_PROJECT
-        Pages/ProjectPage/ProjectPage.cc
-        Pages/ProjectPage/ProjectPage.h
-        Pages/ProjectPage/TopBarProject.cc
-        Pages/ProjectPage/TopBarProject.h
-        Pages/ProjectPage/TabWidget.cc
-        Pages/ProjectPage/TabWidget.h
-        Pages/ProjectPage/TabBar.cc
-        Pages/ProjectPage/TabBar.h
-        Pages/ProjectPage/NavigationWidget.cc
+        Windows/ProjectWindow/ProjectWindow.cc
+        Windows/ProjectWindow/ProjectWindow.h
+        Windows/ProjectWindow/ProjectPage.cc
+        Windows/ProjectWindow/ProjectPage.h
+        Windows/ProjectWindow/TopBarProject.cc
+        Windows/ProjectWindow/TopBarProject.h
+        Windows/ProjectWindow/TabWidget.cc
+        Windows/ProjectWindow/TabWidget.h
+        Windows/ProjectWindow/TabBar.cc
+        Windows/ProjectWindow/TabBar.h
+        Windows/ProjectWindow/NavigationWidget.cc
 )
 
 set(UI_TAB
-        Pages/TabPage/TabPage.cc
-        Pages/TabPage/TabPage.h
-        Pages/TabPage/TopBarTab.cc
-        Pages/TabPage/TopBarTab.h
+        Windows/TabWindow/TabWindow.cc
+        Windows/TabWindow/TabWindow.h
+        Windows/TabWindow/TabPage.cc
+        Windows/TabWindow/TabPage.h
+        Windows/TabWindow/TopBarTab.cc
+        Windows/TabWindow/TopBarTab.h
 )
 
 set(POP_UP
         PopUp/InputWidget.cc
         PopUp/InputWidget.h
-)
-
-set(FILE_SYSTEM
-        FileSystem/FileSystem.cc
-        FileSystem/FileSystem.h
-)
-
-set(PAINTER
-        Painter/PainterWidget.cc
-        Painter/PainterWidget.h
-)
-
-
-
-set(Resources
-        resources.qrc
-        Core/UIManager.cc
-        Core/UIManager.h
-        CommandConsole/CustomConsole.cc
-        CommandConsole/CustomConsole.h
         PopUp/ParameterInputWidget.cc
         PopUp/ParameterInputWidget.h
         PopUp/NameInputWidget.cc
@@ -153,8 +159,19 @@ set(Resources
         PopUp/PathInputWidget.h
 )
 
+set(FILE_SYSTEM
+        FileSystem/FileSystem.cc
+        FileSystem/FileSystem.h
+)
+
+
+set(Resources
+        resources.qrc
+)
+
 add_executable(OurPaint-Desktop-UI
         main.cc
+        ${WINDOWS}
         ${COMMAND_CONSOLE}
         ${PAINTER}
         ${CORE}
@@ -180,11 +197,10 @@ target_include_directories(OurPaint-Desktop-UI PRIVATE
         DragDrop
         PopUp
         FileSystem
-        Painter
-        Painter/QOpenGL
-        Pages/StartPage
-        Pages/ProjectPage
-        Pages/TabPage
+        Windows
+        Windows/StartWindow
+        Windows/ProjectWindow
+        Windows/TabWindow
 )
 
 

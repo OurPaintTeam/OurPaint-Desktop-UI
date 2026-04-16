@@ -3,15 +3,14 @@
 
 #include <QLabel>
 
-#include "TopBar.h"
+#include "../BaseEditorTopBar.h"
 
 namespace UI {
-    class CommandConsole;
     class SideTool;
 
 
     // Top bar for detached Tab
-    class TopBarTab final : public TopBar {
+    class TopBarTab final : public BaseEditorTopBar {
         Q_OBJECT
 
     public:
@@ -20,18 +19,11 @@ namespace UI {
 
         void setLeftTool(SideTool* tool);
         void setRightTool(SideTool* tool);
-        void setCommandConsole(CommandConsole* console);
+        void setConsole(QWidget* console);
 
     private:
         // UI elements
         QLabel* title_{nullptr};
-        SideTool* leftTool_{nullptr};
-        SideTool* rightTool_{nullptr};
-        CommandConsole* commandConsole_{nullptr};
-
-        QPushButton* btnLeft_{nullptr};
-        QPushButton* btnRight_{nullptr};
-        QPushButton* btnConsole_{nullptr};
 
         void createTabWidgets();
     };

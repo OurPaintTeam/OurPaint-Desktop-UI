@@ -1,7 +1,7 @@
 #ifndef OURPAINT_DESKTOP_UI_STARTPAGE_H
 #define OURPAINT_DESKTOP_UI_STARTPAGE_H
 
-#include <QWidget>
+#include "../BasePage.h"
 
 class QHBoxLayout;
 class QVBoxLayout;
@@ -13,7 +13,7 @@ namespace UI {
 
 
     // Landing page with recent projects.
-    class StartPage final : public QWidget {
+    class StartPage final : public BasePage {
         Q_OBJECT
 
     public:
@@ -37,8 +37,6 @@ namespace UI {
         ProjectsListWidget* projectsListWidget_{nullptr};
         AnimationArea* animationArea_{nullptr};
 
-        QVBoxLayout* mainLayout_{nullptr};
-        QWidget* mainArea_{nullptr};
         QHBoxLayout* contentLayout_{nullptr};
 
         QString defaultProjectsPath_;

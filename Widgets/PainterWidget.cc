@@ -1,5 +1,6 @@
 #include "PainterWidget.h"
 
+#include <QMainWindow>
 #include <QOpenGLWindow>
 #include <QVBoxLayout>
 
@@ -31,6 +32,10 @@ void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
     layout_->addWidget(renderWidget);
+
+    connect(renderWidget, &QObject::destroyed, this, [renderWindow]() {
+        renderWindow->deleteLater();
+    });
 }
 
 
@@ -38,4 +43,8 @@ void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
     layout_->addWidget(renderWidget);
+
+    connect(renderWidget, &QObject::destroyed, this, [renderWindow]() {
+        renderWindow->deleteLater();
+    });
 }

@@ -6,14 +6,13 @@
 #include "TopBarStart.h"
 
 #include <QFileDialog>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include "PathInputWidget.h"
 
 
 UI::StartPage::StartPage(QWidget* parent)
-    : QWidget(parent) {
-    setAttribute(Qt::WA_StyledBackground, true);
+    : BasePage(parent) {
     setObjectName("StartPage");
     initUI();
     connect(projectsListWidget_, &ProjectsListWidget::pressProjectTriggered, this,
@@ -76,8 +75,7 @@ void UI::StartPage::onCreateProjectSlot() {
 
 
 void UI::StartPage::initUI() {
-    mainLayout_ = new QVBoxLayout(this);
-    mainArea_ = new QWidget(this);
+    initBasePage();
     contentLayout_ = new QHBoxLayout(mainArea_);
 
     topBar_ = new TopBarStart(this);
@@ -85,14 +83,10 @@ void UI::StartPage::initUI() {
     projectsListWidget_ = new ProjectsListWidget(mainArea_);
     animationArea_ = new AnimationArea(mainArea_);
 
-    mainLayout_->setContentsMargins(0, 0, 0, 0);
-    mainLayout_->setSpacing(0);
-
     contentLayout_->setContentsMargins(0, 0, 0, 0);
     contentLayout_->setSpacing(0);
 
-    mainLayout_->addWidget(topBar_);
-    mainLayout_->addWidget(mainArea_);
+    mainLayout_->insertWidget(0, topBar_);
 
     contentLayout_->addWidget(projectsListWidget_);
     contentLayout_->addWidget(animationArea_, 1);

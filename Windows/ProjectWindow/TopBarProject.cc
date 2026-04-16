@@ -1,7 +1,6 @@
 #include "TopBarProject.h"
 
 #include "CollaborationMenu.h"
-#include "CommandConsole.h"
 #include "MenuButton.h"
 #include "SettingsWidget.h"
 #include "SideMenu.h"
@@ -15,8 +14,7 @@
 
 
 UI::TopBarProject::TopBarProject(QWidget* parent)
-    : TopBar(parent) {
-    setAttribute(Qt::WA_StyledBackground, true);
+    : BaseEditorTopBar(parent) {
     setObjectName(QStringLiteral("TopBarProject"));
     createProjectButtons();
 }
@@ -27,14 +25,13 @@ void UI::TopBarProject::setTabBar(TabBar* bar) {
         return;
     }
     tabBar_ = bar;
-    btnTabs_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/tab.svg"));
-    btnTabs_->setToolTip("Show/size tab panel");
-    addCenterWidget(btnTabs_);
-    connect(btnTabs_, &QPushButton::clicked, this, [this]() {
-        if (tabBar_) {
-            tabBar_->setVisible(!tabBar_->isVisible());
-        }
-    });
+    btnTabs_ = createToggleButton(QIcon(":/Assets/icons/showHidePanels/tab.svg"),
+                                  QStringLiteral("Show/size tab panel"),
+                                  [this]() {
+                                      if (tabBar_) {
+                                          toggleWidgetVisibility(tabBar_);
+                                      }
+                                  });
 }
 
 
@@ -42,15 +39,8 @@ void UI::TopBarProject::setLeftMenu(SideMenu* menu) {
     if (!menu) {
         return;
     }
-    leftMenu_ = menu;
-    btnLeft_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/left.svg"));
-    btnLeft_->setToolTip("Show/size left.svg panel");
-    addCenterWidget(btnLeft_);
-    connect(btnLeft_, &QPushButton::clicked, this, [this]() {
-        if (leftMenu_) {
-            leftMenu_->setVisible(!leftMenu_->isVisible());
-        }
-    });
+    setLeftPanel(menu, QIcon(":/Assets/icons/showHidePanels/left.svg"),
+                 QStringLiteral("Show/size left.svg panel"));
 }
 
 
@@ -58,32 +48,16 @@ void UI::TopBarProject::setRightMenu(SideMenu* menu) {
     if (!menu) {
         return;
     }
-    rightMenu_ = menu;
-    btnRight_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/right.svg"));
-    btnRight_->setToolTip("Show/size right panel");
-    addCenterWidget(btnRight_);
-    connect(btnRight_, &QPushButton::clicked, this, [this]() {
-        if (rightMenu_) {
-            rightMenu_->setVisible(!rightMenu_->isVisible());
-        }
-    });
+    setRightPanel(menu, QIcon(":/Assets/icons/showHidePanels/right.svg"),
+                  QStringLiteral("Show/size right panel"));
 }
 
 
-void UI::TopBarProject::setConsole(CommandConsole* console) {
+void UI::TopBarProject::setConsole(QWidget* console) {
     if (!console) {
         return;
     }
-    commandConsole_ = console;
-    btnConsole_ = createWindowButton(QIcon(":/Assets/icons/showHidePanels/console.svg"));
-
-    btnConsole_->setToolTip("Show/size console");
-    addCenterWidget(btnConsole_);
-    connect(btnConsole_, &QPushButton::clicked, this, [this]() {
-        if (commandConsole_) {
-            commandConsole_->setVisible(!commandConsole_->isVisible());
-        }
-    });
+    BaseEditorTopBar::setConsole(console);
 }
 
 
@@ -95,22 +69,15 @@ void UI::TopBarProject::setTabsButtonEnabled(const bool enabled) const {
 
 
 void UI::TopBarProject::setLeftButtonEnabled(const bool enabled) const {
-    if (btnLeft_) {
-        btnLeft_->setEnabled(enabled);
+    if (leftButton_) {
+        leftButton_->setEnabled(enabled);
     }
 }
 
 
 void UI::TopBarProject::setRightButtonEnabled(const bool enabled) const {
-    if (btnRight_) {
-        btnRight_->setEnabled(enabled);
-    }
-}
-
-
-void UI::TopBarProject::setConsoleButtonEnabled(const bool enabled) const {
-    if (btnConsole_) {
-        btnConsole_->setEnabled(enabled);
+    if (rightButton_) {
+        rightButton_->setEnabled(enabled);
     }
 }
 

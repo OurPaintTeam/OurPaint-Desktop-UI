@@ -1,14 +1,12 @@
 #ifndef OURPAINT_DESKTOP_UI_TOPBARPROJECT_H
 #define OURPAINT_DESKTOP_UI_TOPBARPROJECT_H
 
-
-#include "TopBar.h"
+#include "../BaseEditorTopBar.h"
 
 class QPushButton;
 class QToolButton;
 
 namespace UI {
-    class CommandConsole;
     class TabBar;
     class SideMenu;
     class CollaborationMenu;
@@ -18,7 +16,7 @@ namespace UI {
 
 
     // Top bar for Project workspace
-    class TopBarProject final : public TopBar {
+    class TopBarProject final : public BaseEditorTopBar {
         Q_OBJECT
 
     public:
@@ -28,13 +26,11 @@ namespace UI {
         void setTabBar(TabBar* bar);
         void setLeftMenu(SideMenu* menu);
         void setRightMenu(SideMenu* menu);
-        void setConsole(CommandConsole* console);
+        void setConsole(QWidget* console);
 
         void setTabsButtonEnabled(bool enabled) const;
         void setLeftButtonEnabled(bool enabled) const;
         void setRightButtonEnabled(bool enabled) const;
-        void setConsoleButtonEnabled(bool enabled) const;
-
         void setPanelsButtonsEnabled(bool enabled) const;
 
     signals:
@@ -60,15 +56,8 @@ namespace UI {
     private:
         // Pointers to linked UI components
         TabBar* tabBar_{nullptr};
-        SideMenu* leftMenu_{nullptr};
-        SideMenu* rightMenu_{nullptr};
-        CommandConsole* commandConsole_{nullptr};
-
         // Buttons
         QPushButton* btnTabs_{nullptr};
-        QPushButton* btnLeft_{nullptr};
-        QPushButton* btnRight_{nullptr};
-        QPushButton* btnConsole_{nullptr};
         QPushButton* btnSettings_{nullptr};
         ProjectMenu* projectMenu_{nullptr};
         CollaborationMenu* collaborationMenu_{nullptr};

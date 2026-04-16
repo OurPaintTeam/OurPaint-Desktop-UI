@@ -2,7 +2,10 @@
 #define OURPAINT_DESKTOP_UI_UIMANAGER_H
 
 #include "FileSystem.h"
-#include "MainWindow.h"
+#include "ProjectManager.h"
+
+class QLineEdit;
+class QWindow;
 
 namespace UI {
     class UIManager final : public QObject {
@@ -13,31 +16,34 @@ namespace UI {
         ~UIManager() override = default;
 
     private:
-        QVector<UI::MainWindow*> mainWindows_;
+        QVector<UI::ProjectManager*> projectManagers_;
         UI::FileSystem fs_;
 
         bool checkedOpened(const QString& projectPath) const;
-        void sentCommandFromConsole(const UI::MainWindow* window, const QString& command);
-        void closeApplication(const UI::MainWindow* window, const QString& projectPath);
-        void openNewWindowOpenProjectSlot(const UI::MainWindow* window, const QString& projectPath);
-        void openNewWindowCreateProjectSlot(const UI::MainWindow* window, const QString& projectPath);
-        void openProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const;
-        void createProjectThisWindowSlot(UI::MainWindow* window, const QString& projectPath) const;
-        void openFileSlot(const UI::MainWindow* window, const QString& filePath) const;
-        void renameTabSlot(const UI::MainWindow* window, const QString& oldName, const QString& newName) const;
-        void removeTabSlot(const UI::MainWindow* window, const QString& tabName) const;
-        void createFileSlot(const UI::MainWindow* window, const QString& fileName) const;
-        void goToStartWindowSlot(UI::MainWindow* window) const;
-        void renameProjectSlot(UI::MainWindow* window, const QString& newName, const QString& path) const;
-        void deleteProjectSlot(UI::MainWindow* window, const QString& path) const;
-        void deleteSlot(UI::MainWindow* window);
+        void sentCommandFromConsole(UI::ProjectManager* manager, const QString& command);
+        void openNewWindowOpenProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
+        void openNewWindowCreateProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
+        void openProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const;
+        void createProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const;
+        void openTabWindowSlot(UI::ProjectManager* manager, const QString& nameTab) const;
+        void openFileSlot(UI::ProjectManager* manager, const QString& filePath) const;
+        void renameTabSlot(UI::ProjectManager* manager, const QString& oldName, const QString& newName) const;
+        void removeTabSlot(UI::ProjectManager* manager, const QString& tabName) const;
+        void createFileSlot(UI::ProjectManager* manager, const QString& fileName) const;
+        void goToStartWindowSlot(UI::ProjectManager* manager) const;
+        void renameProjectSlot(UI::ProjectManager* manager, const QString& newName, const QString& path) const;
+        void deleteProjectSlot(UI::ProjectManager* manager, const QString& path) const;
+        void deleteSlot(UI::ProjectManager* manager);
 
-        void primitiveSlot(const UI::MainWindow* window, PrimitiveType& type);
-        void constraintSlot(const UI::MainWindow* window, ConstraintType& type);
-        void toolsSlot(const UI::MainWindow* window, ToolsType& type);
+        void primitiveSlot(UI::ProjectManager* manager, PrimitiveType& type);
+        void constraintSlot(UI::ProjectManager* manager, ConstraintType& type);
+        void toolsSlot(UI::ProjectManager* manager, ToolsType& type);
 
-        UI::MainWindow* createWindow(UI::MainWindow* parent, const UI::MainWindow::ProjectData& projectData);
-        void initSignals(UI::MainWindow& window);
+        UI::ProjectManager* createProjectManager(const UI::ProjectManager::ProjectData& projectData = {});
+        UI::ProjectManager* createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
+                                                        QWindow* windowRender,
+                                                        QLineEdit* consoleEngine);
+        void initSignals(UI::ProjectManager& manager);
     };
 } // namespace UI
 

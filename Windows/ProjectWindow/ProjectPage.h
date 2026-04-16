@@ -1,92 +1,65 @@
 #ifndef OURPAINT_DESKTOP_UI_PROJECTPAGE_H
 #define OURPAINT_DESKTOP_UI_PROJECTPAGE_H
 
-#include <QWidget>
+#include <QString>
 
-class QLineEdit;
-class QStackedWidget;
-class QOpenGLWindow;
+#include "../BaseEditorPage.h"
+
 class QPushButton;
-class QVBoxLayout;
-class QHBoxLayout;
+class QStackedWidget;
 
 namespace UI {
-    enum class ToolsType;
-    enum class ConstraintType;
-    enum class PrimitiveType;
-    class TopBarProject;
-    class TabBar;
-    class ToolBar;
-    class PainterWidget;
-    class CommandConsole;
-    class SideMenu;
     class ContainerWidget;
     class NavigationWidget;
+    class SideMenu;
+    class TabBar;
+    class TopBarProject;
 
 
-    class ProjectPage final : public QWidget {
+    class ProjectPage final : public BaseEditorPage {
         Q_OBJECT
 
     public:
         explicit ProjectPage(QWidget* parent = nullptr);
         ~ProjectPage() override = default;
-        void setQOpenGLPainter(QOpenGLWindow* engine) const;
-        void setQWindowRender(QWindow* engine) const;
-        void setCommandConsoleEngine(QLineEdit* engine) const;
+
         void setDefaultProjectsPath(const QString& projectPath);
+
     signals:
         void openNewWindowCreateProjectTriggered(const QString& projectPath);
         void createProjectThisWindowTriggered(const QString& projectPath);
-
         void openNewWindowOpenProjectTriggered(const QString& projectPath);
         void openProjectThisWindowTriggered(const QString& projectPath);
-        void openFileTriggered(const QString& filePath); // (topBar)
+        void openFileTriggered(const QString& filePath);
 
         void crateFileTriggered(const QString& fileName);
-
-        /// Tabs
         void setActiveTabTriggered(const QString& name);
         void removeTabTriggered(const QString& name);
         void renameTabTriggered(const QString& oldName, const QString& newName);
         void openTabWindowTriggered(const QString& fileName);
 
-        /// Navigation
         void goToStartWindowTriggered();
-        void createFileTriggered(const QString& fileName); // (tab/top/navigation)
+        void createFileTriggered(const QString& fileName);
         void createProjectTriggered();
         void closeApplicationTriggered();
 
-        void primitiveTriggered(PrimitiveType& type);
-        void constraintTriggered(ConstraintType& type);
-        void toolsTriggered(ToolsType& type);
-
-        /// TopBar - Project
         void openProjectTriggered();
         void exportFileTriggered();
         void scriptTriggered();
-        // void openFileTriggered();
-        // void createProjectTriggered(); (Navigation)
-        // void createFileTriggered(); (Navigation/TopBar/TabBar)
 
-        /// TopBar - Collaboration
         void collaborationOpenTriggered();
         void collaborationCloseTriggered();
 
-        /// TopBar - Version Control
         void versionInitTriggered();
         void versionCreateTriggered();
         void versionPushTriggered();
         void versionPullTriggered();
         void versionCommitTriggered();
 
-        /// Console Command
-        void sentCommandTriggered(const QString& command);
-
     private:
-        void initUI();
+        void initUI() override;
         void setupConnections();
 
-        void createLayouts();
         void createTopBar();
         void createSideColumns();
         void createCenterColumn();
@@ -110,38 +83,17 @@ namespace UI {
         void onRenameTabSlot(const QString& oldName, const QString& newName) const;
 
     private:
-        QVBoxLayout* mainLayout_{nullptr};
-        QHBoxLayout* rootLayout_{nullptr};
-        QVBoxLayout* centerLayout_{nullptr};
-
-        QVBoxLayout* workspaceLayout_{nullptr};
-        QVBoxLayout* painterLayout_{nullptr};
-        QHBoxLayout* consoleLayout_{nullptr};
-
-        QWidget* mainArea_{nullptr};
-        QWidget* centerColumn_{nullptr};
-
         QStackedWidget* centerStack_{nullptr};
-
         QWidget* workspacePage_{nullptr};
         NavigationWidget* navigationPage_{nullptr};
 
-        QWidget* painterWrapper_{nullptr};
-        QWidget* consoleWrapper_{nullptr};
-
         TopBarProject* topBar_{nullptr};
         TabBar* tabBar_{nullptr};
-        ToolBar* toolBar_{nullptr};
-
-        PainterWidget* painter_{nullptr};
-        CommandConsole* console_{nullptr};
-
         SideMenu* leftColumn_{nullptr};
         SideMenu* rightColumn_{nullptr};
 
         ContainerWidget* messengerContainer_{nullptr};
         ContainerWidget* infoContainer_{nullptr};
-
         QPushButton* messengerButton_{nullptr};
         QPushButton* infoButton_{nullptr};
 
