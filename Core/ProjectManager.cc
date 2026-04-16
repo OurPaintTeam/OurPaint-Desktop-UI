@@ -7,17 +7,17 @@
 #include "TabWindow.h"
 
 
-UI::ProjectManager::ProjectManager(QObject* parent, ProjectManager::ProjectData data)
-    : QObject(parent), projectData_(std::move(data)) {
+UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data)
+    : projectData_(std::move(data)) {
     // For this constructor we always start with StartWindow.
     ensureStartWindow();
     openStartWindow();
 }
 
 
-UI::ProjectManager::ProjectManager(QObject* parent, ProjectManager::ProjectData data, QWindow* windowRender,
+UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data, QWindow* windowRender,
                                    QLineEdit* consoleEngine)
-    : QObject(parent), projectData_(std::move(data)) {
+    : projectData_(std::move(data)) {
     // No StartWindow. Create ProjectWindow and apply engines.
     openProjectWindow();
     if (windowRender) {

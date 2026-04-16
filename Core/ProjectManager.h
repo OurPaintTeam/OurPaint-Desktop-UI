@@ -32,9 +32,9 @@ namespace UI {
 
 
         // Creates only StartWindow. ProjectWindow is created later via openProjectWindow().
-        explicit ProjectManager(QObject* parent = nullptr, ProjectData data = {{}, {}});
+        explicit ProjectManager(ProjectData data = {{}, {}});
         // Creates and opens ProjectWindow immediately (no StartWindow).
-        ProjectManager(QObject* parent, ProjectData data, QWindow* windowRender, QLineEdit* consoleEngine);
+        ProjectManager(ProjectData data, QWindow* windowRender, QLineEdit* consoleEngine);
         ~ProjectManager() override;
 
         QString projectPath() const;

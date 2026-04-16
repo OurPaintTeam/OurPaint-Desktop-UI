@@ -12,4 +12,6 @@ add_executable(OurPaintApp
         UIManager.cc
 )
 
+add_subdirectory(src/UI)
+
 target_link_libraries(OurPaintApp PRIVATE ourpaint_ui)

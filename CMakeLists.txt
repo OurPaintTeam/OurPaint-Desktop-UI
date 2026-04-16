@@ -146,8 +146,8 @@ set(FILE_SYSTEM
         FileSystem/FileSystem.h
 )
 
-set(Resources
-        Styles/resources.qrc
+set(RESOURCES
+        resources.qrc
 )
 
 add_library(ourpaint_ui STATIC
@@ -162,13 +162,12 @@ add_library(ourpaint_ui STATIC
         ${UI_TAB}
         ${POP_UP}
         ${FILE_SYSTEM}
-        ${Resources}
+        ${RESOURCES}
 )
 
 target_include_directories(ourpaint_ui PUBLIC
         .
         Core
-        CommandConsole
         Widgets
         Panels
         Menus
@@ -188,3 +187,7 @@ target_link_libraries(ourpaint_ui PUBLIC
         Qt6::OpenGLWidgets
         Qt6::OpenGL
 )
+
+if (WIN32)
+    target_link_libraries(ourpaint_ui PUBLIC dwmapi)
+endif()

@@ -220,7 +220,7 @@ void UI::UIManager::toolsSlot(UI::ProjectManager* manager, ToolsType& type) {
 UI::ProjectManager* UI::UIManager::createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
                                                               QWindow* windowRender,
                                                               QLineEdit* consoleEngine) {
-    auto* manager = new UI::ProjectManager(this, projectData, windowRender, consoleEngine);
+    auto* manager = new UI::ProjectManager(projectData, windowRender, consoleEngine);
     projectManagers_.push_back(manager);
     manager->setDefaultProjectsPath(fs_.defaultProjectsPath());
     manager->setProjectsList(fs_.projects());
@@ -231,7 +231,7 @@ UI::ProjectManager* UI::UIManager::createOpenedProjectManager(const UI::ProjectM
 
 
 UI::ProjectManager* UI::UIManager::createProjectManager(const UI::ProjectManager::ProjectData& projectData) {
-    auto* manager = new UI::ProjectManager(this, projectData);
+    auto* manager = new UI::ProjectManager(projectData);
     projectManagers_.push_back(manager);
     manager->setDefaultProjectsPath(fs_.defaultProjectsPath());
     manager->setProjectsList(fs_.projects());
