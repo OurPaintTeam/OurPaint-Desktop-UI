@@ -4,11 +4,19 @@
 #include <windows.h>
 #include <dwmapi.h>
 #include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
-#ifndef DWMWA_CAPTION_COLOR
-#define DWMWA_BORDER_COLOR 34
-#define DWMWA_CAPTION_COLOR 35
+
+
+#ifndef DWMWA_WINDOW_CORNER_PREFERENCE
+#define DWMWA_WINDOW_CORNER_PREFERENCE 33
 #endif
+
+enum DWM_WINDOW_CORNER_PREFERENCE {
+    DWMWCP_DEFAULT = 0,
+    DWMWCP_DONOTROUND = 1,
+    DWMWCP_ROUND = 2,
+    DWMWCP_ROUNDSMALL = 3
+};
+
 #endif
 
 
@@ -19,6 +27,9 @@
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent)
     : QMainWindow(parent) {
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
@@ -60,19 +71,13 @@ void UI::FramelessWindow::initWindowForWindows() const {
 
     SetWindowLong(hwnd, GWL_STYLE, winStyle);
 
-    COLORREF color = RGB(73, 72, 80);
-
-    DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
-
-    COLORREF borderColor = RGB(73, 72, 80);
-
-    DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, &borderColor, sizeof(borderColor));
-
-    MARGINS margins = {-1, -1, -1, -1};
-    DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                 SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER);
+    DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
+    DwmSetWindowAttribute(
+        hwnd,
+        DWMWA_WINDOW_CORNER_PREFERENCE,
+        &cornerPref,
+        sizeof(cornerPref)
+    );
 }
 
 

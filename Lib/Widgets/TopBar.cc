@@ -17,21 +17,26 @@ UI::TopBar::TopBar(QWidget *parent)
     setupLayouts();
     setupWindowButtons();
     setObjectName("TopBar");
+
+    setCursor(Qt::OpenHandCursor);
 }
 
 
 void UI::TopBar::addLeftWidget(QWidget *widget) const {
     leftLayout_->addWidget(widget);
+    widget->setCursor(Qt::PointingHandCursor);
 }
 
 
 void UI::TopBar::addCenterWidget(QWidget *widget) const {
     centerLayout_->addWidget(widget);
+    widget->setCursor(Qt::PointingHandCursor);
 }
 
 
 QPushButton* UI::TopBar::createWindowButton() {
     auto *button = new QPushButton(this);
+    button->setCursor(Qt::PointingHandCursor);
     constexpr auto buttonSize = QSize(32, 32);
     button->setFixedSize(buttonSize);
     button->setFocusPolicy(Qt::NoFocus);
@@ -41,6 +46,7 @@ QPushButton* UI::TopBar::createWindowButton() {
 
 QPushButton* UI::TopBar::createWindowButton(const QString& text) {
     auto *button = new QPushButton(this);
+    button->setCursor(Qt::PointingHandCursor);
     button->setToolTip(text);
     button->setObjectName(text);
     button->setText(text);
@@ -53,6 +59,7 @@ QPushButton* UI::TopBar::createWindowButton(const QString& text) {
 
 QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
     auto *button = new QPushButton(this);
+    button->setCursor(Qt::PointingHandCursor);
     button->setIcon(icon);
     constexpr auto buttonSize = QSize(32, 32);
     button->setFixedSize(buttonSize);
@@ -64,10 +71,20 @@ QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
 void UI::TopBar::mousePressEvent(QMouseEvent *event) {
 #ifdef Q_OS_WIN
     if (event->button() == Qt::LeftButton) {
+        setCursor(Qt::ClosedHandCursor);
         window()->windowHandle()->startSystemMove();
+        event->accept();
+        return;
     }
 #endif
+
     QWidget::mousePressEvent(event);
+}
+
+
+void UI::TopBar::mouseReleaseEvent(QMouseEvent *event) {
+    setCursor(Qt::OpenHandCursor);
+    QWidget::mouseReleaseEvent(event);
 }
 
 
