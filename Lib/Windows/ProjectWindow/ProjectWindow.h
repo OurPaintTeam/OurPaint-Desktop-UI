@@ -38,7 +38,7 @@ namespace UI {
         void openTabWindowTriggered(const QString& tabName);
         void closeApplicationTriggered();
 
-      void applySettings(int value1, int value2, int value3);
+      void applySettings(double value1, double value2, double value3);
     protected:
         void closeEvent(QCloseEvent* event) override;
 

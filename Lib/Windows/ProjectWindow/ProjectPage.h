@@ -56,7 +56,7 @@ namespace UI {
         void versionPullTriggered();
         void versionCommitTriggered();
 
-      void applySettings(int value1, int value2, int value3);
+      void applySettings(double value1, double value2, double value3);
 
     private:
         void initUI() override;
