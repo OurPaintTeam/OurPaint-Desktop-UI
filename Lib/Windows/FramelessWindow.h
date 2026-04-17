@@ -15,7 +15,6 @@ namespace UI {
         bool nativeEvent(const QByteArray& eventType,
                          void *message,
                          qintptr *result) override;
-        void changeEvent(QEvent *event) override;
 
     public:
         explicit FramelessWindow(QWidget *parent = nullptr);
@@ -24,7 +23,6 @@ namespace UI {
         virtual void initUI() = 0;
 
 #ifdef Q_OS_WIN
-        void updateWindowCorners();
         void initWindowForWindows() const;
 #endif
 

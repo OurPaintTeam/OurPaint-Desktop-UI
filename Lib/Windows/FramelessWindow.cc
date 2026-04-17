@@ -26,7 +26,7 @@ enum DWM_WINDOW_CORNER_PREFERENCE {
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent)
     : QMainWindow(parent) {
-
+  //  setWindowFlags(Qt::Window | Qt::FramelessWindowHint); setAttribute(Qt::WA_TranslucentBackground);
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
