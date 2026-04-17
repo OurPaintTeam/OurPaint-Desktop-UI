@@ -53,6 +53,7 @@ namespace UI {
         void versionPullTriggered();
         void versionCommitTriggered();
 
+      void applySettings(int value1, int value2, int value3);
     private:
         // Pointers to linked UI components
         TabBar* tabBar_{nullptr};

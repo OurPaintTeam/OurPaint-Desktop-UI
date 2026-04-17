@@ -174,5 +174,8 @@ void UI::TopBarProject::setupSettings() {
         auto* const settings = new SettingsWidget(this);
         settings->setAttribute(Qt::WA_DeleteOnClose);
         settings->show();
+
+      connect(settings, &SettingsWidget::settingsApplied, this,&TopBarProject::applySettings);
     });
+
 }

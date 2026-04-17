@@ -80,6 +80,8 @@ namespace UI {
         void removeTabTriggered(const QString& fileName);
         void goToStartWindowTriggered();
 
+      void applySettings(int value1, int value2, int value3);
+
     private:
         void connectStartWindowSignals();
         void connectProjectWindowSignals();

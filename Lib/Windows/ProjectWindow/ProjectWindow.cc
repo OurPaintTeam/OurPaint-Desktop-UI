@@ -37,6 +37,8 @@ void UI::ProjectWindow::initUI() {
             this, &ProjectWindow::openTabWindowTriggered);
     connect(projectPage_, &ProjectPage::closeApplicationTriggered,
             this, &ProjectWindow::closeApplicationTriggered);
+  connect(projectPage_, &ProjectPage::applySettings,
+        this, &ProjectWindow::applySettings);
 }
 
 

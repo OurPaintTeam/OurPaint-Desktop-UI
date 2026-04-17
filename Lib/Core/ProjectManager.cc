@@ -281,6 +281,9 @@ void UI::ProjectManager::connectProjectWindowSignals() {
                     window->close();
                 }
             });
+
+  connect(projectWindow_, &ProjectWindow::applySettings,
+        this, &ProjectManager::applySettings);
 }
 
 

@@ -215,7 +215,9 @@ void UIManager::toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type) {
     Q_UNUSED(type);
     manager->addNotification("Tools slot");
 }
-
+void UIManager::settingsSlot(UI::ProjectManager *manager, int f, int s, int t) {
+  qDebug()<<f<<s<<t;
+}
 
 UI::ProjectManager* UIManager::createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
                                                               QWindow* windowRender,
@@ -321,6 +323,11 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
             [this, &manager](UI::ToolsType& type) {
                 toolsSlot(&manager, type);
             });
+
+  connect(&manager, &UI::ProjectManager::applySettings, this,
+        [this, &manager](int f,int s,int t) {
+            settingsSlot(&manager, f,s,t);
+        });
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] {

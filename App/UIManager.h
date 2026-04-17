@@ -37,6 +37,7 @@ class QWindow;
         void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type);
         void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type);
         void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type);
+        void settingsSlot(UI::ProjectManager* manager,int f,int s,int t);
 
         UI::ProjectManager* createProjectManager(const UI::ProjectManager::ProjectData& projectData = {});
         UI::ProjectManager* createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,

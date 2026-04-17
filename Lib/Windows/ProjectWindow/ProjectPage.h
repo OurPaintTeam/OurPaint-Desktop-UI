@@ -56,6 +56,8 @@ namespace UI {
         void versionPullTriggered();
         void versionCommitTriggered();
 
+      void applySettings(int value1, int value2, int value3);
+
     private:
         void initUI() override;
         void setupConnections();

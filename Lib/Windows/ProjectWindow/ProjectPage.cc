@@ -93,6 +93,9 @@ void UI::ProjectPage::setupConnections() {
             this, &ProjectPage::versionPullTriggered);
     connect(topBar_, &TopBarProject::versionCommitTriggered,
             this, &ProjectPage::versionCommitTriggered);
+
+  connect(topBar_, &TopBarProject::applySettings,
+        this, &ProjectPage::applySettings);
 }
 
 
