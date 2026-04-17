@@ -79,14 +79,46 @@ void UI::FramelessWindow::initWindowForWindows() const {
         sizeof(cornerPref)
     );
 }
+#endif
+
+
+void UI::FramelessWindow::updateWindowCorners() {
+#ifdef Q_OS_WIN
+    HWND hwnd = (HWND) winId();
+
+    DWM_WINDOW_CORNER_PREFERENCE pref;
+
+    if (isMaximized() || isFullScreen()) {
+        pref = DWMWCP_DONOTROUND;
+    } else {
+        pref = DWMWCP_ROUND;
+    }
+
+    DwmSetWindowAttribute(
+        hwnd,
+        DWMWA_WINDOW_CORNER_PREFERENCE,
+        &pref,
+        sizeof(pref)
+    );
+#endif
+}
 
 
 bool UI::FramelessWindow::nativeEvent(const QByteArray&,
                                       void *message,
                                       qintptr *result) {
     return QMainWindow::nativeEvent({}, message, result);
-}
+#ifdef Q_OS_WIN
 #endif
+}
+
+
+void UI::FramelessWindow::changeEvent(QEvent *event) {
+    if (event->type() == QEvent::WindowStateChange) {
+        updateWindowCorners();
+    }
+    QMainWindow::changeEvent(event);
+}
 
 
 QString UI::FramelessWindow::loadStyle(const QString& path) {
