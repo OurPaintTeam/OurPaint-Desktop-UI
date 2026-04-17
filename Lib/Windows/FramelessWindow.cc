@@ -3,8 +3,7 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <dwmapi.h>
-#include <dwmapi.h>
-
+#include <windowsx.h>
 
 #ifndef DWMWA_WINDOW_CORNER_PREFERENCE
 #define DWMWA_WINDOW_CORNER_PREFERENCE 33
@@ -27,8 +26,6 @@ enum DWM_WINDOW_CORNER_PREFERENCE {
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent)
     : QMainWindow(parent) {
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
 
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
@@ -64,12 +61,9 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent)
 #ifdef Q_OS_WIN
 void UI::FramelessWindow::initWindowForWindows() const {
     HWND hwnd = (HWND) winId();
-    LONG winStyle = GetWindowLong(hwnd, GWL_STYLE);
-    winStyle &= ~WS_CAPTION;
-    winStyle |= WS_THICKFRAME;
-    winStyle &= ~WS_SYSMENU;
-
-    SetWindowLong(hwnd, GWL_STYLE, winStyle);
+    LONG style = GetWindowLong(hwnd, GWL_STYLE);
+    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+    SetWindowLong(hwnd, GWL_STYLE, style);
 
     DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
     DwmSetWindowAttribute(
@@ -104,12 +98,71 @@ void UI::FramelessWindow::updateWindowCorners() {
 }
 
 
-bool UI::FramelessWindow::nativeEvent(const QByteArray&,
+bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                                       void *message,
                                       qintptr *result) {
-    return QMainWindow::nativeEvent({}, message, result);
 #ifdef Q_OS_WIN
+    if (eventType == "windows_generic_MSG") {
+
+        MSG* msg = static_cast<MSG*>(message);
+
+        switch (msg->message) {
+
+            case WM_NCHITTEST: {
+                const LONG borderWidth = 8;
+
+                RECT winrect;
+                GetWindowRect(msg->hwnd, &winrect);
+
+                long x = GET_X_LPARAM(msg->lParam);
+                long y = GET_Y_LPARAM(msg->lParam);
+
+                bool left   = x < winrect.left + borderWidth;
+                bool right  = x > winrect.right - borderWidth;
+                bool top    = y < winrect.top + borderWidth;
+                bool bottom = y > winrect.bottom - borderWidth;
+
+                if (left && top) {
+                    *result = HTTOPLEFT;
+                    return true;
+                }
+                if (right && top) {
+                    *result = HTTOPRIGHT;
+                    return true;
+                }
+                if (left && bottom) {
+                    *result = HTBOTTOMLEFT;
+                    return true;
+                }
+                if (right && bottom) {
+                    *result = HTBOTTOMRIGHT;
+                    return true;
+                }
+                if (left) {
+                    *result = HTLEFT;
+                    return true;
+                }
+                if (right) {
+                    *result = HTRIGHT;
+                    return true;
+                }
+                if (top) {
+                    *result = HTTOP;
+                    return true;
+                }
+                if (bottom) {
+                    *result = HTBOTTOM;
+                    return true;
+                }
+
+                *result = HTCLIENT;
+                return true;
+            }
+        }
+    }
 #endif
+
+    return QMainWindow::nativeEvent(eventType, message, result);
 }
 
 
