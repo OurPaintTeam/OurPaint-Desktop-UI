@@ -6,6 +6,7 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 #ifndef DWMWA_CAPTION_COLOR
+#define DWMWA_BORDER_COLOR 34
 #define DWMWA_CAPTION_COLOR 35
 #endif
 #endif
@@ -62,6 +63,13 @@ void UI::FramelessWindow::initWindowForWindows() const {
     COLORREF color = RGB(73, 72, 80);
 
     DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
+
+    COLORREF borderColor = RGB(73, 72, 80);
+
+    DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, &borderColor, sizeof(borderColor));
+
+    MARGINS margins = {-1, -1, -1, -1};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
 
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER);
