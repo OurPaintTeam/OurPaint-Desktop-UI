@@ -62,8 +62,11 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent)
 void UI::FramelessWindow::initWindowForWindows() const {
     HWND hwnd = (HWND) winId();
     LONG style = GetWindowLong(hwnd, GWL_STYLE);
-    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
     SetWindowLong(hwnd, GWL_STYLE, style);
+
+    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+    SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
     DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
     DwmSetWindowAttribute(
@@ -159,6 +162,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 return true;
             }
         }
+
     }
 #endif
 
