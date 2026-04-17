@@ -3,20 +3,11 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <dwmapi.h>
-#include <dwmapi.h>
-
-
-#ifndef DWMWA_WINDOW_CORNER_PREFERENCE
-#define DWMWA_WINDOW_CORNER_PREFERENCE 33
+#pragma comment(lib, "dwmapi.lib")
+#ifndef DWMWA_CAPTION_COLOR
+#define DWMWA_BORDER_COLOR 34
+#define DWMWA_CAPTION_COLOR 35
 #endif
-
-enum DWM_WINDOW_CORNER_PREFERENCE {
-    DWMWCP_DEFAULT = 0,
-    DWMWCP_DONOTROUND = 1,
-    DWMWCP_ROUND = 2,
-    DWMWCP_ROUNDSMALL = 3
-};
-
 #endif
 
 
@@ -27,9 +18,6 @@ enum DWM_WINDOW_CORNER_PREFERENCE {
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent)
     : QMainWindow(parent) {
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
@@ -71,36 +59,19 @@ void UI::FramelessWindow::initWindowForWindows() const {
 
     SetWindowLong(hwnd, GWL_STYLE, winStyle);
 
-    DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
-    DwmSetWindowAttribute(
-        hwnd,
-        DWMWA_WINDOW_CORNER_PREFERENCE,
-        &cornerPref,
-        sizeof(cornerPref)
-    );
-}
-#endif
+    COLORREF color = RGB(73, 72, 80);
 
+    DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
 
-void UI::FramelessWindow::updateWindowCorners() {
-#ifdef Q_OS_WIN
-    HWND hwnd = (HWND) winId();
+    COLORREF borderColor = RGB(73, 72, 80);
 
-    DWM_WINDOW_CORNER_PREFERENCE pref;
+    DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, &borderColor, sizeof(borderColor));
 
-    if (isMaximized() || isFullScreen()) {
-        pref = DWMWCP_DONOTROUND;
-    } else {
-        pref = DWMWCP_ROUND;
-    }
+    MARGINS margins = {-1, -1, -1, -1};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
 
-    DwmSetWindowAttribute(
-        hwnd,
-        DWMWA_WINDOW_CORNER_PREFERENCE,
-        &pref,
-        sizeof(pref)
-    );
-#endif
+    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER);
 }
 
 
@@ -108,17 +79,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray&,
                                       void *message,
                                       qintptr *result) {
     return QMainWindow::nativeEvent({}, message, result);
-#ifdef Q_OS_WIN
+}
 #endif
-}
-
-
-void UI::FramelessWindow::changeEvent(QEvent *event) {
-    if (event->type() == QEvent::WindowStateChange) {
-        updateWindowCorners();
-    }
-    QMainWindow::changeEvent(event);
-}
 
 
 QString UI::FramelessWindow::loadStyle(const QString& path) {
