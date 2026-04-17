@@ -3,9 +3,11 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QMouseEvent>
+#include <QWindow>
 
 
-UI::TopBar::TopBar(QWidget* parent)
+UI::TopBar::TopBar(QWidget *parent)
     : QWidget(parent),
       mainLayout_(new QHBoxLayout(this)) {
     constexpr auto size = 32;
@@ -18,18 +20,18 @@ UI::TopBar::TopBar(QWidget* parent)
 }
 
 
-void UI::TopBar::addLeftWidget(QWidget* widget) const {
+void UI::TopBar::addLeftWidget(QWidget *widget) const {
     leftLayout_->addWidget(widget);
 }
 
 
-void UI::TopBar::addCenterWidget(QWidget* widget) const {
+void UI::TopBar::addCenterWidget(QWidget *widget) const {
     centerLayout_->addWidget(widget);
 }
 
 
 QPushButton* UI::TopBar::createWindowButton() {
-    auto* button = new QPushButton(this);
+    auto *button = new QPushButton(this);
     constexpr auto buttonSize = QSize(32, 32);
     button->setFixedSize(buttonSize);
     button->setFocusPolicy(Qt::NoFocus);
@@ -38,7 +40,7 @@ QPushButton* UI::TopBar::createWindowButton() {
 
 
 QPushButton* UI::TopBar::createWindowButton(const QString& text) {
-    auto* button = new QPushButton(this);
+    auto *button = new QPushButton(this);
     button->setToolTip(text);
     button->setObjectName(text);
     button->setText(text);
@@ -50,12 +52,22 @@ QPushButton* UI::TopBar::createWindowButton(const QString& text) {
 
 
 QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
-    auto* button = new QPushButton(this);
+    auto *button = new QPushButton(this);
     button->setIcon(icon);
     constexpr auto buttonSize = QSize(32, 32);
     button->setFixedSize(buttonSize);
     button->setFocusPolicy(Qt::NoFocus);
     return button;
+}
+
+
+void UI::TopBar::mousePressEvent(QMouseEvent *event) {
+#ifdef Q_OS_WIN
+    if (event->button() == Qt::LeftButton) {
+        window()->windowHandle()->startSystemMove();
+    }
+#endif
+    QWidget::mousePressEvent(event);
 }
 
 
@@ -120,17 +132,17 @@ void UI::TopBar::setupWindowButtons() {
     rightLayout_->addWidget(closeButton_);
 
     connect(minButton_, &QPushButton::clicked, []() {
-        if (auto* window = QApplication::activeWindow()) {
+        if (auto *window = QApplication::activeWindow()) {
             window->showMinimized();
         }
     });
     connect(maxButton_, &QPushButton::clicked, []() {
-        if (auto* window = QApplication::activeWindow()) {
+        if (auto *window = QApplication::activeWindow()) {
             window->isMaximized() ? window->showNormal() : window->showMaximized();
         }
     });
     connect(closeButton_, &QPushButton::clicked, []() {
-        if (auto* window = QApplication::activeWindow()) {
+        if (auto *window = QApplication::activeWindow()) {
             window->close();
         }
     });

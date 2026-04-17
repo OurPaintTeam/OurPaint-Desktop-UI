@@ -20,6 +20,7 @@ namespace UI {
         QPushButton* createWindowButton();
         QPushButton* createWindowButton(const QString& text);
         QPushButton* createWindowButton(const QIcon& icon);
+        void mousePressEvent(QMouseEvent *event) override;
 
     private:
         QHBoxLayout* mainLayout_{nullptr};

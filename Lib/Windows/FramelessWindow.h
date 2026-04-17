@@ -12,20 +12,17 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit FramelessWindow(QWidget* parent = nullptr);
+        explicit FramelessWindow(QWidget *parent = nullptr);
         ~FramelessWindow() override = default;
 
         virtual void initUI() = 0;
 
-    protected:
-        void mousePressEvent(QMouseEvent* event) override;
-        void mouseMoveEvent(QMouseEvent* event) override;
-        void mouseReleaseEvent(QMouseEvent* event) override;
-
 #ifdef Q_OS_WIN
         bool nativeEvent(const QByteArray& eventType,
-                         void* message,
-                         qintptr* result) override;
+                         void *message,
+                         qintptr *result) override;
+
+        void initWindowForWindows() const;
 #endif
 
     private:
