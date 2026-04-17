@@ -16,17 +16,20 @@ namespace UI {
                          void *message,
                          qintptr *result) override;
 
+        void changeEvent(QEvent* event) override;
+
     public:
         explicit FramelessWindow(QWidget *parent = nullptr);
         ~FramelessWindow() override = default;
 
         virtual void initUI() = 0;
 
+    private:
 #ifdef Q_OS_WIN
+        void updateWindowCorners() const;
         void initWindowForWindows() const;
 #endif
 
-    private:
         QPoint dragOffset_{};
         bool isDragging_{false};
 
