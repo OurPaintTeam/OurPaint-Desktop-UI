@@ -11,318 +11,299 @@
 
 #include "InputWidget.h"
 #include "NameInputWidget.h"
+#include "TabMenu.h"
 #include "TabWidget.h"
 
-
-UI::TabBar::TabBar(QWidget* parent)
-    : QWidget(parent),
-      tabBar_(new QWidget(this)),
-      tabLayout_(new QHBoxLayout(tabBar_)),
-      mainLayout_(new QHBoxLayout(this)),
+UI::TabBar::TabBar(QWidget *parent)
+    : QWidget(parent), tabBar_(new QWidget(this)),
+      tabLayout_(new QHBoxLayout(tabBar_)), mainLayout_(new QHBoxLayout(this)),
       scrollArea_(new QScrollArea(this)) {
-    setObjectName(QStringLiteral("TabBar"));
+  setObjectName(QStringLiteral("TabBar"));
 
-    setAcceptDrops(true);
-    constexpr auto sizeH = 32;
-    setFixedHeight(sizeH);
-    setAttribute(Qt::WA_StyledBackground, true);
+  setAcceptDrops(true);
+  constexpr auto sizeH = 32;
+  setFixedHeight(sizeH);
+  setAttribute(Qt::WA_StyledBackground, true);
 
-    tabBar_->setObjectName(QStringLiteral("TabBarWidget"));
-    tabBar_->setAttribute(Qt::WA_StyledBackground, true);
-    tabBar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    tabBar_->setMinimumHeight(sizeH);
+  tabMenu_ = new TabMenu(this);
+    connect(tabMenu_, &TabMenu::deleteTabTriggered, this, [this]() {
+     if (contextTab_) {
+       if (removeTab(contextTab_)) {
+         removeTabTriggered(contextTab_->getName());
+       }
+     }
+   });
 
-    mainLayout_->setObjectName(QStringLiteral("TabBarMainLayout"));
-    mainLayout_->setContentsMargins(0, 0, 0, 0);
-    mainLayout_->setSpacing(0);
-
-    tabLayout_->setObjectName(QStringLiteral("TabBarLayout"));
-    tabLayout_->setContentsMargins(0, 0, 0, 0);
-    tabLayout_->setSpacing(3);
-
-    // ScrollArea
-    scrollArea_->setObjectName(QStringLiteral("ScrollAreaTabBar"));
-    scrollArea_->setWidget(tabBar_);
-    scrollArea_->setWidgetResizable(true);
-    scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea_->setFrameShape(QFrame::NoFrame);
-
-    // viewport
-    scrollArea_->viewport()->setObjectName(QStringLiteral("ViewportScrollAreaTabBar"));
-    scrollArea_->viewport()->setAttribute(Qt::WA_StyledBackground, true);
-
-    scrollArea_->horizontalScrollBar()->setObjectName(QStringLiteral("TabBarHScroll"));
-    scrollArea_->verticalScrollBar()->setObjectName(QStringLiteral("TabBarVScroll"));
-    scrollArea_->horizontalScrollBar()->setAttribute(Qt::WA_StyledBackground, true);
-    scrollArea_->verticalScrollBar()->setAttribute(Qt::WA_StyledBackground, true);
-
-    QScroller::grabGesture(scrollArea_->viewport(), QScroller::LeftMouseButtonGesture);
-
-    mainLayout_->addWidget(scrollArea_);
-
-    createPlusButton();
-    tabLayout_->addWidget(plusButton_);
-    tabLayout_->addStretch();
-}
-
-
-void UI::TabBar::addTab(const QString& name) {
-    if (name.isEmpty()) {
-        return;
-    }
-    for (const auto& ch: name) {
-        if (ch.isSpace()) {
-            return;
-        }
-    }
-    for (const auto& t: tabs_) {
-        if (t->getName() == name) {
-            return;
-        }
-    }
-
-    auto* tab = new UI::TabWidget(name, tabBar_);
-    tabs_.append(tab);
-
-    const auto plusIndex = tabLayout_->indexOf(plusButton_);
-    tabLayout_->insertWidget(plusIndex, tab);
-
-    connect(tab, &UI::TabWidget::clickedTriggered, this, &TabBar::setActiveTabSlot);
-    connect(tab, &UI::TabWidget::closeRequestedTriggered, this, &TabBar::closeTabOnPtrSlot);
-    connect(tab, &UI::TabWidget::draggedOutTriggered, this, [this](TabWidget* draggedTab) {
-        emit openTabWindowTriggered(draggedTab->getName());
-        closeTabOnPtrSlot(draggedTab);
+    connect(tabMenu_, &TabMenu::renameTabTriggered, this, [this]() {
+      // TODO rename dialog
     });
 
-    setActiveTabSlot(tab);
+    connect(tabMenu_, &TabMenu::closeTabTriggered, this, [this]() {
+      if (contextTab_) {
+        removeTab(contextTab_);
+      }
+    });
+
+    connect(tabMenu_, &TabMenu::closeAllTabsTriggered, this, [this]() {
+      while (!tabs_.isEmpty()) {
+        removeTab(tabs_.first());
+      }
+    });
+
+  tabBar_->setObjectName(QStringLiteral("TabBarWidget"));
+  tabBar_->setAttribute(Qt::WA_StyledBackground, true);
+  tabBar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  tabBar_->setMinimumHeight(sizeH);
+
+  mainLayout_->setObjectName(QStringLiteral("TabBarMainLayout"));
+  mainLayout_->setContentsMargins(0, 0, 0, 0);
+  mainLayout_->setSpacing(0);
+
+  tabLayout_->setObjectName(QStringLiteral("TabBarLayout"));
+  tabLayout_->setContentsMargins(0, 0, 0, 0);
+  tabLayout_->setSpacing(3);
+
+  // ScrollArea
+  scrollArea_->setObjectName(QStringLiteral("ScrollAreaTabBar"));
+  scrollArea_->setWidget(tabBar_);
+  scrollArea_->setWidgetResizable(true);
+  scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  scrollArea_->setFrameShape(QFrame::NoFrame);
+
+  // viewport
+  scrollArea_->viewport()->setObjectName(
+      QStringLiteral("ViewportScrollAreaTabBar"));
+  scrollArea_->viewport()->setAttribute(Qt::WA_StyledBackground, true);
+
+  scrollArea_->horizontalScrollBar()->setObjectName(
+      QStringLiteral("TabBarHScroll"));
+  scrollArea_->verticalScrollBar()->setObjectName(
+      QStringLiteral("TabBarVScroll"));
+  scrollArea_->horizontalScrollBar()->setAttribute(Qt::WA_StyledBackground,
+                                                   true);
+  scrollArea_->verticalScrollBar()->setAttribute(Qt::WA_StyledBackground, true);
+
+  QScroller::grabGesture(scrollArea_->viewport(),
+                         QScroller::LeftMouseButtonGesture);
+
+  mainLayout_->addWidget(scrollArea_);
+
+  createPlusButton();
+  tabLayout_->addWidget(plusButton_);
+  tabLayout_->addStretch();
 }
 
+void UI::TabBar::addTabSlot(const QString &name) {
+  if (name.isEmpty()) {
+    return;
+  }
+  for (const auto &t : tabs_) {
+    if (t->getName() == name) {
+      return;
+    }
+  }
 
-bool UI::TabBar::isEmptyTab() const {
-    return tabLayout_->count() == 2; // (spacer + plusButton)
+  auto *tab = new UI::TabWidget(name, tabBar_);
+  tabs_.append(tab);
+
+  const auto plusIndex = tabLayout_->indexOf(plusButton_);
+  tabLayout_->insertWidget(plusIndex, tab);
+
+  connect(tab, &UI::TabWidget::clickedTriggered, this,
+          &TabBar::setActiveTabSlot);
+  connect(tab, &UI::TabWidget::closeRequestedTriggered, this,
+          &TabBar::removeTab);
+  connect(tab, &UI::TabWidget::draggedOutTriggered, this,
+          [this](TabWidget *draggedTab) {
+            emit openTabWindowTriggered(draggedTab->getName());
+            removeTab(draggedTab);
+          });
+  connect(tab, &UI::TabWidget::rightClickedTriggered, this,
+          &UI::TabBar::openTabMenuSlot);
+
+  setActiveTabSlot(tab);
 }
 
+bool UI::TabBar::isEmptyTab() const { return tabs_.isEmpty(); }
 
-void UI::TabBar::renameTab(const QString& oldName, const QString& newName) {
-    for (auto* tab: tabs_) {
-        if (tab->getName() == oldName) {
-            tab->setName(newName);
-            return;
-        }
+void UI::TabBar::renameTab(const QString &oldName, const QString &newName) {
+  for (auto *tab : tabs_) {
+    if (tab->getName() == oldName) {
+      tab->setName(newName);
+      return;
     }
+  }
 }
 
-
-void UI::TabBar::deleteTabSlot(const QString& name) {
-    for (auto* tab: tabs_) {
-        if (tab->getName() == name) {
-            tabLayout_->removeWidget(tab);
-            tabs_.removeOne(tab);
-
-            if (activeTab_ == tab) {
-                activeTab_ = nullptr;
-            }
-
-            tab->deleteLater();
-            return;
-        }
+void UI::TabBar::deleteTabSlot(const QString &name) {
+  for (auto *tab : tabs_) {
+    if (tab->getName() == name) {
+      removeTab(tab);
+      return;
     }
+  }
 }
 
+bool UI::TabBar::removeTab(TabWidget *tab) {
+  if (!tab) {
+    return false;
+  }
 
-void UI::TabBar::openTabSlot(const QString& name) {
-    for (auto* tab: tabs_) {
-        if (tab->getName() == name) {
-            if (!tab->isVisible()) {
-                const auto plusIndex = tabLayout_->indexOf(plusButton_);
+  const int index = tabLayout_->indexOf(tab);
+  const bool wasActive = (activeTab_ == tab);
 
-                tab->show();
-                tabLayout_->insertWidget(plusIndex, tab);
-            }
+  // 1. remove from layout
+  tabLayout_->removeWidget(tab);
 
-            setActiveTabSlot(tab);
-            return;
-        }
+  // 2. remove from vector
+  tabs_.removeOne(tab);
+
+  // 3. reset pointer if needed
+  if (wasActive) {
+    activeTab_ = nullptr;
+  }
+
+  // 4. delete tab safely
+  tab->deleteLater(); // тут вылетает сегментатион фаулт
+
+  // 5. choose new active tab
+  if (wasActive) {
+
+    TabWidget *newActive = nullptr;
+
+    if (index >= 0 && index < tabLayout_->count()) {
+      newActive =
+          qobject_cast<TabWidget *>(tabLayout_->itemAt(index)->widget());
     }
+
+    if (!newActive && index - 1 >= 0) {
+      newActive =
+          qobject_cast<TabWidget *>(tabLayout_->itemAt(index - 1)->widget());
+    }
+
+    if (newActive) {
+      setActiveTabSlot(newActive);
+    } else {
+      emit allTabsCloseTriggered();
+    }
+  }
+
+  return true;
 }
 
-
-void UI::TabBar::createTabSlot(const QString& name) {
-    if (name.isEmpty()) {
-        return;
+UI::TabWidget *UI::TabBar::closeTabOnNameSlot(const QString &name) {
+  for (auto *tab : tabs_) {
+    if (tab->getName() == name) {
+      removeTab(tab);
+      return tab;
     }
+  }
 
-    for (const auto& ch: name) {
-        if (ch.isSpace()) {
-            return;
-        }
-    }
-
-    for (const auto& t: tabs_) {
-        if (t->getName() == name) {
-            return;
-        }
-    }
-
-    auto* tab = new UI::TabWidget(name, tabBar_);
-    tabs_.append(tab);
-
-    const auto plusIndex = tabLayout_->indexOf(plusButton_);
-    tabLayout_->insertWidget(plusIndex, tab);
-
-    connect(tab, &UI::TabWidget::clickedTriggered,
-            this, &TabBar::setActiveTabSlot);
-
-    connect(tab, &UI::TabWidget::closeRequestedTriggered,
-            this, &TabBar::closeTabOnPtrSlot);
-
-    connect(tab, &UI::TabWidget::draggedOutTriggered,
-            this,
-            [this](TabWidget* draggedTab) {
-                emit openTabWindowTriggered(draggedTab->getName());
-                closeTabOnPtrSlot(draggedTab);
-            });
-
-    setActiveTabSlot(tab);
+  return nullptr;
 }
 
+void UI::TabBar::setActiveTabSlot(TabWidget *tab) {
+  if (tab == nullptr) {
+    return;
+  }
 
-UI::TabWidget* UI::TabBar::closeTabOnNameSlot(const QString& name) {
-    for (auto* tab: tabs_) {
-        if (tab->getName() == name) {
-            closeTabOnPtrSlot(tab);
-            return tab;
-        }
-    }
+  if (activeTab_ != nullptr) {
+    activeTab_->setActive(false);
+  }
 
-    return nullptr;
+  activeTab_ = tab;
+  activeTab_->setActive(true);
+
+  emit setActiveTabTriggered(tab->getName());
 }
 
+void UI::TabBar::openTabMenuSlot(TabWidget *tab, const QPoint &localPos)
+{
 
-void UI::TabBar::setActiveTabSlot(TabWidget* tab) {
-    if (tab == nullptr) {
-        return;
-    }
 
-    if (activeTab_ != nullptr) {
-        activeTab_->setActive(false);
-    }
+  if (!tabMenu_) {
+    tabMenu_ = new TabMenu(this);
+  }
 
-    activeTab_ = tab;
-    activeTab_->setActive(true);
-
-    emit setActiveTabTriggered(tab->getName());
+  contextTab_ = tab;
+  const QPoint globalPos = tab->mapToGlobal(localPos);
+  tabMenu_->move(globalPos);
+  tabMenu_->exec();
 }
 
+void UI::TabBar::dragEnterEvent(QDragEnterEvent *event) {
+  if (event->mimeData()->hasFormat("application/x-tabwidget")) {
+    event->acceptProposedAction();
+  }
+}
 
-void UI::TabBar::closeTabOnPtrSlot(TabWidget* tab) {
-    if (!tab) {
-        return;
+void UI::TabBar::dragMoveEvent(QDragMoveEvent *event) {
+  if (event->mimeData()->hasFormat("application/x-tabwidget")) {
+    event->acceptProposedAction();
+  }
+}
+
+void UI::TabBar::dropEvent(QDropEvent *event) {
+  if (!event->mimeData()->hasFormat("application/x-tabwidget")) {
+    return;
+  }
+
+  const auto data = event->mimeData()->data("application/x-tabwidget");
+  auto *tab = reinterpret_cast<TabWidget *>(data.toULongLong());
+
+  const auto localPos = tabBar_->mapFrom(this, event->position().toPoint());
+
+  if (const auto plusGeometry = plusButton_->geometry();
+      localPos.x() > plusGeometry.center().x()) {
+    tabLayout_->removeWidget(tab);
+    tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
+  } else {
+    int insertIndex = -1;
+
+    for (int index = 0; index < tabLayout_->count(); ++index) {
+      const auto *const widget = tabLayout_->itemAt(index)->widget();
+      if (widget == nullptr || widget == plusButton_) {
+        continue;
+      }
+
+      if (const auto geometry = widget->geometry();
+          localPos.x() < geometry.center().x()) {
+        insertIndex = index;
+        break;
+      }
     }
-
-    const auto index = tabLayout_->indexOf(tab);
 
     tabLayout_->removeWidget(tab);
-    tab->hide();
 
-    if (activeTab_ == tab) {
-        activeTab_ = nullptr;
-
-        if (isEmptyTab()) {
-            emit allTabsCloseTriggered();
-            return;
-        }
-
-        QWidget* newTab = nullptr;
-
-        if (index < tabLayout_->count()) {
-            newTab = tabLayout_->itemAt(index)->widget();
-        } else if (index - 1 >= 0) {
-            newTab = tabLayout_->itemAt(index - 1)->widget();
-        }
-
-        if (newTab) {
-            setActiveTabSlot(dynamic_cast<TabWidget*>(newTab));
-        }
-    }
-}
-
-
-void UI::TabBar::dragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-tabwidget")) {
-        event->acceptProposedAction();
-    }
-}
-
-
-void UI::TabBar::dragMoveEvent(QDragMoveEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-tabwidget")) {
-        event->acceptProposedAction();
-    }
-}
-
-
-void UI::TabBar::dropEvent(QDropEvent* event) {
-    if (!event->mimeData()->hasFormat("application/x-tabwidget")) {
-        return;
-    }
-
-    const auto data = event->mimeData()->data("application/x-tabwidget");
-    auto* tab = reinterpret_cast<TabWidget*>(data.toULongLong());
-
-    const auto localPos = tabBar_->mapFrom(this, event->position().toPoint());
-
-    if (const auto plusGeometry = plusButton_->geometry(); localPos.x() > plusGeometry.center().x()) {
-        tabLayout_->removeWidget(tab);
-        tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
+    if (insertIndex != -1) {
+      tabLayout_->insertWidget(insertIndex, tab);
     } else {
-        int insertIndex = -1;
-
-        for (int index = 0; index < tabLayout_->count(); ++index) {
-            const auto* const widget = tabLayout_->itemAt(index)->widget();
-            if (widget == nullptr || widget == plusButton_) {
-                continue;
-            }
-
-            if (const auto geometry = widget->geometry();
-                localPos.x() < geometry.center().x()) {
-                insertIndex = index;
-                break;
-            }
-        }
-
-        tabLayout_->removeWidget(tab);
-
-        if (insertIndex != -1) {
-            tabLayout_->insertWidget(insertIndex, tab);
-        } else {
-            tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
-        }
+      tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
     }
+  }
 
-    setActiveTabSlot(tab);
+  setActiveTabSlot(tab);
 
-    event->acceptProposedAction();
+  event->acceptProposedAction();
 }
-
 
 void UI::TabBar::createPlusButton() {
-    plusButton_ = new QPushButton("+", tabBar_);
-    constexpr auto sizeW = 32;
-    plusButton_->setFixedWidth(sizeW);
-    plusButton_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    plusButton_->setObjectName(QStringLiteral("PlusButtonTab"));
+  plusButton_ = new QPushButton("+", tabBar_);
+  constexpr auto sizeW = 32;
+  plusButton_->setFixedWidth(sizeW);
+  plusButton_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+  plusButton_->setObjectName(QStringLiteral("PlusButtonTab"));
 
-    connect(plusButton_, &QPushButton::clicked, this, [this]() {
-        auto* prompt = new NameInputWidget("Name:", this);
-        const auto globalPos = plusButton_->mapToGlobal(QPoint(0, plusButton_->height()));
+  connect(plusButton_, &QPushButton::clicked, this, [this]() {
+    auto *prompt = new NameInputWidget("Name:", this);
+    const auto globalPos =
+        plusButton_->mapToGlobal(QPoint(0, plusButton_->height()));
 
-        prompt->move(globalPos);
-        prompt->show();
+    prompt->move(globalPos);
+    prompt->show();
 
-        connect(prompt, &InputWidget::inputEnteredTriggered, this, [this](const QString& text) {
-            emit createTabTriggered(text);
-        });
-    });
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this](const QString &text) { emit createTabTriggered(text); });
+  });
 }

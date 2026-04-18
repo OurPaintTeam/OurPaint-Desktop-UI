@@ -3,13 +3,15 @@
 
 
 #include <QWidget>
+#include <QPointer>
 
 class QHBoxLayout;
 class QPushButton;
 class QScrollArea;
 
 namespace UI {
-    class TabWidget;
+class TabMenu;
+class TabWidget;
 
 
     // Scrollable bar with draggable document tabs.
@@ -18,9 +20,7 @@ namespace UI {
 
     public:
         explicit TabBar(QWidget* parent = nullptr);
-        void addTab(const QString& name);
         [[nodiscard]] bool isEmptyTab() const;
-
     signals:
         void renameTabTriggered(const QString& oldName, const QString& newName);
         void removeTabTriggered(const QString& name);
@@ -32,13 +32,12 @@ namespace UI {
     public slots:
         void renameTab(const QString& oldName, const QString& newName);
         void deleteTabSlot(const QString& name);
-        void openTabSlot(const QString& name);
-        void createTabSlot(const QString& name);
         UI::TabWidget* closeTabOnNameSlot(const QString& name);
+        void addTabSlot(const QString& name);
 
     private slots:
         void setActiveTabSlot(UI::TabWidget* tab);
-        void closeTabOnPtrSlot(UI::TabWidget* tab);
+        void openTabMenuSlot(TabWidget* tab, const QPoint& localPos);
 
     protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
@@ -54,8 +53,11 @@ namespace UI {
 
         QVector<TabWidget*> tabs_{};
         TabWidget* activeTab_{nullptr};
+        TabMenu* tabMenu_{nullptr};
+        QPointer<TabWidget> contextTab_;
 
         void createPlusButton();
+      bool removeTab(TabWidget* tab);
     };
 } // namespace UI
 

@@ -133,7 +133,6 @@ void UIManager::removeTabSlot(UI::ProjectManager* manager, const QString& tabNam
     }
 
     if (fs_.removeTab(projectId, tabName) == UI::FileSystem::FsResult::Ok) {
-        manager->deleteTabSlot(tabName);
         manager->addNotification("🗑️ Tab removed: " + tabName);
     } else {
         manager->addNotification("❌ Failed to remove tab: " + tabName);

@@ -70,6 +70,11 @@ void UI::TabWidget::mousePressEvent(QMouseEvent* e) {
         dragStartPos_ = e->pos();
     }
 
+  if (e->button() == Qt::RightButton) {
+    emit rightClickedTriggered(this, e->pos());
+    return;
+  }
+
     QWidget::mousePressEvent(e);
 }
 

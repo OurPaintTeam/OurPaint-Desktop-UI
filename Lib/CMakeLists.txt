@@ -65,6 +65,8 @@ set(MENUS
         Menus/CircleMenu.h
         Menus/LineMenu.cc
         Menus/LineMenu.h
+        Menus/TabMenu.cc
+        Menus/TabMenu.h
 )
 
 set(DRAG

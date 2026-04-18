@@ -21,6 +21,7 @@ namespace UI {
         void clickedTriggered(UI::TabWidget* tab);
         void draggedOutTriggered(UI::TabWidget* tab);
         void closeRequestedTriggered(UI::TabWidget* tab);
+        void rightClickedTriggered(TabWidget* tab, const QPoint& localPos);
 
     protected:
         void mousePressEvent(QMouseEvent* e) override;

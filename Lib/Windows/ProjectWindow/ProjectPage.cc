@@ -289,7 +289,7 @@ void UI::ProjectPage::onAddTabSlot(const QString& name) const {
         return;
     }
 
-    tabBar_->addTab(name);
+    tabBar_->addTabSlot(name);
     updatePageSlot();
 }
 
