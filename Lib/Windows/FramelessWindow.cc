@@ -18,7 +18,7 @@ enum DWM_WINDOW_CORNER_PREFERENCE { DWMWCP_DEFAULT = 0, DWMWCP_DONOTROUND = 1, D
 #include <QMouseEvent>
 
 UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
-    //  setWindowFlags(Qt::Window | Qt::FramelessWindowHint); setAttribute(Qt::WA_TranslucentBackground);
+    //setWindowFlags(Qt::Window | Qt::FramelessWindowHint); setAttribute(Qt::WA_TranslucentBackground);
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle("OurPaint");
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
@@ -48,6 +48,7 @@ void UI::FramelessWindow::initWindowForWindows() const {
     HWND hwnd = (HWND)winId();
     LONG style = GetWindowLong(hwnd, GWL_STYLE);
     style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
+   // style &= ~(WS_CAPTION | WS_SYSMENU );
     SetWindowLong(hwnd, GWL_STYLE, style);
 
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
