@@ -12,6 +12,7 @@ namespace UI {
 
     enum class PrimitiveType {
         Point,
+        CubicBezier,
 
         Line,
         Polyline,

@@ -54,6 +54,7 @@ namespace UI {
         CircleMenu* circleMenu_{nullptr};
         LineMenu* lineMenu_{nullptr};
 
+
         QPushButton* cursorTool_{nullptr};
         QPushButton* sizeTool_{nullptr};
 
@@ -61,6 +62,7 @@ namespace UI {
         MenuButton* linePrimitive_{nullptr};
         MenuButton* circlePrimitive_{nullptr};
         MenuButton* arcPrimitive_{nullptr};
+        QPushButton* cubicBezierPrimitive_{nullptr};
 
 
         struct ConstraintConfig {

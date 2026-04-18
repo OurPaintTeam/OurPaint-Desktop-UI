@@ -109,6 +109,8 @@ void UI::ToolBar::initFiguresLane() {
     arcPrimitive_->setOpenLeftClick(false);
     arcPrimitive_->setChange(true);
 
+    cubicBezierPrimitive_ = figuresContainer_->addButton(QIcon(":/Assets/icons/primitives/vector.png"));
+    cubicBezierPrimitive_->setToolTip("CubicBezier");
 
     constexpr QSize toolsSize(25, 25);
     cursorTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/cursorTool.png"));
@@ -249,6 +251,11 @@ void UI::ToolBar::initSignals() {
 
     connect(pointPrimitive_, &QPushButton::clicked, this, [this]() {
         auto type = PrimitiveType::Point;
+        emit primitiveTriggered(type);
+    });
+
+    connect(cubicBezierPrimitive_, &QPushButton::clicked, this, [this]() {
+        auto type = PrimitiveType::CubicBezier;
         emit primitiveTriggered(type);
     });
 

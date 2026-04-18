@@ -6,6 +6,8 @@
 
         <file>Assets/icons/primitives/point.png</file>
 
+        <file>Assets/icons/primitives/vector.png</file>
+
         <file>Assets/icons/primitives/line.png</file>
         <file>Assets/icons/primitives/polyline.svg</file>
         <file>Assets/icons/primitives/infiniteLine.svg</file>
