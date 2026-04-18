@@ -9,7 +9,17 @@
 #define DWMWA_WINDOW_CORNER_PREFERENCE 33
 #endif
 
-enum DWM_WINDOW_CORNER_PREFERENCE { DWMWCP_DEFAULT = 0, DWMWCP_DONOTROUND = 1, DWMWCP_ROUND = 2, DWMWCP_ROUNDSMALL = 3 };
+#ifndef DWMWA_CAPTION_COLOR
+#define DWMWA_BORDER_COLOR 34
+#define DWMWA_CAPTION_COLOR 35
+#endif
+
+enum DWM_WINDOW_CORNER_PREFERENCE {
+  DWMWCP_DEFAULT = 0,
+  DWMWCP_DONOTROUND = 1,
+  DWMWCP_ROUND = 2,
+  DWMWCP_ROUNDSMALL = 3
+};
 
 #endif
 
@@ -17,62 +27,84 @@ enum DWM_WINDOW_CORNER_PREFERENCE { DWMWCP_DEFAULT = 0, DWMWCP_DONOTROUND = 1, D
 #include <QFile>
 #include <QMouseEvent>
 
-UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
-    //setWindowFlags(Qt::Window | Qt::FramelessWindowHint); setAttribute(Qt::WA_TranslucentBackground);
-    setObjectName(QStringLiteral("FramelessWindow"));
-    setWindowTitle("OurPaint");
-    setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
+UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
+  // setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+  setAttribute(Qt::WA_TranslucentBackground);
+  setAttribute(Qt::WA_NoSystemBackground);
+  setObjectName(QStringLiteral("FramelessWindow"));
+  setWindowTitle("OurPaint");
+  setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
 
-    const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
-                                   ":/Styles/text.qss", ":/Styles/scroll.qss"});
+  const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss",
+                                 ":/Styles/menu.qss", ":/Styles/tooltip.qss",
+                                 ":/Styles/window.qss", ":/Styles/text.qss",
+                                 ":/Styles/scroll.qss"});
 
-    if (style.isEmpty()) {
-        qWarning() << "No styles loaded!";
-    } else {
-        setStyleSheet(style);
-    }
+  if (style.isEmpty()) {
+    qWarning() << "No styles loaded!";
+  } else {
+    setStyleSheet(style);
+  }
 
 #ifdef Q_OS_WIN
-    initWindowForWindows();
+  initWindowForWindowsFrame();
+  // initWindowForWindowsWithoutFrame();
 #endif
 
-    QApplication::setQuitOnLastWindowClosed(true);
-    constexpr int sizeW = 960;
-    constexpr int sizeY = 540;
-    constexpr auto size = QSize(sizeW, sizeY);
-    resize(size);
+  constexpr int sizeW = 960;
+  constexpr int sizeY = 540;
+  constexpr auto size = QSize(sizeW, sizeY);
+  resize(size);
 }
 
 #ifdef Q_OS_WIN
-void UI::FramelessWindow::initWindowForWindows() const {
-    HWND hwnd = (HWND)winId();
-    LONG style = GetWindowLong(hwnd, GWL_STYLE);
-    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
-   // style &= ~(WS_CAPTION | WS_SYSMENU );
-    SetWindowLong(hwnd, GWL_STYLE, style);
+void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
+  HWND hwnd = (HWND)winId();
+  LONG style = GetWindowLong(hwnd, GWL_STYLE);
+  style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
+  SetWindowLong(hwnd, GWL_STYLE, style);
 
-    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+  DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
+  DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPref,
+                        sizeof(cornerPref));
+}
 
-    DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
-    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPref, sizeof(cornerPref));
+void UI::FramelessWindow::initWindowForWindowsFrame() const {
+  HWND hwnd = (HWND)winId();
+  LONG style = GetWindowLong(hwnd, GWL_STYLE);
+  style &= ~(WS_CAPTION | WS_SYSMENU);
+  SetWindowLong(hwnd, GWL_STYLE, style);
+
+  COLORREF color = RGB(73, 72, 80);
+  DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
+
+  COLORREF borderColor = RGB(73, 72, 80);
+  DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, &borderColor,
+                        sizeof(borderColor));
 }
 
 void UI::FramelessWindow::updateWindowCorners() const {
-    HWND hwnd = (HWND)winId();
+  HWND hwnd = (HWND)winId();
 
-    DWM_WINDOW_CORNER_PREFERENCE pref;
+  DWM_WINDOW_CORNER_PREFERENCE pref;
 
-    if (isMaximized() || isFullScreen()) {
-        pref = DWMWCP_DONOTROUND;
-    } else {
-        pref = DWMWCP_ROUND;
-    }
+  if (isMaximized() || isFullScreen()) {
+    pref = DWMWCP_DONOTROUND;
+  } else {
+    pref = DWMWCP_ROUND;
+  }
 
-    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &pref, sizeof(pref));
+  DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &pref,
+                        sizeof(pref));
 }
 #endif
 
-bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
+bool UI::FramelessWindow::nativeEvent(const QByteArray &eventType,
+                                      void *message, qintptr *result) {
+  /*
+   * Если initWindowForWindowsWithoutFrame()
+   */
+  /*
 #ifdef Q_OS_WIN
     if (eventType == "windows_generic_MSG") {
         MSG* msg = static_cast<MSG*>(message);
@@ -132,38 +164,51 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
         }
     }
 #endif
-
-    return QMainWindow::nativeEvent(eventType, message, result);
+*/
+  return QMainWindow::nativeEvent(eventType, message, result);
 }
 
-void UI::FramelessWindow::changeEvent(QEvent* event) {
+void UI::FramelessWindow::changeEvent(QEvent *event) {
 #ifdef Q_OS_WIN
-    if (event->type() == QEvent::WindowStateChange) {
-        updateWindowCorners();
-    }
+  if (event->type() == QEvent::WindowStateChange) {
+    /*
+     * Если initWindowForWindowsWithoutFrame()
+     */
+    //   updateWindowCorners();
+  }
 #endif
-    QMainWindow::changeEvent(event);
+  QMainWindow::changeEvent(event);
 }
 
-QString UI::FramelessWindow::loadStyle(const QString& path) {
-    QFile file(path);
-    if (!file.exists()) {
-        qWarning() << "Resource not found:" << path;
-        return "";
-    }
+QString UI::FramelessWindow::loadStyle(const QString &path) {
+  QFile file(path);
+  if (!file.exists()) {
+    qWarning() << "Resource not found:" << path;
+    return "";
+  }
 
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        qWarning() << "Failed to open style file:" << path;
-        return "";
-    }
+  if (!file.open(QFile::ReadOnly | QFile::Text)) {
+    qWarning() << "Failed to open style file:" << path;
+    return "";
+  }
 
-    return QString::fromUtf8(file.readAll());
+  return QString::fromUtf8(file.readAll());
 }
 
-QString UI::FramelessWindow::loadStyles(const QStringList& files) {
-    QString style;
-    for (const auto& file : files) {
-        style += loadStyle(file);
-    }
-    return style;
+QString UI::FramelessWindow::loadStyles(const QStringList &files) {
+  QString style;
+  for (const auto &file : files) {
+    style += loadStyle(file);
+  }
+  return style;
+}
+
+void UI::FramelessWindow::showEvent(QShowEvent *event) {
+  if (isStart) {
+    QRect screenGeometry =
+        QGuiApplication::primaryScreen()->availableGeometry();
+    move(screenGeometry.center() - rect().center());
+    isStart = false;
+  }
+  QMainWindow::showEvent(event);
 }

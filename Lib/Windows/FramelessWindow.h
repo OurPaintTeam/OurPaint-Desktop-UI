@@ -17,6 +17,7 @@ namespace UI {
                          qintptr *result) override;
 
         void changeEvent(QEvent* event) override;
+        void showEvent(QShowEvent* event) override;
 
     public:
         explicit FramelessWindow(QWidget *parent = nullptr);
@@ -27,11 +28,13 @@ namespace UI {
     private:
 #ifdef Q_OS_WIN
         void updateWindowCorners() const;
-        void initWindowForWindows() const;
+        void initWindowForWindowsFrame() const;
+        void initWindowForWindowsWithoutFrame() const;
 #endif
 
         QPoint dragOffset_{};
         bool isDragging_{false};
+        bool isStart{true};
 
         static QString loadStyle(const QString& path);
         static QString loadStyles(const QStringList& files);
