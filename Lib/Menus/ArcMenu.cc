@@ -31,3 +31,20 @@ UI::ArcMenu::ArcMenu(QWidget* parent)
     setObjectName(QStringLiteral("ArcMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
 }
+
+
+QAction* UI::ArcMenu::arcCenter() const {
+  return arcCenter_;
+}
+
+QAction* UI::ArcMenu::arc3Points() const {
+  return arc3Points_;
+}
+
+QAction* UI::ArcMenu::arcRadius() const {
+  return arcRadius_;
+}
+
+QAction* UI::ArcMenu::arcSettings() const {
+  return arcSettings_;
+}

@@ -32,6 +32,8 @@ namespace UI {
         explicit ToolBar(QWidget* parent = nullptr);
         void showAllElements();
         void hideAllElements();
+      void setActiveTool(ToolsType tool);
+      void setActiveTool(PrimitiveType tool);
 
     signals:
         void primitiveTriggered(PrimitiveType& type);
@@ -49,6 +51,7 @@ namespace UI {
         void initFiguresLane();
         void initConstraintsLane();
         void initSignals();
+        void setActiveTool(QPushButton* tool);
 
         ArcMenu* arcMenu_{nullptr};
         CircleMenu* circleMenu_{nullptr};
@@ -63,6 +66,7 @@ namespace UI {
         MenuButton* circlePrimitive_{nullptr};
         MenuButton* arcPrimitive_{nullptr};
         QPushButton* cubicBezierPrimitive_{nullptr};
+        QPushButton* activeTool_{nullptr};
 
 
         struct ConstraintConfig {

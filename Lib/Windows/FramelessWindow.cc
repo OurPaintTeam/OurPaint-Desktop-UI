@@ -47,6 +47,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
   }
 
 #ifdef Q_OS_WIN
+  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint); /* отключает заголовок*/
   initWindowForWindowsFrame();
   // initWindowForWindowsWithoutFrame();
 #endif
@@ -70,12 +71,16 @@ void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
 }
 
 void UI::FramelessWindow::initWindowForWindowsFrame() const {
+  // либо  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
+  // либо
   HWND hwnd = (HWND)winId();
+/*
   LONG style = GetWindowLong(hwnd, GWL_STYLE);
   style &= ~(WS_CAPTION | WS_SYSMENU);
-  SetWindowLong(hwnd, GWL_STYLE, style);
+  SetWindowLong(hwnd, GWL_STYLE, style);*/
 
-  COLORREF color = RGB(73, 72, 80);
+  COLORREF color = RGB(31, 52, 56);
+ // COLORREF color = RGB(73, 72, 80); /* как у титле бар */
   DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
 
   COLORREF borderColor = RGB(73, 72, 80);

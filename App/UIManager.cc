@@ -5,7 +5,7 @@
 
 #include "CustomConsole.h"
 #include "RenderEngine.h"
-
+#include "ToolsType.h"
 
 UIManager::UIManager() {
     setlocale(LC_ALL, "");
@@ -36,6 +36,7 @@ void UIManager::openNewWindowOpenProjectSlot(UI::ProjectManager* manager, const 
 
     if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
         auto* newManager = createOpenedProjectManager({data.path, data.id}, new RenderEngine(), new CustomConsole());
+      newManager->setActiveToolProjectWindow(UI::ToolsType::Size);
         for (const auto& tabName: data.tabs) {
             newManager->addTabSlot(tabName);
         }
@@ -54,6 +55,7 @@ void UIManager::openNewWindowCreateProjectSlot(UI::ProjectManager* manager, cons
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         auto* newManager =
                 createOpenedProjectManager({projectPath, projectId}, new RenderEngine(), new CustomConsole());
+      newManager->setActiveToolProjectWindow(UI::ToolsType::Size);
         newManager->addNotification("✨ Project created in new window: " + projectName);
     } else {
         manager->addNotification("❌ Failed to create project: " + projectName);
@@ -64,6 +66,7 @@ void UIManager::openNewWindowCreateProjectSlot(UI::ProjectManager* manager, cons
 void UIManager::openTabWindowSlot(UI::ProjectManager* manager, const QString& nameTab) const {
     manager->openTabWindow(nameTab, new RenderEngine(), new CustomConsole());
     manager->addNotification("✨ Tab created in new window: " + nameTab);
+  manager->setActiveToolTabWindow(nameTab,UI::ToolsType::Size);
 }
 
 
@@ -79,6 +82,7 @@ void UIManager::openProjectThisWindowSlot(UI::ProjectManager* manager, const QSt
             manager->addTabSlot(tabName);
         }
         manager->addNotification("✅ Project opened: " + data.name);
+      manager->setActiveToolProjectWindow(UI::ToolsType::Size);
     }
 }
 
@@ -88,6 +92,7 @@ void UIManager::createProjectThisWindowSlot(UI::ProjectManager* manager, const Q
     if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
         manager->openProjectWindow({projectPath, projectId}, new RenderEngine(), new CustomConsole());
         manager->addNotification("✨ Project created: " + projectName);
+      manager->setActiveToolProjectWindow(UI::ToolsType::Size);
     } else {
         manager->addNotification("❌ Failed to create project: " + projectName);
     }

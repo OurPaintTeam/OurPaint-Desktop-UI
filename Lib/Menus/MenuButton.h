@@ -15,6 +15,7 @@ namespace UI {
         void setDraw(bool draw);
         void setOpenLeftClick(bool acceptLeftClick);
         void setChange(bool acceptChange);
+        void applyAction(const QAction* action);
     signals:
         void leftClickedTriggered(const QAction* action);
 
@@ -24,8 +25,6 @@ namespace UI {
         void wheelEvent(QWheelEvent* event) override;
 
     private:
-        void applyAction(const QAction* action);
-
         QMenu* menu_{nullptr};
         bool draw_{true};
         bool openLeftClick_{true};

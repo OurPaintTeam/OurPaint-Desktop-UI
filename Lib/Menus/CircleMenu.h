@@ -9,10 +9,14 @@ namespace UI {
         Q_OBJECT
     public:
         explicit CircleMenu(QWidget* parent = nullptr);
+      QAction* circleByDiameter() const;
+      QAction* circleByRadius() const;
+      QAction* ellipse() const;
+      QAction* circleSettings() const;
         private:
-        QAction* circleCenter_{nullptr};
-        QAction* circleTwoPoints_{nullptr};
-        QAction* circleThreePoints_{nullptr};
+        QAction* circleByDiameter_{nullptr};
+        QAction* circleByRadius_{nullptr};
+        QAction* ellipse_{nullptr};
         QAction* circleSettings_{nullptr};
     };
 }// namespace UI

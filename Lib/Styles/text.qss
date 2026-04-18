@@ -1,4 +1,3 @@
-
 #ProjectName
 {
     font-size: 14px;
@@ -79,24 +78,6 @@ font-weight: bold;
  }
 
 
-
-#MenuButton::menu-indicator {
-    image: none;              /* убираем стрелку меню */
-}
-
-#HelpButton:hover,
-#MenuButton:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;       /* закругление при hover */
-}
-
-#HelpButton:pressed,
-#HelpButton:checked,
-#MenuButton:pressed,
-#MenuButton:checked {
-    background: rgba(255, 255, 255, 0.16);
-    border-radius: 6px;       /* закругление при нажатии */
-}
 
 
 

@@ -165,8 +165,6 @@ add_library(ourpaint_ui STATIC
 
 target_include_directories(ourpaint_ui PUBLIC
         ..
-        Styles
-        Assets
         Core
         Widgets
         Panels

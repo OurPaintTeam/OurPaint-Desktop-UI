@@ -9,7 +9,10 @@ namespace UI {
 
     public:
         explicit LineMenu(QWidget* parent = nullptr);
-
+      QAction* line() const;
+      QAction* polyLine() const;
+      QAction* infiniteLine() const;
+      QAction* settingsLine() const;
     private:
         QAction* line_{nullptr};
         QAction* polyLine_{nullptr};

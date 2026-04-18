@@ -41,6 +41,13 @@ void UI::BaseEditorPage::setCommandConsoleEngine(QLineEdit* engine) const {
     }
 }
 
+void UI::BaseEditorPage::setActiveTool(ToolsType tool) {
+  toolBar_->setActiveTool(tool);
+}
+void UI::BaseEditorPage::setActiveTool(PrimitiveType tool) {
+  toolBar_->setActiveTool(tool);
+}
+
 
 void UI::BaseEditorPage::initBaseEditorPage() {
     initBasePage();

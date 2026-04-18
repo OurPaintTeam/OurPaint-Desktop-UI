@@ -23,6 +23,9 @@ namespace UI {
         explicit BaseEditorWindow(QWidget* parent = nullptr);
         ~BaseEditorWindow() override = default;
 
+      void setActiveTool(ToolsType tool);
+      void setActiveTool(PrimitiveType tool);
+
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
         void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;

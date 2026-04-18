@@ -16,8 +16,57 @@ QPushButton:hover {
 QPushButton#CloseApplication:hover {
     background: #c42b1c;
 }
+#ActiveTool {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-radius: 6px;
+    color: #D8D8F6;
+     image-position: center;
 
+    padding: 0px;
+    margin: 0px;
+    spacing: 0px;
+}
+#NoActiveTool {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #D8D8F6;
+    image-position: center;
 
+    padding: 0px;
+    margin: 0px;
+    spacing: 0px;
+}
+#NoActiveTool::menu-indicator {
+    image: none;              /* убираем стрелку меню */
+}
+#ActiveTool::menu-indicator {
+    image: none;              /* убираем стрелку меню */
+}
+
+#ActiveTool:hover, #NoActiveTool:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+#ActiveTool:pressed, #NoActiveTool:pressed {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+QPushButton {
+    image-position: center;
+}
+
+#ActiveTool QPushButton::icon {
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+#NoActiveTool QPushButton::icon {
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
 
 /* =========================
    PROJECT BUTTON

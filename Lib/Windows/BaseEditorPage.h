@@ -30,6 +30,8 @@ namespace UI {
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
         void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
+      void setActiveTool(ToolsType tool);
+      void setActiveTool(PrimitiveType tool);
 
     signals:
         void sentCommandTriggered(const QString& command);

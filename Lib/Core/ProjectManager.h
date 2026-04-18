@@ -36,6 +36,11 @@ namespace UI {
         ProjectManager(ProjectData data, QWindow* windowRender, QLineEdit* consoleEngine);
         ~ProjectManager() override;
 
+      void setActiveToolProjectWindow(ToolsType tool) const;
+      void setActiveToolProjectWindow(PrimitiveType tool);
+      void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
+      void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
+
         QString projectPath() const;
         QString projectID() const;
         void setProjectPath(const QString& projectPath);

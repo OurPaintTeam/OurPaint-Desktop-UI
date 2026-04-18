@@ -43,6 +43,28 @@ UI::ProjectManager::~ProjectManager() {
     }
 }
 
+void UI::ProjectManager::setActiveToolProjectWindow(ToolsType tool) const {
+  projectWindow_->setActiveTool(tool);
+}
+void UI::ProjectManager::setActiveToolProjectWindow(PrimitiveType tool) {
+  projectWindow_->setActiveTool(tool);
+}
+void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, ToolsType tool) {
+  for (TabWindow* tab : tabWindows_) {
+    if (tab && tab->tabName() == tabName) {
+      tab->setActiveTool(tool);
+      return;
+    }
+  }
+}
+void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, PrimitiveType tool) {
+  for (TabWindow* tab : tabWindows_) {
+    if (tab && tab->tabName() == tabName) {
+      tab->setActiveTool(tool);
+      return;
+    }
+  }
+}
 
 QString UI::ProjectManager::projectPath() const {
     return projectData_.path;

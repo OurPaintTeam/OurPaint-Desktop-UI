@@ -7,6 +7,12 @@ UI::BaseEditorWindow::BaseEditorWindow(QWidget* parent)
     : BaseWindow(parent) {
 }
 
+void  UI::BaseEditorWindow::setActiveTool(ToolsType tool) {
+editorPage_->setActiveTool(tool);
+}
+void  UI::BaseEditorWindow::setActiveTool(PrimitiveType tool) {
+  editorPage_->setActiveTool(tool);
+}
 
 void UI::BaseEditorWindow::setQOpenGLPainter(QOpenGLWindow* engine) const {
     if (editorPage_) {

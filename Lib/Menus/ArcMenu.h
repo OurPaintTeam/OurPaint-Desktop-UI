@@ -10,7 +10,10 @@ namespace UI {
 
     public:
         explicit ArcMenu(QWidget* parent = nullptr);
-
+      QAction* arcCenter() const;
+      QAction* arc3Points() const;
+      QAction* arcRadius() const;
+      QAction* arcSettings() const;
     private:
         QAction* arcCenter_{nullptr};
         QAction* arc3Points_{nullptr};

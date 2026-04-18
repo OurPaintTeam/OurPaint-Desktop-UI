@@ -199,19 +199,18 @@ void UI::MenuButton::wheelEvent(QWheelEvent* event) {
 
 
 void UI::MenuButton::applyAction(const QAction* action) {
-    if (!action) {
-        return;
-    }
+  if (!action) {
+    return;
+  }
 
-    if (!action->icon().isNull()) {
-        setIcon(action->icon());
-        setText(QString());
-    } else {
-        setIcon(QIcon());
-        setText(action->text());
-    }
+  if (!action->icon().isNull()) {
+    setIcon(action->icon());
+    setText(QString());
+  } else {
+    setIcon(QIcon());
+    setText(action->text());
+  }
 
-    setToolTip(action->text());
-
-    activeAction_ = action;
+  setToolTip(action->text());
+  activeAction_ = action;
 }

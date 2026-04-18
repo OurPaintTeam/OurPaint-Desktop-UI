@@ -20,7 +20,7 @@ namespace UI {
         LineSettings,
 
         CircleByDiameter,
-        CircleTwoPoints,
+        CircleByRadius,
         EllipseThreePoints,
         CircleSettings,
 

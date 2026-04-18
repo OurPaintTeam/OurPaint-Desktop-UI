@@ -13,7 +13,7 @@
         <file>Assets/icons/primitives/infiniteLine.svg</file>
 
         <file>Assets/icons/primitives/circleByDiameter.png</file>
-        <file>Assets/icons/primitives/circleTwoPoints.svg</file>
+        <file>Assets/icons/primitives/circleByRadius.svg</file>
         <file>Assets/icons/primitives/ellipseThreePoints.svg</file>
 
         <file>Assets/icons/primitives/arcByRadius.png</file>

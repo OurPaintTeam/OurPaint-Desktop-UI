@@ -27,3 +27,20 @@ UI::LineMenu::LineMenu(QWidget* parent)
     setObjectName(QStringLiteral("LineMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
 }
+
+
+QAction* UI::LineMenu::line() const {
+  return line_;
+}
+
+QAction* UI::LineMenu::polyLine() const {
+  return polyLine_;
+}
+
+QAction* UI::LineMenu::infiniteLine() const {
+  return infiniteLine_;
+}
+
+QAction* UI::LineMenu::settingsLine() const {
+  return settingsLine_;
+}
