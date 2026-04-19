@@ -31,9 +31,9 @@ namespace {
 
 UI::FileSystem::FileSystem() {
     const auto docs = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    rootPath_ = toSystemPath(docs + "/OurPaint");
-    projectsDir_ = toSystemPath(rootPath_ + "/Projects");
-    settingsDir_ = toSystemPath(rootPath_ + "/Settings");
+    rootPath_ = toSystemPath(docs + "/OurPaint/");
+    projectsDir_ = toSystemPath(rootPath_ + "/Projects/");
+    settingsDir_ = toSystemPath(rootPath_ + "/Settings/");
     projectsXml_ = toSystemPath(settingsDir_ + "/projects.xml");
     initialize();
 }
@@ -418,7 +418,7 @@ UI::FileSystem::FsResult UI::FileSystem::openFile(const QString& filePath, FileD
 
 
 UI::FileSystem::FsResult UI::FileSystem::removeProjectById(const QString& projectId) const {
-    auto projects = loadProjects();
+    auto projects = loadProjectsRaw();
     QString path;
 
     for (const auto& p: projects) {
@@ -438,6 +438,30 @@ UI::FileSystem::FsResult UI::FileSystem::removeProjectById(const QString& projec
     }
 
     return removeProjectFromXml(projectId);
+}
+
+
+UI::FileSystem::FsResult UI::FileSystem::removeProjectFromXml(const QString& projectId) const {
+    auto projects = loadProjectsRaw();
+
+    QVector<ProjectData> updated;
+    bool found = false;
+
+    for (const auto& p : projects) {
+        if (p.id == projectId) {
+            found = true;
+            continue;
+        }
+
+        updated.append(p);
+    }
+
+    if (!found) {
+        return FsResult::NotFound;
+    }
+
+    saveProjects(updated);
+    return FsResult::Ok;
 }
 
 
@@ -732,88 +756,6 @@ UI::FileSystem::FsResult UI::FileSystem::renameTab(const QString& projectId,
 }
 
 
-QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjects() const {
-    QVector<ProjectData> list;
-    QFile file(projectsXml_);
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        return list;
-    }
-
-    QXmlStreamReader xml(&file);
-
-    QSet<QString> seenIds;
-    QSet<QString> seenPaths;
-
-    bool modified = false;
-
-    while (!xml.atEnd()) {
-        xml.readNext();
-
-        if (xml.isStartElement() && xml.name() == "project") {
-            ProjectData data;
-            data.id = xml.attributes().value("id").toString();
-            data.name = xml.attributes().value("name").toString();
-
-            const auto rawPath = xml.attributes().value("path").toString();
-            data.path = toComparablePath(rawPath);
-
-            if (data.id.isEmpty() || data.path.isEmpty()) {
-                modified = true;
-                continue;
-            }
-
-            if (seenIds.contains(data.id) || seenPaths.contains(data.path)) {
-                modified = true;
-                continue;
-            }
-
-            if (!QDir(data.path).exists()) {
-                modified = true;
-                continue;
-            }
-
-            seenIds.insert(data.id);
-            seenPaths.insert(data.path);
-
-            list.append(data);
-        }
-    }
-
-    file.close();
-
-    if (xml.hasError()) {
-        modified = true;
-    }
-
-    if (modified) {
-        QFile outFile(projectsXml_);
-        if (outFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-            QXmlStreamWriter writer(&outFile);
-            writer.setAutoFormatting(true);
-
-            writer.writeStartDocument();
-            writer.writeStartElement("projects");
-
-            for (const auto& p : list) {
-                writer.writeStartElement("project");
-                writer.writeAttribute("id", p.id);
-                writer.writeAttribute("name", p.name);
-                writer.writeAttribute("path", p.path);
-                writer.writeEndElement();
-            }
-
-            writer.writeEndElement();
-            writer.writeEndDocument();
-
-            outFile.close();
-        }
-    }
-
-    return list;
-}
-
-
 UI::FileSystem::FsResult UI::FileSystem::addProject(const QString& name, const QString& path,
                                                     const QString& outId) const {
     auto projects = loadProjects();
@@ -856,34 +798,73 @@ UI::FileSystem::FsResult UI::FileSystem::addProject(const QString& name, const Q
 }
 
 
-UI::FileSystem::FsResult UI::FileSystem::removeProjectFromXml(const QString& projectId) const {
-    auto projects = loadProjects();
-    QVector<ProjectData> newList;
-    bool found = false;
+QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjectsRaw() const {
+    QVector<ProjectData> list;
+    QFile file(projectsXml_);
 
-    for (const auto& p: projects) {
-        if (p.id != projectId) {
-            newList.append(p);
-        } else {
-            found = true;
+    if (!file.open(QIODevice::ReadOnly)) {
+        return list;
+    }
+
+    QXmlStreamReader xml(&file);
+
+    while (!xml.atEnd()) {
+        xml.readNext();
+
+        if (xml.isStartElement() && xml.name() == "project") {
+            ProjectData p;
+            p.id = xml.attributes().value("id").toString();
+            p.name = xml.attributes().value("name").toString();
+            p.path = toComparablePath(xml.attributes().value("path").toString());
+
+            if (!p.id.isEmpty() && !p.path.isEmpty()) {
+                list.append(p);
+            }
         }
     }
 
-    if (!found) {
-        return FsResult::NotFound;
+    return list;
+}
+
+
+QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjects() const {
+    const auto raw = loadProjectsRaw();
+
+    QVector<ProjectData> clean;
+    bool changed = false;
+
+    for (const auto& p : raw) {
+        const QString systemPath = toSystemPath(p.path);
+
+        if (QDir(systemPath).exists()) {
+            clean.append(p);
+        } else {
+            changed = true;
+        }
     }
 
+    if (changed) {
+        saveProjects(clean);
+    }
+
+    return clean;
+}
+
+
+void UI::FileSystem::saveProjects(const QVector<ProjectData>& projects) const {
     QFile file(projectsXml_);
+
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        return FsResult::IoError;
+        return;
     }
 
     QXmlStreamWriter xml(&file);
     xml.setAutoFormatting(true);
+
     xml.writeStartDocument();
     xml.writeStartElement("projects");
 
-    for (const auto& p: newList) {
+    for (const auto& p : projects) {
         xml.writeStartElement("project");
         xml.writeAttribute("id", p.id);
         xml.writeAttribute("name", p.name);
@@ -893,9 +874,6 @@ UI::FileSystem::FsResult UI::FileSystem::removeProjectFromXml(const QString& pro
 
     xml.writeEndElement();
     xml.writeEndDocument();
-    file.close();
-
-    return FsResult::Ok;
 }
 
 

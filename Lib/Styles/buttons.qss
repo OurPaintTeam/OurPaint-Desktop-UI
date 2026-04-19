@@ -72,6 +72,56 @@ QPushButton {
    PROJECT BUTTON
 ========================= */
 
+
+#ProjectNameEdit {
+   background: transparent;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    color: #D8D8F6;
+    text-align: left;
+}
+
+#NameContainerProject {
+    background-color: red;
+}
+
+
+#ConfirmDialogYesButton {
+    padding: 8px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #D8D8F6;
+}
+
+#ConfirmDialogNoButton {
+    padding: 8px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #D8D8F6;
+}
+
+#ConfirmDialogYesButton:hover {
+    padding: 8px 20px;
+    color: #D8D8F6;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#ConfirmDialogNoButton:hover {
+    padding: 8px 20px;
+    color: #D8D8F6;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#RenameBtnProject:hover{
+                     background: rgba(255,255,255,0.3);
+                 }
+#DeleteBtnProject:hover {
+                     background: rgba(255,255,255,0.3);
+                 }
+
 #ProjectButton
 {
     background-color: transparent;
@@ -89,8 +139,6 @@ QPushButton {
 {
     background-color: #3f3e47;
 }
-
-
 
 
 /* =========================
@@ -145,6 +193,8 @@ QPushButton {
 #closeButton_:pressed {
     background-color: #5a2f2f;
 }
+
+
 
 
 

@@ -40,6 +40,7 @@ namespace UI {
         FsResult openProjectByPath(const QString& fullPath, ProjectData& outData) const;
         FsResult openFile(const QString& filePath, FileData& outData) const;
         FsResult removeProjectById(const QString& projectId) const;
+        FsResult removeProjectFromXml(const QString& projectId) const;
         FsResult renameProjectById(const QString& projectId, const QString& newName, ProjectData& outData) const;
         FsResult renameProjectByPath(const QString& fullPath, const QString& newName, ProjectData& outData) const;
         FsResult createTab(const QString& projectId, const QString& tabName) const;
@@ -52,13 +53,15 @@ namespace UI {
         QString settingsDir_;
         QString projectsXml_;
 
+        void saveProjects(const QList<ProjectData>& list) const;
+        QVector<UI::FileSystem::ProjectData> loadProjectsRaw() const;
         QVector<ProjectData> loadProjects() const;
 
         FsResult addProject(const QString& name,
                             const QString& path,
                             const QString& outId) const;
 
-        FsResult removeProjectFromXml(const QString& projectId) const;
+
 
         FsResult renameProjectInXml(const QString& projectId,
                                     const QString& newPath,

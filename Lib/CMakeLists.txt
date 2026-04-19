@@ -145,6 +145,8 @@ set(POP_UP
         PopUp/NameInputWidget.h
         PopUp/PathInputWidget.cc
         PopUp/PathInputWidget.h
+        PopUp/ConfirmDialog.cc
+        PopUp/ConfirmDialog.h
 )
 
 set(FILE_SYSTEM

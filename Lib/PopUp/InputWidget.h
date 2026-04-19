@@ -33,7 +33,6 @@ namespace UI {
 
         QVBoxLayout* mainLayout() const;
         QLineEdit* lineEdit() const;
-    private:
         QLabel* label_{nullptr};
         QLineEdit* lineEdit_{nullptr};
         QPushButton* okButton_{nullptr};
