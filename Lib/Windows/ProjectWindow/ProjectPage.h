@@ -47,7 +47,7 @@ namespace UI {
 
         void openProjectTriggered();
         void exportFileTriggered();
-        void scriptTriggered();
+        void scriptTriggered(const QString& text);
 
         void collaborationOpenTriggered();
         void collaborationCloseTriggered();
@@ -80,6 +80,7 @@ namespace UI {
         void onCreateProjectSlot();
         void onOpenProjectSlot();
         void openFileSlot();
+        void onOpenScriptSlot();
 
     public slots:
         void onAddTabSlot(const QString& name) const;

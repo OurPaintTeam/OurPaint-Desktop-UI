@@ -11,7 +11,7 @@ namespace UI {
 
     public:
         explicit PathInputWidget(const QString& promptText,
-                                 QWidget* parent = nullptr);
+                                 QWidget* parent = nullptr,const bool txt = false);
 
         void setCheckBoxQuestion(const QString& text);
         bool isCheckBoxChecked() const;
@@ -24,6 +24,7 @@ namespace UI {
 
     private slots:
         void openFolderSlot() ;
+        void openFolderTxtSlot();
     };
 } // namespace UI
 

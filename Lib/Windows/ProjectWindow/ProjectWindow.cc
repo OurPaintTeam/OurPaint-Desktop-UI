@@ -41,6 +41,8 @@ void UI::ProjectWindow::initUI() {
             this, &ProjectWindow::closeApplicationTriggered);
   connect(projectPage_, &ProjectPage::applySettings,
         this, &ProjectWindow::applySettings);
+    connect(projectPage_, &ProjectPage::scriptTriggered,
+      this, &ProjectWindow::onOpenScriptTriggered);
 }
 
 

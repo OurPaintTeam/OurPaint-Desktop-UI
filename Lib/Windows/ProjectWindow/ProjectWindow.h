@@ -37,6 +37,7 @@ namespace UI {
         void renameTabTriggered(const QString& oldName, const QString& newName);
         void removeTabTriggered(const QString& fileName);
         void openTabWindowTriggered(const QString& tabName);
+        void onOpenScriptTriggered(const QString& text);
         void closeApplicationTriggered();
 
       void applySettings(double value1, double value2, double value3);

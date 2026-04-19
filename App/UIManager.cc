@@ -218,6 +218,11 @@ void UIManager::closeTabWindowSlot(UI::ProjectManager* manager, const QString& n
 }
 
 
+void UIManager::scriptSlot(UI::ProjectManager* manager, const QString& path) {
+    manager->addNotification("Close tab slot "+path);
+}
+
+
 void UIManager::primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name) {
     Q_UNUSED(type);
     manager->addNotification(name,"Primitive slot selected "+name);
@@ -361,6 +366,11 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::closeTabWindowTriggered, this,
 [this, &manager](const QString& name) {
   closeTabWindowSlot(&manager,name);
+});
+
+    connect(&manager, &UI::ProjectManager::scriptTriggered, this,
+[this, &manager](const QString& path) {
+scriptSlot(&manager,path);
 });
 
     connect(&manager, &QObject::destroyed, this,

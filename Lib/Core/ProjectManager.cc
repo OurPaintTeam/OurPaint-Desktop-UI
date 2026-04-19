@@ -316,6 +316,9 @@ void UI::ProjectManager::connectProjectWindowSignals() {
     connect(projectWindow_, &ProjectWindow::setActiveTabTriggered,
         this, &ProjectManager::setActiveTabTriggered);
 
+    connect(projectWindow_, &ProjectWindow::onOpenScriptTriggered,
+    this, &ProjectManager::scriptTriggered);
+
     connect(projectWindow_, &ProjectWindow::closeApplicationTriggered,
             this, [this] {
                 if (auto* window = activeWindow()) {

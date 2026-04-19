@@ -88,6 +88,7 @@ namespace UI {
         void setActiveTabTriggered(const QString& name);
         void returnTabWindowTriggered(const QString& name);
         void closeTabWindowTriggered(const QString& name);
+        void scriptTriggered(const QString& text);
         void goToStartWindowTriggered();
 
       void applySettings(double value1, double value2, double value3);

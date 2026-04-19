@@ -8,7 +8,7 @@
 
 
 UI::PathInputWidget::PathInputWidget(const QString& promptText,
-                                     QWidget* parent)
+                                     QWidget* parent,const bool txt)
     : InputWidget(promptText, parent),
       parentWidget_(parent),
       browseButton_(new QPushButton(this)),
@@ -37,8 +37,13 @@ UI::PathInputWidget::PathInputWidget(const QString& promptText,
 
     mainLayout()->insertLayout(1, layout_);
 
-    connect(browseButton_, &QPushButton::clicked,
-            this, &PathInputWidget::openFolderSlot);
+    if (txt) {
+        connect(browseButton_, &QPushButton::clicked,
+                this, &PathInputWidget::openFolderTxtSlot);
+    }else {
+        connect(browseButton_, &QPushButton::clicked,
+               this, &PathInputWidget::openFolderSlot);
+    }
 }
 
 
@@ -74,5 +79,23 @@ void UI::PathInputWidget::openFolderSlot()  {
     show();
     if (!folderPath.isEmpty()) {
         lineEdit()->setText(folderPath);
+    }
+}
+
+
+void UI::PathInputWidget::openFolderTxtSlot() {
+    hide();
+
+    const auto filePath = QFileDialog::getOpenFileName(
+        parentWidget_,
+        tr("Select TXT File"),
+        lineEdit()->text(),
+        tr("Text Files (*.txt);;All Files (*)")
+    );
+
+    show();
+
+    if (!filePath.isEmpty()) {
+        lineEdit()->setText(filePath);
     }
 }
