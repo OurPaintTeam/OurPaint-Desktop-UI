@@ -45,9 +45,11 @@ namespace UI {
         QString projectID() const;
         void setProjectPath(const QString& projectPath);
         void setProjectData(const ProjectData& data);
+        void setActiveTabNameProject(const QString& name);
 
         void setDefaultProjectsPath(const QString& projectPath);
         void setProjectsList(const QVector<QPair<QString, QString> >& projectsList);
+        void addNotification(const QString& tabName,const QString& text) const;
         void addNotification(const QString& text) const;
 
         // StartWindow is created (if needed) and ProjectWindow is removed.
@@ -67,10 +69,10 @@ namespace UI {
         void setCommandConsoleEngine(QLineEdit* engine) const;
 
         signals:
-        void sentCommandTriggered(const QString& command);
-        void primitiveTriggered(PrimitiveType& type);
-        void constraintTriggered(ConstraintType& type);
-        void toolsTriggered(ToolsType& type);
+        void sentCommandTriggered(const QString tabName, const QString& command);
+        void primitiveTriggered(const QString tabName,PrimitiveType& type);
+        void constraintTriggered(const QString tabName,ConstraintType& type);
+        void toolsTriggered(const QString tabName, ToolsType& type);
 
         void openProjectThisWindowTriggered(const QString& path);
         void createProjectThisWindowTriggered(const QString& path);
@@ -83,6 +85,9 @@ namespace UI {
         void createFileTriggered(const QString& fileName);
         void renameTabTriggered(const QString& oldName, const QString& newName);
         void removeTabTriggered(const QString& fileName);
+        void setActiveTabTriggered(const QString& name);
+        void returnTabWindowTriggered(const QString& name);
+        void closeTabWindowTriggered(const QString& name);
         void goToStartWindowTriggered();
 
       void applySettings(double value1, double value2, double value3);
@@ -105,7 +110,6 @@ namespace UI {
         ProjectData projectData_{};
         QString defaultProjectPath_{};
         QVector<QPair<QString, QString> > projectsList_{};
-        QVector<QString> tabs_{};
 
         StartWindow* startWindow_{nullptr};
         ProjectWindow* projectWindow_{nullptr};

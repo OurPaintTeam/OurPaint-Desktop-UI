@@ -22,9 +22,9 @@ bool UIManager::checkedOpened(const QString& projectPath) const {
 }
 
 
-void UIManager::sentCommandFromConsole(UI::ProjectManager* manager, const QString& command) {
+void UIManager::sentCommandFromConsole(UI::ProjectManager* manager, const QString& command,const QString& name) const{
     Q_UNUSED(command);
-    manager->addNotification("Console command received");
+    manager->addNotification(name,"Console command received "+ name);
 }
 
 
@@ -65,7 +65,7 @@ void UIManager::openNewWindowCreateProjectSlot(UI::ProjectManager* manager, cons
 
 void UIManager::openTabWindowSlot(UI::ProjectManager* manager, const QString& nameTab) const {
     manager->openTabWindow(nameTab, new RenderEngine(), new CustomConsole());
-    manager->addNotification("✨ Tab created in new window: " + nameTab);
+    manager->addNotification(nameTab,"✨ Tab created in new window: " + nameTab);
   manager->setActiveToolTabWindow(nameTab,UI::ToolsType::Size);
 }
 
@@ -203,22 +203,36 @@ void UIManager::deleteSlot(UI::ProjectManager* manager) {
     projectManagers_.removeOne(manager);
 }
 
+void UIManager::setActiveTabSlot(UI::ProjectManager* manager, const QString& name) {
 
-void UIManager::primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type) {
-    Q_UNUSED(type);
-    manager->addNotification("Primitive slot selected");
+}
+
+void UIManager::returnTabWindowSlot(UI::ProjectManager* manager, const QString& name) {
+    manager->addTabSlot(name);
+    manager->addNotification("Return tab slot "+name);
 }
 
 
-void UIManager::constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type) {
-    Q_UNUSED(type);
-    manager->addNotification("Constraint slot selected");
+void UIManager::closeTabWindowSlot(UI::ProjectManager* manager, const QString& name) {
+    manager->addNotification("Close tab slot "+name);
 }
 
 
-void UIManager::toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type) {
+void UIManager::primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name) {
     Q_UNUSED(type);
-    manager->addNotification("Tools slot");
+    manager->addNotification(name,"Primitive slot selected "+name);
+}
+
+
+void UIManager::constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type,const QString& name) {
+    Q_UNUSED(type);
+    manager->addNotification(name,"Constraint slot selected "+name);
+}
+
+
+void UIManager::toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type,const QString& name) {
+    Q_UNUSED(type);
+    manager->addNotification(name,"Tools slot "+name);
 }
 void UIManager::settingsSlot(UI::ProjectManager *manager, double f, double s, double t) {
   qDebug()<<f<<s<<t;
@@ -250,8 +264,8 @@ UI::ProjectManager* UIManager::createProjectManager(const UI::ProjectManager::Pr
 
 void UIManager::initSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
-            [this, &manager](const QString& command) {
-                sentCommandFromConsole(&manager, command);
+            [this, &manager](const QString& name,const QString& command) {
+                sentCommandFromConsole(&manager, command,name);
             });
 
     connect(&manager, &UI::ProjectManager::openNewWindowOpenProjectTriggered, this,
@@ -315,24 +329,39 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
             });
 
     connect(&manager, &UI::ProjectManager::primitiveTriggered, this,
-            [this, &manager](UI::PrimitiveType& type) {
-                primitiveSlot(&manager, type);
+            [this, &manager](const QString& name,UI::PrimitiveType& type) {
+                primitiveSlot(&manager, type,name);
             });
 
     connect(&manager, &UI::ProjectManager::constraintTriggered, this,
-            [this, &manager](UI::ConstraintType& type) {
-                constraintSlot(&manager, type);
+            [this, &manager](const QString& name,UI::ConstraintType& type) {
+                constraintSlot(&manager, type,name);
             });
 
     connect(&manager, &UI::ProjectManager::toolsTriggered, this,
-            [this, &manager](UI::ToolsType& type) {
-                toolsSlot(&manager, type);
+            [this, &manager](const QString& name,UI::ToolsType& type) {
+                toolsSlot(&manager, type,name);
             });
 
   connect(&manager, &UI::ProjectManager::applySettings, this,
         [this, &manager](double f,double s,double t) {
             settingsSlot(&manager, f,s,t);
         });
+
+    connect(&manager, &UI::ProjectManager::setActiveTabTriggered, this,
+      [this, &manager](const QString& name) {
+          setActiveTabSlot(&manager,name);
+      });
+
+    connect(&manager, &UI::ProjectManager::returnTabWindowTriggered, this,
+  [this, &manager](const QString& name) {
+      returnTabWindowSlot(&manager,name);
+  });
+
+    connect(&manager, &UI::ProjectManager::closeTabWindowTriggered, this,
+[this, &manager](const QString& name) {
+  closeTabWindowSlot(&manager,name);
+});
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] {

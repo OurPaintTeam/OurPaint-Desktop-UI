@@ -109,6 +109,19 @@ QPushButton {
     background: rgba(255, 255, 255, 0.3);
 }
 
+#ReturnTab {
+    padding: 5px 5x;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #D8D8F6;
+}
+#ReturnTab:hover {
+              padding: 5px 5px;
+              color: #D8D8F6;
+              background: rgba(255, 255, 255, 0.3);
+          }
+
 #ConfirmDialogNoButton:hover {
     padding: 8px 20px;
     color: #D8D8F6;

@@ -25,16 +25,17 @@ namespace UI {
 
       void setActiveTool(ToolsType tool);
       void setActiveTool(PrimitiveType tool);
+        void setActiveName(const QString& name);
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
         void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
 
     signals:
-        void sentCommandTriggered(const QString& command);
-        void primitiveTriggered(PrimitiveType& type);
-        void constraintTriggered(ConstraintType& type);
-        void toolsTriggered(ToolsType& type);
+        void sentCommandTriggered(const QString tabName, const QString& command);
+        void primitiveTriggered(const QString tabName,PrimitiveType& type);
+        void constraintTriggered(const QString tabName,ConstraintType& type);
+        void toolsTriggered(const QString tabName, ToolsType& type);
 
     protected:
         void initEditor(BaseEditorPage* editorPage);

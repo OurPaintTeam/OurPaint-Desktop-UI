@@ -12,9 +12,10 @@ UI::TabWindow::TabWindow(const QString& tabName, QWidget* parent)
 
 
 void UI::TabWindow::initUI() {
-    tabPage_ = new TabPage(this);
+    tabPage_ = new TabPage(this,tabName_);
     initEditor(tabPage_);
     setWindowTitle(tabName_);
+    connect(tabPage_,&TabPage::returnTabWindowTriggered,this,&TabWindow::returnTabTriggered);
 }
 
 
@@ -26,10 +27,10 @@ QString UI::TabWindow::tabName() const {
 void UI::TabWindow::setTabName(const QString& tabName) {
     tabName_ = tabName;
     setWindowTitle(tabName_);
+    setActiveName(tabName_);
 }
 
 
 void UI::TabWindow::closeEvent(QCloseEvent* event) {
-    emit returnTabTriggered(tabName_);
     BaseEditorWindow::closeEvent(event);
 }

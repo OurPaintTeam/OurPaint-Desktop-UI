@@ -52,6 +52,27 @@ UI::TabBar::TabBar(QWidget *parent)
       }
     });
 
+    connect(tabMenu_, &TabMenu::closeAllRightTabsTriggered, this, [this]() {
+        if (!contextTab_) {return;}
+
+        const int index = tabs_.indexOf(contextTab_);
+        if (index == -1){ return;}
+
+        for (int i = tabs_.size() - 1; i > index; --i) {
+            removeTab(tabs_[i]);
+        }
+    });
+
+    connect(tabMenu_, &TabMenu::closeAllLeftTabsTriggered, this, [this]() {
+      if (!contextTab_){ return;}
+
+      const int index = tabs_.indexOf(contextTab_);
+      if (index == -1) {return;}
+
+      for (int i = index - 1; i >= 0; --i) {
+          removeTab(tabs_[i]);
+      }
+  });
   tabBar_->setObjectName(QStringLiteral("TabBarWidget"));
   tabBar_->setAttribute(Qt::WA_StyledBackground, true);
   tabBar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

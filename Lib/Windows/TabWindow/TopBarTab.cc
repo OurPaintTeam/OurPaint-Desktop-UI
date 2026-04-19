@@ -3,6 +3,8 @@
 #include "SideTool.h"
 
 #include <QLabel>
+#include <QPushButton>
+
 
 UI::TopBarTab::TopBarTab(QWidget* parent)
     : BaseEditorTopBar(parent) {
@@ -32,5 +34,11 @@ void UI::TopBarTab::createTabWidgets() {
     title_ = new QLabel(QStringLiteral("OurPaint"), this);
     title_->setObjectName(QStringLiteral("TitleOurPaint"));
 
+    const auto x = new QPushButton(this);
+    connect(x, &QPushButton::clicked, this,&TopBarTab::returnTabWindowTriggered);
+    x->setToolTip("Return");
+    x->setObjectName("ReturnTab");
+    x->setIcon( QIcon(":/Assets/icons/showHidePanels/home.svg"));
     addLeftWidget(title_);
+    addLeftWidget(x);
 }

@@ -20,7 +20,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit ProjectPage(QWidget* parent = nullptr);
+        explicit ProjectPage(QWidget* parent = nullptr,const QString& name = "");
         ~ProjectPage() override = default;
 
         void setDefaultProjectsPath(const QString& projectPath);

@@ -17,35 +17,48 @@ namespace {
 } // namespace
 
 
-UI::BaseEditorPage::BaseEditorPage(QWidget* parent)
-    : BasePage(parent) {
+UI::BaseEditorPage::BaseEditorPage(QWidget *parent,const QString& name)
+    : BasePage(parent),activeName_(name) {
 }
 
 
-void UI::BaseEditorPage::setQOpenGLPainter(QOpenGLWindow* engine) const {
+QString UI::BaseEditorPage::name() const {
+   return activeName_;
+}
+
+void UI::BaseEditorPage::setQOpenGLPainter(QOpenGLWindow *engine) const {
     if (painter_) {
         painter_->setQOpenGL(engine);
     }
 }
 
-void UI::BaseEditorPage::setQWindowRender(QWindow* engine) const {
+
+void UI::BaseEditorPage::setQWindowRender(QWindow *engine) const {
     if (painter_) {
         painter_->setQWindowRender(engine);
     }
 }
 
 
-void UI::BaseEditorPage::setCommandConsoleEngine(QLineEdit* engine) const {
+void UI::BaseEditorPage::setCommandConsoleEngine(QLineEdit *engine) const {
     if (console_) {
         console_->setLineEditEngine(engine);
     }
 }
 
+
 void UI::BaseEditorPage::setActiveTool(ToolsType tool) {
-  toolBar_->setActiveTool(tool);
+    toolBar_->setActiveTool(tool);
 }
+
+
 void UI::BaseEditorPage::setActiveTool(PrimitiveType tool) {
-  toolBar_->setActiveTool(tool);
+    toolBar_->setActiveTool(tool);
+}
+
+
+void UI::BaseEditorPage::setActiveName(const QString& name) {
+    activeName_ = name;
 }
 
 
@@ -58,8 +71,8 @@ void UI::BaseEditorPage::initBaseEditorPage() {
 }
 
 
-QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget* parent) {
-    auto* workspacePage = new QWidget(parent);
+QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
+    auto *workspacePage = new QWidget(parent);
     workspacePage->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     workspaceLayout_ = new QVBoxLayout(workspacePage);
@@ -95,13 +108,42 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget* parent) {
     workspaceLayout_->setStretchFactor(consoleWrapper_, 0);
 
     connect(console_, &CommandConsole::sentCommandTriggered,
-            this, &BaseEditorPage::sentCommandTriggered);
+            this, [this](const QString& command) {
+                if (activeName_.isEmpty()) {
+                    return;
+                }
+
+                emit sentCommandTriggered(activeName_, command);
+            });
+
     connect(toolBar_, &ToolBar::primitiveTriggered,
-            this, &BaseEditorPage::primitiveTriggered);
+            this, [this](PrimitiveType& type) {
+                if (activeName_.isEmpty()) {
+                    return;
+                }
+
+                emit primitiveTriggered(activeName_, type);
+            });
+
+
     connect(toolBar_, &ToolBar::constraintTriggered,
-            this, &BaseEditorPage::constraintTriggered);
+            this, [this](ConstraintType& type) {
+                if (activeName_.isEmpty()) {
+                    return;
+                }
+
+                emit constraintTriggered(activeName_, type);
+            });
+
+
     connect(toolBar_, &ToolBar::toolsTriggered,
-            this, &BaseEditorPage::toolsTriggered);
+            this, [this](ToolsType& type) {
+                if (activeName_.isEmpty()) {
+                    return;
+                }
+
+                emit toolsTriggered(activeName_, type);
+            });
 
     return workspacePage;
 }

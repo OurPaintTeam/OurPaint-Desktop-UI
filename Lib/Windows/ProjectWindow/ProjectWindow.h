@@ -27,6 +27,7 @@ namespace UI {
     signals:
         void windowClosedTriggered();
         void goToStartWindowTriggered();
+        void setActiveTabTriggered(const QString& name);
         void openProjectThisWindowTriggered(const QString& path);
         void createProjectThisWindowTriggered(const QString& path);
         void openNewWindowOpenProjectTriggered(const QString& path);

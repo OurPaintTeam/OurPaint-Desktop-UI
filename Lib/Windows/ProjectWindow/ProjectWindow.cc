@@ -31,6 +31,8 @@ void UI::ProjectWindow::initUI() {
             this, &ProjectWindow::createFileTriggered);
     connect(projectPage_, &ProjectPage::renameTabTriggered,
             this, &ProjectWindow::renameTabTriggered);
+    connect(projectPage_, &ProjectPage::setActiveTabTriggered,
+           this, &ProjectWindow::setActiveTabTriggered);
     connect(projectPage_, &ProjectPage::removeTabTriggered,
             this, &ProjectWindow::removeTabTriggered);
     connect(projectPage_, &ProjectPage::openTabWindowTriggered,
@@ -66,6 +68,7 @@ void UI::ProjectWindow::deleteTabSlot(const QString& name) const {
 void UI::ProjectWindow::renameTabSlot(const QString& oldName, const QString& newName) const {
     if (projectPage_) {
         projectPage_->onRenameTabSlot(oldName, newName);
+        projectPage_->setActiveName(newName);
     }
 }
 

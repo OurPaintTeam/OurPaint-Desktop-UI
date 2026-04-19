@@ -24,20 +24,22 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit BaseEditorPage(QWidget* parent = nullptr);
+        explicit BaseEditorPage(QWidget* parent = nullptr,const QString& name = "");
+        QString name() const;
         ~BaseEditorPage() override = default;
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
         void setQWindowRender(QWindow* engine) const;
         void setCommandConsoleEngine(QLineEdit* engine) const;
-      void setActiveTool(ToolsType tool);
-      void setActiveTool(PrimitiveType tool);
+        void setActiveTool(ToolsType tool);
+        void setActiveTool(PrimitiveType tool);
+        void setActiveName(const QString& name);
 
     signals:
-        void sentCommandTriggered(const QString& command);
-        void primitiveTriggered(PrimitiveType& type);
-        void constraintTriggered(ConstraintType& type);
-        void toolsTriggered(ToolsType& type);
+        void sentCommandTriggered(const QString tabName, const QString& command);
+        void primitiveTriggered(const QString tabName,PrimitiveType& type);
+        void constraintTriggered(const QString tabName,ConstraintType& type);
+        void toolsTriggered(const QString tabName, ToolsType& type);
 
     protected:
         void initBaseEditorPage();
@@ -57,6 +59,7 @@ namespace UI {
         ToolBar* toolBar_{nullptr};
         PainterWidget* painter_{nullptr};
         CommandConsole* console_{nullptr};
+        QString activeName_;
     };
 } // namespace UI
 

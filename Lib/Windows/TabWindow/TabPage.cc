@@ -6,8 +6,8 @@
 #include "TopBarTab.h"
 
 
-UI::TabPage::TabPage(QWidget* parent)
-    : BaseEditorPage(parent) {
+UI::TabPage::TabPage(QWidget* parent,const QString& name)
+    : BaseEditorPage(parent,name) {
     setObjectName(QStringLiteral("TabPage"));
     initUI();
 }
@@ -31,4 +31,8 @@ void UI::TabPage::initUI() {
     topBar_->setConsole(consoleWrapper_);
     topBar_->setLeftTool(leftTool_);
     topBar_->setRightTool(rightTool_);
+
+    connect(topBar_,&TopBarTab::returnTabWindowTriggered,this,[this] {
+        emit returnTabWindowTriggered(name());
+    });
 }

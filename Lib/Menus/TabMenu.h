@@ -12,10 +12,14 @@ signals:
   void renameTabTriggered();
   void closeTabTriggered();
   void closeAllTabsTriggered();
+    void closeAllRightTabsTriggered();
+    void closeAllLeftTabsTriggered();
 private:
   QAction* deleteTab_{nullptr};
   QAction* renameTab_{nullptr};
   QAction* closeTab_{nullptr};
+    QAction* closeAllLeftTabs_{nullptr};
+    QAction* closeAllRightTabs_{nullptr};
   QAction* closeAllTabs_{nullptr};
 
 };

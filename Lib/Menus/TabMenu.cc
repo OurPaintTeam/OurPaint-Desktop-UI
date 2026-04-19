@@ -13,6 +13,8 @@ UI::TabMenu::TabMenu(QWidget* parent)
 
   addSeparator();
 
+    closeAllLeftTabs_ = addAction("Close all left tabs");
+    closeAllRightTabs_ = addAction("Close all right tabs");
   closeAllTabs_ = addAction("Close all tabs");
 
   connect(deleteTab_, &QAction::triggered,
@@ -26,4 +28,8 @@ UI::TabMenu::TabMenu(QWidget* parent)
 
   connect(closeAllTabs_, &QAction::triggered,
           this, &UI::TabMenu::closeAllTabsTriggered);
+    connect(closeAllLeftTabs_, &QAction::triggered,
+        this, &UI::TabMenu::closeAllLeftTabsTriggered);
+    connect(closeAllRightTabs_, &QAction::triggered,
+        this, &UI::TabMenu::closeAllRightTabsTriggered);
 }

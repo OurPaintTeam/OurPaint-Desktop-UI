@@ -24,8 +24,8 @@ namespace {
 } // namespace
 
 
-UI::ProjectPage::ProjectPage(QWidget* parent)
-    : BaseEditorPage(parent) {
+UI::ProjectPage::ProjectPage(QWidget* parent,const QString& name)
+    : BaseEditorPage(parent,name) {
     setObjectName("ProjectPage");
 
     initUI();
@@ -53,7 +53,10 @@ void UI::ProjectPage::initUI() {
 
 void UI::ProjectPage::setupConnections() {
     connect(tabBar_, &TabBar::openTabWindowTriggered, this, &ProjectPage::openTabWindowTriggered);
-    connect(tabBar_, &TabBar::setActiveTabTriggered, this, &ProjectPage::setActiveTabTriggered);
+    connect(tabBar_, &TabBar::setActiveTabTriggered, this, [this](const QString& name) {
+        setActiveName(name);
+        emit setActiveTabTriggered(name);
+    });
     connect(tabBar_, &TabBar::createTabTriggered, this, &ProjectPage::createFileTriggered);
     connect(tabBar_, &TabBar::allTabsCloseTriggered, this, &ProjectPage::updatePageSlot);
     connect(tabBar_, &TabBar::renameTabTriggered, this, &ProjectPage::renameTabTriggered);

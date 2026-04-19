@@ -12,9 +12,10 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit TabPage(QWidget* parent = nullptr);
+        explicit TabPage(QWidget* parent = nullptr, const QString& name = "");
         ~TabPage() override = default;
-
+    signals:
+        void returnTabWindowTriggered(const QString& name);
     private:
         void initUI() override;
 

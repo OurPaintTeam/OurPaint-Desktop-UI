@@ -67,6 +67,8 @@ UI::ProjectButton::ProjectButton(const QString& name,
     layout_->addWidget(pathLabel_);
 
     nameLabel_->installEventFilter(this);
+    nameLabel_->setToolTip(name);
+    pathLabel_->setToolTip(path);
 
     connect(edit_, &RenameTabLineEdit::focusLost, this, &ProjectButton::cancelRenameInline);
     connect(edit_, &QLineEdit::returnPressed, this, &ProjectButton::finishRenameInline);

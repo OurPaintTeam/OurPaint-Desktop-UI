@@ -2,6 +2,7 @@
 
 #include "BaseEditorWindow.h"
 #include "BaseWindow.h"
+#include "ParameterInputWidget.h"
 #include "ProjectWindow.h"
 #include "StartWindow.h"
 #include "TabWindow.h"
@@ -85,6 +86,10 @@ void UI::ProjectManager::setProjectData(const ProjectData& data) {
     projectData_ = data;
 }
 
+void UI::ProjectManager::setActiveTabNameProject(const QString& name) {
+    projectWindow_->setActiveName(name);
+}
+
 
 void UI::ProjectManager::setDefaultProjectsPath(const QString& projectPath) {
     defaultProjectPath_ = projectPath;
@@ -105,6 +110,16 @@ void UI::ProjectManager::setProjectsList(const QVector<QPair<QString, QString> >
 }
 
 
+void UI::ProjectManager::addNotification(const QString& tabName,const QString& text) const {
+    for (auto* t: tabWindows_) {
+        if (t->tabName() == tabName) {
+            t->addNotification(text);
+            return;
+        }
+    }
+}
+
+
 void UI::ProjectManager::addNotification(const QString& text) const {
     if (const auto* window = activeWindow()) {
         window->addNotification(text);
@@ -115,7 +130,6 @@ void UI::ProjectManager::addNotification(const QString& text) const {
 void UI::ProjectManager::openStartWindow() {
     projectData_ = {};
     closeTabWindows();
-    tabs_.clear();
 
     removeProjectWindow();
     ensureStartWindow();
@@ -136,7 +150,6 @@ void UI::ProjectManager::openStartWindow() {
 void UI::ProjectManager::openProjectWindow() {
     removeStartWindow();
     closeTabWindows();
-    tabs_.clear();
 
     removeProjectWindow();
     ensureProjectWindow();
@@ -164,11 +177,10 @@ void UI::ProjectManager::openProjectWindow(const ProjectData& data, QWindow* win
 
 
 void UI::ProjectManager::addTabSlot(const QString& name) {
-    if (name.isEmpty() || tabs_.contains(name)) {
+    if (name.isEmpty()) {
         return;
     }
 
-    tabs_.append(name);
     projectWindow_->addTabSlot(name);
 }
 
@@ -178,7 +190,6 @@ void UI::ProjectManager::deleteTabSlot(const QString& name) {
         return;
     }
 
-    tabs_.removeAll(name);
     projectWindow_->deleteTabSlot(name);
 
     if (auto* tabWindow = findTabWindow(name)) {
@@ -194,9 +205,11 @@ void UI::ProjectManager::renameTabSlot(const QString& oldName, const QString& ne
         return;
     }
 
-    const auto index = tabs_.indexOf(oldName);
-    if (index >= 0) {
-        tabs_[index] = newName;
+    for (auto* tabWindow : tabWindows_) {
+        if (tabWindow->tabName() == oldName) {
+            tabWindow->setTabName(newName);
+            return;
+        }
     }
 
     projectWindow_->renameTabSlot(oldName, newName);
@@ -297,6 +310,9 @@ void UI::ProjectManager::connectProjectWindowSignals() {
     connect(projectWindow_, &ProjectWindow::openTabWindowTriggered,
             this, &ProjectManager::checkOpenedTabWindow);
 
+    connect(projectWindow_, &ProjectWindow::setActiveTabTriggered,
+        this, &ProjectManager::setActiveTabTriggered);
+
     connect(projectWindow_, &ProjectWindow::closeApplicationTriggered,
             this, [this] {
                 if (auto* window = activeWindow()) {
@@ -378,7 +394,6 @@ void UI::ProjectManager::handleProjectWindowClosed() {
     }
 
     closeTabWindows();
-    tabs_.clear();
     projectData_ = {};
 
     if (projectWindow_) {
@@ -401,7 +416,6 @@ void UI::ProjectManager::checkOpenedTabWindow(const QString& tabName) {
     }
     emit openNewWindowTabTriggered(tabName);
 }
-
 
 void UI::ProjectManager::openTabWindow(const QString& tabName,
                                        QWindow* windowRender,
@@ -427,11 +441,20 @@ void UI::ProjectManager::openTabWindow(const QString& tabName,
             this, &ProjectManager::toolsTriggered);
 
     connect(tabWindow, &TabWindow::returnTabTriggered,
-            this, [](const QString&) {
-            });
-    connect(tabWindow, &QObject::destroyed,
-            this, [this, tabWindow] {
+            this, [this, tabWindow](const QString& name) {
+                emit returnTabWindowTriggered(name);
                 tabWindows_.removeOne(tabWindow);
+                tabWindow->close();
+            });
+
+    connect(tabWindow, &QObject::destroyed,
+            this, [this, tabWindow]() {
+                for (const auto* t: tabWindows_) {
+                    if (tabWindow == t) {
+                        tabWindows_.removeOne(tabWindow);
+                   emit closeTabWindowTriggered(tabWindow->windowTitle());
+                    }
+                }
             });
 
     tabWindow->show();
@@ -466,7 +489,6 @@ UI::BaseEditorWindow* UI::ProjectManager::activeEditorWindow() const {
             return tabWindow;
         }
     }
-
     if (projectWindow_ && projectWindow_->isVisible()) {
         return projectWindow_;
     }

@@ -19,7 +19,7 @@ class QWindow;
         UI::FileSystem fs_;
 
         bool checkedOpened(const QString& projectPath) const;
-        void sentCommandFromConsole(UI::ProjectManager* manager, const QString& command);
+        void sentCommandFromConsole(UI::ProjectManager* manager, const QString& command,const QString& name) const;
         void openNewWindowOpenProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
         void openNewWindowCreateProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
         void openProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const;
@@ -33,10 +33,13 @@ class QWindow;
         void renameProjectSlot(UI::ProjectManager* manager, const QString& newName, const QString& path) const;
         void deleteProjectSlot(UI::ProjectManager* manager, const QString& path) const;
         void deleteSlot(UI::ProjectManager* manager);
+        void setActiveTabSlot(UI::ProjectManager* manager, const QString& name);
+        void returnTabWindowSlot(UI::ProjectManager* manager, const QString& name);
+        void closeTabWindowSlot(UI::ProjectManager* manager, const QString& name);
 
-        void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type);
-        void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type);
-        void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type);
+        void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name);
+        void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type,const QString& name);
+        void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type, const QString& name);
         void settingsSlot(UI::ProjectManager* manager,double f,double s,double t);
 
         UI::ProjectManager* createProjectManager(const UI::ProjectManager::ProjectData& projectData = {});

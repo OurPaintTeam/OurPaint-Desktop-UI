@@ -14,6 +14,10 @@ void  UI::BaseEditorWindow::setActiveTool(PrimitiveType tool) {
   editorPage_->setActiveTool(tool);
 }
 
+void  UI::BaseEditorWindow::setActiveName(const QString& name) {
+    editorPage_->setActiveName(name);
+}
+
 void UI::BaseEditorWindow::setQOpenGLPainter(QOpenGLWindow* engine) const {
     if (editorPage_) {
         editorPage_->setQOpenGLPainter(engine);

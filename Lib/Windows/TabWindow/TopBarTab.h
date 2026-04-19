@@ -20,6 +20,8 @@ namespace UI {
         void setLeftTool(SideTool* tool);
         void setRightTool(SideTool* tool);
         void setConsole(QWidget* console);
+        signals:
+        void returnTabWindowTriggered();
 
     private:
         // UI elements
