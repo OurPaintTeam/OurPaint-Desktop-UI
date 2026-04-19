@@ -116,11 +116,12 @@ void UIManager::renameTabSlot(UI::ProjectManager* manager, const QString& oldNam
         return;
     }
 
+    const auto oldname = oldName;
     if (fs_.renameTab(projectId, oldName, newName) == UI::FileSystem::FsResult::Ok) {
         manager->renameTabSlot(oldName, newName);
-        manager->addNotification("✏️ Tab renamed: " + oldName + " → " + newName);
+        manager->addNotification("✏️ Tab renamed: " + oldname + " → " + newName);
     } else {
-        manager->addNotification("❌ Failed to rename tab: " + oldName);
+        manager->addNotification("❌ Failed to rename tab: " + oldname);
     }
 }
 

@@ -9,10 +9,10 @@
 #include <QScroller>
 #include <QSizePolicy>
 
-#include "InputWidget.h"
-#include "NameInputWidget.h"
+
 #include "TabMenu.h"
 #include "TabWidget.h"
+
 
 UI::TabBar::TabBar(QWidget *parent)
     : QWidget(parent), tabBar_(new QWidget(this)),
@@ -35,7 +35,9 @@ UI::TabBar::TabBar(QWidget *parent)
    });
 
     connect(tabMenu_, &TabMenu::renameTabTriggered, this, [this]() {
-      // TODO rename dialog
+        if (contextTab_) {
+            contextTab_->startRename();
+      }
     });
 
     connect(tabMenu_, &TabMenu::closeTabTriggered, this, [this]() {
@@ -110,6 +112,8 @@ void UI::TabBar::addTabSlot(const QString &name) {
   const auto plusIndex = tabLayout_->indexOf(plusButton_);
   tabLayout_->insertWidget(plusIndex, tab);
 
+    connect(tab, &UI::TabWidget::renameTriggered, this,
+        &UI::TabBar::renameTabTriggered);
   connect(tab, &UI::TabWidget::clickedTriggered, this,
           &TabBar::setActiveTabSlot);
   connect(tab, &UI::TabWidget::closeRequestedTriggered, this,
@@ -295,15 +299,28 @@ void UI::TabBar::createPlusButton() {
   plusButton_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
   plusButton_->setObjectName(QStringLiteral("PlusButtonTab"));
 
-  connect(plusButton_, &QPushButton::clicked, this, [this]() {
-    auto *prompt = new NameInputWidget("Name:", this);
-    const auto globalPos =
-        plusButton_->mapToGlobal(QPoint(0, plusButton_->height()));
+    connect(plusButton_, &QPushButton::clicked, this, [this]() {
 
-    prompt->move(globalPos);
-    prompt->show();
+        auto* tab = new TabWidget("",this);
 
-    connect(prompt, &InputWidget::inputEnteredTriggered, this,
-            [this](const QString &text) { emit createTabTriggered(text); });
-  });
+        const auto plusIndex = tabLayout_->indexOf(plusButton_);
+        tabLayout_->insertWidget(plusIndex, tab);
+
+        tab->startRename();
+        connect(tab, &TabWidget::renameTriggered, this,
+                [this, tab](const QString& name,const QString& nameNew) {
+
+            emit createTabTriggered(nameNew);
+             tabLayout_->removeWidget(tab);
+                    tab->deleteLater();
+        });
+
+        connect(tab, &TabWidget::cancelRenameTriggered, this,
+                [this, tab]() {
+
+            tabLayout_->removeWidget(tab);
+            tab->deleteLater();
+        });
+
+    });
 }

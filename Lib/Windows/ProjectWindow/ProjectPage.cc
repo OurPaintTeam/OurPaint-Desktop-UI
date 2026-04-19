@@ -309,5 +309,5 @@ void UI::ProjectPage::onRenameTabSlot(const QString& oldName, const QString& new
         return;
     }
 
-    tabBar_->renameTabTriggered(oldName, newName);
+    tabBar_->renameTab(oldName, newName);
 }

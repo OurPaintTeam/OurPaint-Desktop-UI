@@ -8,9 +8,13 @@
 #include <QPushButton>
 #include <QStyle>
 #include <QToolButton>
+#include <QLineEdit>
+
+#include "RenameTabLineEdit.h"
 
 
 namespace {
+    constexpr int MAX_TAB_TEXT_WIDTH = 120;
     constexpr int K_TAB_HORIZONTAL_PADDING_PX = 8;
     constexpr int K_TAB_LAYOUT_SPACING_PX = 4;
     constexpr int K_CLOSE_BUTTON_WIDTH_PX = 16;
@@ -20,14 +24,15 @@ namespace {
 
 UI::TabWidget::TabWidget(const QString& name, QWidget* parent)
     : QWidget(parent)
-      , nameButton_(new QPushButton(name, this)), closeButton_(new QToolButton(this)), layout_(new QHBoxLayout(this)),
-      name_(name) {
+      , nameButton_(new QPushButton(this)), closeButton_(new QToolButton(this)), layout_(new QHBoxLayout(this)),
+      name_(name), edit_(new RenameTabLineEdit(this)) {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     layout_->setContentsMargins(K_TAB_HORIZONTAL_PADDING_PX, 0, K_TAB_HORIZONTAL_PADDING_PX, 0);
     layout_->setSpacing(K_TAB_LAYOUT_SPACING_PX);
     nameButton_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    setName(name);
 
     closeButton_->setText("✕");
     closeButton_->setFixedWidth(K_CLOSE_BUTTON_WIDTH_PX);
@@ -46,9 +51,35 @@ UI::TabWidget::TabWidget(const QString& name, QWidget* parent)
         emit closeRequestedTriggered(this);
     });
 
+  edit_->hide();
+  edit_->setText(name_);
+  edit_->setFrame(false);
+    edit_->setObjectName("TabLineEdit");
+
+
+
+  layout_->insertWidget(0, edit_);
+
+  connect(edit_, &QLineEdit::returnPressed, this, &TabWidget::finishRename);
+
+    connect(edit_, &RenameTabLineEdit::focusLost, this,&TabWidget::cancelRename);
+
+  nameButton_->installEventFilter(this);
     setObjectName(QStringLiteral("TabWidgetActive"));
 }
 
+
+bool UI::TabWidget::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj == nameButton_) {
+    if (event->type() == QEvent::MouseButtonDblClick) {
+      startRename();
+      return true;
+    }
+  }
+
+  return QWidget::eventFilter(obj, event);
+}
 
 QString UI::TabWidget::getName() const {
     return name_;
@@ -57,6 +88,10 @@ QString UI::TabWidget::getName() const {
 
 void UI::TabWidget::setName(const QString& name) {
     name_ = name;
+
+    const QString displayText = elideText(name_, MAX_TAB_TEXT_WIDTH);
+    nameButton_->setText(displayText);
+    nameButton_->setToolTip(name_);
 }
 
 
@@ -106,6 +141,7 @@ void UI::TabWidget::applyInactiveStyle() {
     nameButton_->setObjectName("NameButtonTabInActive");
     closeButton_->setObjectName("CloseButtonTabInActive");
     setObjectName(QStringLiteral("TabWidgetInActive"));
+    cancelRename();
 
     style()->unpolish(this);
     style()->polish(this);
@@ -121,4 +157,43 @@ void UI::TabWidget::applyActiveStyle() {
     style()->unpolish(this);
     style()->polish(this);
     update();
+}
+
+
+void UI::TabWidget::startRename()
+{
+  edit_->setText(name_);
+  nameButton_->hide();
+    edit_->show();
+
+  edit_->setFocus();
+  edit_->selectAll();
+}
+
+void UI::TabWidget::finishRename()
+{
+  const QString newName = edit_->text().trimmed();
+
+  if (!newName.isEmpty() && newName != name_) {
+    emit renameTriggered(name_, newName);
+  }
+
+  edit_->hide();
+  nameButton_->show();
+}
+
+
+void UI::TabWidget::cancelRename()
+{
+  if (edit_) {
+    edit_->hide();
+  }
+  nameButton_->show();
+    emit cancelRenameTriggered();
+}
+
+QString UI::TabWidget::elideText(const QString& text, int maxWidth) const
+{
+    QFontMetrics fm(nameButton_->font());
+    return fm.elidedText(text, Qt::ElideRight, maxWidth);
 }

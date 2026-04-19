@@ -39,6 +39,8 @@ set(WIDGETS
         Widgets/PainterWidget.h
         Widgets/CommandConsole.cc
         Widgets/CommandConsole.h
+        Widgets/RenameTabLineEdit.cc
+        Widgets/RenameTabLineEdit.h
 )
 
 set(PANELS

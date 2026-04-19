@@ -103,6 +103,11 @@ background: transparent;
          border-top-right-radius: 5px;
 }
 
+#TabLineEdit{
+                  background-color: transparent;
+                       color: #D8D8F6;
+                              font-size: 9pt;
+            }
 
 
 #TabWidgetInActive{
