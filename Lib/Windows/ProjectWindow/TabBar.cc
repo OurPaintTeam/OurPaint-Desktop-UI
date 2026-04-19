@@ -17,7 +17,7 @@
 UI::TabBar::TabBar(QWidget *parent)
     : QWidget(parent), tabBar_(new QWidget(this)),
       tabLayout_(new QHBoxLayout(tabBar_)), mainLayout_(new QHBoxLayout(this)),
-      scrollArea_(new QScrollArea(this)) {
+      scrollArea_(new QScrollArea(this)){
   setObjectName(QStringLiteral("TabBar"));
 
   setAcceptDrops(true);
@@ -127,7 +127,7 @@ void UI::TabBar::addTabSlot(const QString &name) {
     }
   }
 
-  auto *tab = new UI::TabWidget(name, tabBar_);
+  auto *tab = new UI::TabWidget(tabBar_,name);
   tabs_.append(tab);
 
   const auto plusIndex = tabLayout_->indexOf(plusButton_);
@@ -279,6 +279,18 @@ void UI::TabBar::dropEvent(QDropEvent *event) {
 
   const auto localPos = tabBar_->mapFrom(this, event->position().toPoint());
 
+    quintptr sourceWindowId = 0;
+    if (event->mimeData()->hasFormat("application/x-window-id")) {
+        sourceWindowId = event->mimeData()
+                        ->data("application/x-window-id")
+                        .toULongLong();
+    }
+
+    auto targetWindowId = reinterpret_cast<quintptr>(this->window());
+    if (sourceWindowId != targetWindowId){
+        return;
+    }
+
   if (const auto plusGeometry = plusButton_->geometry();
       localPos.x() > plusGeometry.center().x()) {
     tabLayout_->removeWidget(tab);
@@ -307,7 +319,6 @@ void UI::TabBar::dropEvent(QDropEvent *event) {
       tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
     }
   }
-
   setActiveTabSlot(tab);
 
   event->acceptProposedAction();
@@ -322,26 +333,31 @@ void UI::TabBar::createPlusButton() {
 
     connect(plusButton_, &QPushButton::clicked, this, [this]() {
 
-        auto* tab = new TabWidget("",this);
-
-        const auto plusIndex = tabLayout_->indexOf(plusButton_);
-        tabLayout_->insertWidget(plusIndex, tab);
-
-        tab->startRename();
-        connect(tab, &TabWidget::renameTriggered, this,
-                [this, tab](const QString& name,const QString& nameNew) {
-
-            emit createTabTriggered(nameNew);
-             tabLayout_->removeWidget(tab);
-                    tab->deleteLater();
-        });
-
-        connect(tab, &TabWidget::cancelRenameTriggered, this,
-                [this, tab]() {
-
-            tabLayout_->removeWidget(tab);
-            tab->deleteLater();
-        });
-
+        createTabSlot();
     });
+}
+
+
+void UI::TabBar::createTabSlot() {
+    auto* tab = new TabWidget(this);
+
+    const auto plusIndex = tabLayout_->indexOf(plusButton_);
+    tabLayout_->insertWidget(plusIndex, tab);
+
+    tab->startRename();
+    connect(tab, &TabWidget::renameTriggered, this,
+            [this, tab](const QString& name,const QString& nameNew) {
+
+        emit createTabTriggered(nameNew);
+         tabLayout_->removeWidget(tab);
+                tab->deleteLater();
+    });
+
+    connect(tab, &TabWidget::cancelRenameTriggered, this,
+            [this, tab]() {
+
+        tabLayout_->removeWidget(tab);
+        tab->deleteLater();
+    });
+
 }

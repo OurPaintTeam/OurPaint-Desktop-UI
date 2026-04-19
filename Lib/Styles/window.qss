@@ -214,3 +214,60 @@ background: transparent;
     background: transparent;
 }
 
+
+
+
+
+/* === Notification Container === */
+#NotificationContainer {
+    background-color: red;
+    border: 1px solid #3e3d42;
+    border-radius: 8px;
+}
+
+/* === Notification Widget === */
+#NotificationWidget {
+    background-color: green;
+    border-radius: 6px;
+    margin: 4px 8px;
+    padding: 8px 12px;
+    border: 1px solid #5a5a6a;
+}
+
+#NotificationWidget:hover {
+    background-color: #4a4a55;
+    border-color: #6a6a7a;
+}
+
+/* Label внутри уведомления */
+#NotificationWidget QLabel {
+    color: #D8D8F6;
+    font-size: 12px;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    padding: 4px 0;
+}
+
+/* Кнопка закрытия */
+#NotificationWidget QPushButton {
+    background-color: transparent;
+    color: #8a8a9a;
+    border: none;
+    border-radius: 4px;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 4px 4px;
+    margin-left: 12px;
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 10px;
+    max-height: 10px;
+}
+
+#NotificationWidget QPushButton:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+#NotificationWidget QPushButton:pressed {
+    background-color: #bd2130;
+}

@@ -167,23 +167,7 @@ void UI::ProjectPage::assembleLayout() const {
 }
 
 void UI::ProjectPage::createFileSlot() {
-    auto* prompt = new NameInputWidget("File Name:", this);
-
-    const auto rect = this->rect();
-    const auto size = prompt->sizeHint();
-
-    prompt->move(rect.center().x() - size.width() / 2,
-                 rect.center().y() - size.height() / 2);
-    prompt->show();
-
-    connect(prompt, &InputWidget::inputEnteredTriggered, this, [this, prompt](const QString& fileName) {
-        if (fileName.isEmpty()) {
-            return;
-        }
-
-        prompt->deleteLater();
-        emit createFileTriggered(fileName);
-    });
+    tabBar_->createTabSlot();
 }
 
 

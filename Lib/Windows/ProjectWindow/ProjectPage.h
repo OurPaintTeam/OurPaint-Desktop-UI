@@ -37,6 +37,8 @@ namespace UI {
         void removeTabTriggered(const QString& name);
         void renameTabTriggered(const QString& oldName, const QString& newName);
         void openTabWindowTriggered(const QString& fileName);
+        void tabMovedToAnotherWindowTriggered(const QString& tabName);
+
 
         void goToStartWindowTriggered();
         void createFileTriggered(const QString& fileName);

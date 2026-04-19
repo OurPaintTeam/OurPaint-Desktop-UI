@@ -14,6 +14,7 @@ UI::NotificationContainer::NotificationContainer(QWidget* parent)
       containerWidget_(new QWidget(this)),
     scrollArea_(new QScrollArea(this)),
       hideTimer_(new QTimer(this)) {
+    setAttribute(Qt::WA_StyledBackground, true);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     layout_->setContentsMargins(0, 0, 0, 0);
     containerLayout_ = new QVBoxLayout(containerWidget_);
@@ -24,7 +25,7 @@ UI::NotificationContainer::NotificationContainer(QWidget* parent)
     scrollArea_->setWidget(containerWidget_);
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
+    scrollArea_->setObjectName("ScrollNotification");
     layout_->addWidget(scrollArea_);
 
     constexpr auto x = 300;
@@ -40,6 +41,8 @@ UI::NotificationContainer::NotificationContainer(QWidget* parent)
     updateContainerSize();
     updatePosition();
     hide();
+
+    setObjectName("NotificationContainer");
 }
 
 

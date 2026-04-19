@@ -117,6 +117,9 @@ void UI::ProjectManager::addNotification(const QString& tabName,const QString& t
             return;
         }
     }
+    if (const auto* window = activeWindow()) {
+        window->addNotification(text);
+    }
 }
 
 
@@ -420,7 +423,6 @@ void UI::ProjectManager::checkOpenedTabWindow(const QString& tabName) {
 void UI::ProjectManager::openTabWindow(const QString& tabName,
                                        QWindow* windowRender,
                                        QLineEdit* consoleEngine) {
-
     auto* tabWindow = new TabWindow(tabName);
     tabWindow->setAttribute(Qt::WA_DeleteOnClose, true);
     tabWindows_.append(tabWindow);

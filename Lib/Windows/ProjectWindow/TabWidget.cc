@@ -22,7 +22,7 @@ namespace {
 } // namespace
 
 
-UI::TabWidget::TabWidget(const QString& name, QWidget* parent)
+UI::TabWidget::TabWidget(QWidget* parent,const QString& name)
     : QWidget(parent)
       , nameButton_(new QPushButton(this)), closeButton_(new QToolButton(this)), layout_(new QHBoxLayout(this)),
       name_(name), edit_(new RenameTabLineEdit(this)) {
@@ -128,6 +128,8 @@ void UI::TabWidget::mouseMoveEvent(QMouseEvent* e) {
     auto mime = std::make_unique<QMimeData>();
 
     mime->setData(K_TAB_MIME_TYPE, QByteArray::number(reinterpret_cast<quintptr>(this)));
+    mime->setData("application/x-window-id",
+              QByteArray::number(reinterpret_cast<quintptr>(window())));
     drag->setMimeData(mime.release());
 
     if (const auto action = drag->exec(Qt::MoveAction);

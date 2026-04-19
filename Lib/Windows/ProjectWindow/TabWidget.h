@@ -17,9 +17,10 @@ namespace UI {
 
     public:
       bool eventFilter(QObject* obj, QEvent* event) override;
-        explicit TabWidget(const QString& name, QWidget* parent = nullptr);
+        explicit TabWidget(QWidget* parent = nullptr,const QString& name="");
       [[nodiscard]] QString getName() const;
         void setName(const QString& name);
+        QString projectName();
         void setActive(bool active);
         void startRename();
 

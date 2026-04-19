@@ -24,7 +24,7 @@ bool UIManager::checkedOpened(const QString& projectPath) const {
 
 void UIManager::sentCommandFromConsole(UI::ProjectManager* manager, const QString& command,const QString& name) const{
     Q_UNUSED(command);
-    manager->addNotification(name,"Console command received "+ name);
+    manager->addNotification(name,"Console command received "+ name  +" : " + command);
 }
 
 
