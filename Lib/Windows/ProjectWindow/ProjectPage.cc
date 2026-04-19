@@ -149,9 +149,11 @@ void UI::ProjectPage::createNavigation() {
 void UI::ProjectPage::createSideContainers() {
     infoContainer_ = new ContainerWidget(ContainerType::Side, Qt::Vertical);
     infoButton_ = infoContainer_->addButton(QIcon(":/Assets/icons/panel/info.png"));
+    infoButton_->setObjectName("InfoButton");
 
     messengerContainer_ = new ContainerWidget(ContainerType::Side, Qt::Vertical);
     messengerButton_ = messengerContainer_->addButton(QIcon(":/Assets/icons/panel/message.png"));
+    messengerButton_->setObjectName("MesButton");
 
     leftColumn_->addContainer(infoContainer_);
     leftColumn_->addContainer(messengerContainer_);

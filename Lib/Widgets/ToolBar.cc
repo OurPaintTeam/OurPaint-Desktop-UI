@@ -134,6 +134,7 @@ void UI::ToolBar::initFiguresLane() {
   figuresSlot_->insert(toolsContainer_);
   figuresSlot_->insert(figuresContainer_);
 
+
   stack_->addWidget(firstLaneWidget_);
 }
 

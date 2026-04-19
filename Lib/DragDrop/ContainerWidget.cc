@@ -13,7 +13,6 @@
 namespace {
     constexpr int K_BUTTON_SIZE_PX = 25;
     constexpr int K_CONTAINER_LAYOUT_SPACING_PX = 4;
-    constexpr auto K_CONTAINER_MIME_TYPE = "application/x-container";
 } // namespace
 
 
@@ -24,7 +23,7 @@ UI::ContainerWidget::ContainerWidget(const ContainerType type,
       , type_(type)
       , orientation_(orientation) {
     setAttribute(Qt::WA_StyledBackground, true);
-    setCursor(Qt::OpenHandCursor);
+
 
     rebuildLayout();
     setObjectName(QStringLiteral("ContainerWidget"));
@@ -115,8 +114,13 @@ void UI::ContainerWidget::startDrag() {
     auto mime = std::make_unique<QMimeData>();
 
     mime->setData(
-        K_CONTAINER_MIME_TYPE,
+        "application/x-container",
         QByteArray::number(reinterpret_cast<quintptr>(this))
+    );
+
+    mime->setData(
+        "application/x-window-id",
+        QByteArray::number(reinterpret_cast<quintptr>(window()))
     );
 
     drag->setMimeData(mime.release());
@@ -137,7 +141,7 @@ UI::SlotWidget* UI::ContainerWidget::currentSlot() const {
 
 
 void UI::ContainerWidget::mousePressEvent(QMouseEvent* e) {
-    if (e->button() == Qt::LeftButton) {
+    if (e->button() == Qt::RightButton) {
         startDrag();
     }
 }

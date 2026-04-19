@@ -6,7 +6,7 @@ QPushButton {
 }
 
 QPushButton:hover {
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.3);
 }
 
     QPushButton:pressed {
@@ -38,6 +38,24 @@ QPushButton#CloseApplication:hover {
     margin: 0px;
     spacing: 0px;
 }
+
+
+#InfoButton,#MesButton {
+    background: transparent;
+    border: none;
+    color: #D8D8F6;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+#InfoButton:hover ,#MesButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#InfoButton:pressed ,#MesButton:pressed {
+    background: rgba(255,255,255,0.16);
+}
+
 #NoActiveTool::menu-indicator {
     image: none;              /* убираем стрелку меню */
 }
@@ -46,7 +64,7 @@ QPushButton#CloseApplication:hover {
 }
 
 #ActiveTool:hover, #NoActiveTool:hover {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 #ActiveTool:pressed, #NoActiveTool:pressed {
@@ -355,21 +373,6 @@ QPushButton {
 
 
 
-#SideTool QPushButton {
-    background: transparent;
-    border: none;
-    color: #D8D8F6;
-    border-radius: 6px;
-    padding: 6px;
-}
-
-#SideTool QPushButton:hover {
-    background: rgba(255,255,255,0.08);
-}
-
-#SideTool QPushButton:pressed {
-    background: rgba(255,255,255,0.16);
-}
 
 
 
