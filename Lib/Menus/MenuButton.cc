@@ -24,8 +24,6 @@ UI::MenuButton::MenuButton(const QString& text, QMenu* menu, QWidget* parent)
     setFont(f);
 
     if (menu) {
-        setMenu(menu);
-
         connect(menu, &QMenu::aboutToShow, this, [this]() {
             setChecked(true);
         });
@@ -56,8 +54,6 @@ void UI::MenuButton::bindMenu(QMenu* menu) {
     if (!menu_) {
         return;
     }
-
-    setMenu(menu_);
 
     for (auto* action: menu_->actions()) {
         connect(action, &QAction::triggered, this, [this, action]() {
