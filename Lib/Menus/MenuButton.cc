@@ -8,7 +8,7 @@
 namespace {
     constexpr int K_FONT_POINT_SIZE = 9;
     constexpr int K_CHECK_MARK_SIZE_PX = 4;
-    constexpr int K_CHECK_MARK_RIGHT_MARGIN_PX = 6;
+    constexpr int K_CHECK_MARK_RIGHT_MARGIN_PX = 10;
 } // namespace
 
 UI::MenuButton::MenuButton(const QString& text, QMenu* menu, QWidget* parent)
@@ -24,7 +24,7 @@ UI::MenuButton::MenuButton(const QString& text, QMenu* menu, QWidget* parent)
     setFont(f);
 
     if (menu) {
-        setMenu(menu);
+        //setMenu(menu);
 
         connect(menu, &QMenu::aboutToShow, this, [this]() {
             setChecked(true);
@@ -57,7 +57,7 @@ void UI::MenuButton::bindMenu(QMenu* menu) {
         return;
     }
 
-    setMenu(menu_);
+   // setMenu(menu_);
 
     for (auto* action: menu_->actions()) {
         connect(action, &QAction::triggered, this, [this, action]() {
