@@ -14,7 +14,6 @@ namespace UI {
         Q_OBJECT
     public:
         explicit NotificationWidget(const QString &text, QWidget *parent = nullptr);
-
         signals:
             void deleted(UI::NotificationWidget *widget);
 

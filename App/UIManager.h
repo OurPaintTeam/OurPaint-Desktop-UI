@@ -36,6 +36,7 @@ class QWindow;
         void setActiveTabSlot(UI::ProjectManager* manager, const QString& name);
         void returnTabWindowSlot(UI::ProjectManager* manager, const QString& name);
         void closeTabWindowSlot(UI::ProjectManager* manager, const QString& name);
+        void scriptSlot(UI::ProjectManager* manager, const QString& path);
 
         void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name);
         void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type,const QString& name);

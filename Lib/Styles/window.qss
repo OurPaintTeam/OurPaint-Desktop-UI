@@ -214,3 +214,74 @@ background: transparent;
     background: transparent;
 }
 
+
+
+
+
+
+
+/* ЭТО СТИЛЬ ДЛЯ ФОНА ВСЕГО КОНТЕЙНЕРА УВЕДОМЛЕНИЙ */
+#ScrollNotification {
+ background: rgba(40, 40, 48, 180); /* полупрозрачный */
+    border-radius: 12px;
+    border: none;
+}
+
+/* === ЭТО СТИЛЬ ДЛЯ ФОНА ВСЕГО КОНТЕЙНЕРА УВЕДОМЛЕНИЙ === */
+#NotificationContainerWidget {
+ background: rgba(40, 40, 48, 180); /* полупрозрачный */
+    border-radius: 12px;
+}
+
+/* === Само уведомление === */
+#NotificationWidget {
+    background-color: #3f3e46; /* как панели */
+    border: 1px solid #3e3d42;
+    border-radius: 8px;
+
+    padding: 6px;
+        padding-left: 6px;
+        padding-right: 6px;
+}
+
+/* Hover эффект */
+#NotificationWidget:hover {
+    background-color: #5a5962;
+}
+
+/* === Текст === */
+#NotificationWidgetLabel {
+    color: #D8D8F6;
+    font-size: 11pt;
+    font-weight: 500;
+    background: transparent;
+}
+
+/* === Кнопка закрытия === */
+#NotificationWidgetClose {
+    background-color: transparent;
+    color: #D8D8F6;
+
+    border: none;
+    border-radius: 6px;
+
+    min-width: 18px;
+    max-width: 18px;
+    min-height: 18px;
+    max-height: 18px;
+
+    font-weight: bold;
+}
+
+/* Hover — мягкий */
+#NotificationWidgetClose:hover {
+    background-color: rgba(255, 255, 255, 30);
+}
+
+/* Press */
+#NotificationWidgetClose:pressed {
+    background-color: rgba(255, 255, 255, 60);
+}
+
+
+

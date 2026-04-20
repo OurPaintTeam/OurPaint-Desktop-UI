@@ -10,7 +10,7 @@
 #include "ToolsType.h"
 
 namespace {
-    constexpr int K_SLOT_MARGINS_PX = 4;
+    constexpr int K_SLOT_MARGINS_PX = 0;
     constexpr int K_SLOT_SPACING_PX = 25;
     constexpr auto K_SLOT_PLACEHOLDER_TEXT = "Drop here";
 } // namespace

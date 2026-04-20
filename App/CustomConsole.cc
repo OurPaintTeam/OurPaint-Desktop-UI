@@ -69,10 +69,10 @@ void CustomConsole::keyPressEvent(QKeyEvent* event) {
             if (!text().isEmpty()) {
                 commandsArray_.push_back(text());
                 index_ = commandsArray_.size();
-                emit sentCommandTriggered(text());
-                clear();
+                // emit sentCommandTriggered(text());
+                // clear();
             }
-            event->accept();
+            QLineEdit::keyPressEvent(event);
             return;
 
         case Qt::Key_Up:

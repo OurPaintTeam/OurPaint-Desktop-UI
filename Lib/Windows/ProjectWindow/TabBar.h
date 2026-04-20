@@ -34,6 +34,7 @@ class TabWidget;
         void deleteTabSlot(const QString& name);
         UI::TabWidget* closeTabOnNameSlot(const QString& name);
         void addTabSlot(const QString& name);
+        void createTabSlot();
 
     private slots:
         void setActiveTabSlot(UI::TabWidget* tab);
