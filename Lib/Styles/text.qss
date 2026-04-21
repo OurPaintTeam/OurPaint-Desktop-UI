@@ -18,7 +18,7 @@
    INPUT FIELD
 ========================= */
 
-#openPanel QLineEdit
+#projectInput
 {
     background-color: #D8D8F6;
     border: 1px solid #3e3d42;
@@ -28,12 +28,12 @@
     font-size: 12px;
 }
 
-#openPanel QLineEdit:hover
+#projectInput:hover
 {
     border: 1px solid #7a6f79;
 }
 
-#openPanel QLineEdit:focus
+#projectInput:focus
 {
     border: 1px solid #7a6f79;
 }

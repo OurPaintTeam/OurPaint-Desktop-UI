@@ -16,7 +16,6 @@ namespace UI {
 
     protected:
         void focusOutEvent(QFocusEvent* e) override;
-        void paintEvent(QPaintEvent *e);
     };
 } // namespace UI
 

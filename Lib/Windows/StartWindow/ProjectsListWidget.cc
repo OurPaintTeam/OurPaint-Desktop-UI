@@ -4,7 +4,6 @@
 #include <QScrollArea>
 
 #include "ProjectButton.h"
-#include "StartPage.h"
 
 
 UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
