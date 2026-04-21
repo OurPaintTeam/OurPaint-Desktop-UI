@@ -153,9 +153,9 @@ void UI::ToolBar::initSignals() {
   constexpr QSize buttonSize(25, 25);
 
   constraints_ = {
-      {":/Assets/icons/constraints/pointLineDist.svg", "Point – Line Distance",
+      {":/Assets/icons/constraints/ObjObjDist.svg", "Object – Object Distance",
        [this] {
-         auto type = ConstraintType::PointLineDistance;
+         auto type = ConstraintType::ObjectObjectDistance;
          emit constraintTriggered(type);
        }},
       {":/Assets/icons/constraints/pointOnLine.svg", "Point on Line",
@@ -163,21 +163,9 @@ void UI::ToolBar::initSignals() {
          auto type = ConstraintType::PointOnLine;
          emit constraintTriggered(type);
        }},
-      {":/Assets/icons/constraints/pointPointDist.svg",
-       "Point – Point Distance",
-       [this] {
-         auto type = ConstraintType::PointPointDistance;
-         emit constraintTriggered(type);
-       }},
       {":/Assets/icons/constraints/pointOnPoint.svg", "Coincident Points",
        [this] {
          auto type = ConstraintType::CoincidentPoints;
-         emit constraintTriggered(type);
-       }},
-      {":/Assets/icons/constraints/lineCircleDist.svg",
-       "Line – Circle Distance",
-       [this] {
-         auto type = ConstraintType::LineCircleDistance;
          emit constraintTriggered(type);
        }},
       {":/Assets/icons/constraints/lineOnCircle.svg", "Line on Circle",

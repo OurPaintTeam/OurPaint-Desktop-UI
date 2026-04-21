@@ -32,11 +32,9 @@ namespace UI {
 
 
     enum class ConstraintType {
-        PointLineDistance,
+        ObjectObjectDistance,
         PointOnLine,
-        PointPointDistance,
         CoincidentPoints,
-        LineCircleDistance,
         LineOnCircle,
         LineInCircle,
         ParallelLines,

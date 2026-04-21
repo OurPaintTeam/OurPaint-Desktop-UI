@@ -25,16 +25,14 @@
         <file>Assets/icons/tools/sizeTool.svg</file>
         <file>Assets/icons/tools/settings.svg</file>
 
-        <file>Assets/icons/constraints/lineCircleDist.svg</file>
+        <file>Assets/icons/constraints/ObjObjDist.svg</file>
         <file>Assets/icons/constraints/lineInCircle.svg</file>
         <file>Assets/icons/constraints/lineLineAngle.svg</file>
         <file>Assets/icons/constraints/lineLineParallel.svg</file>
         <file>Assets/icons/constraints/lineLinePerpendicular.svg</file>
         <file>Assets/icons/constraints/lineOnCircle.svg</file>
-        <file>Assets/icons/constraints/pointLineDist.svg</file>
         <file>Assets/icons/constraints/pointOnLine.svg</file>
         <file>Assets/icons/constraints/pointOnPoint.svg</file>
-        <file>Assets/icons/constraints/pointPointDist.svg</file>
 
         <file>Assets/icons/showHidePanels/right.svg</file>
         <file>Assets/icons/showHidePanels/console.svg</file>
