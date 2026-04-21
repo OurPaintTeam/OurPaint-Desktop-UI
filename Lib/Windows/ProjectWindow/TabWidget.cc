@@ -28,6 +28,7 @@ UI::TabWidget::TabWidget(QWidget* parent,const QString& name)
       name_(name), edit_(new RenameTabLineEdit(this)) {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+  setMaximumWidth(140);
 
     layout_->setContentsMargins(K_TAB_HORIZONTAL_PADDING_PX, 0, K_TAB_HORIZONTAL_PADDING_PX, 0);
     layout_->setSpacing(K_TAB_LAYOUT_SPACING_PX);
