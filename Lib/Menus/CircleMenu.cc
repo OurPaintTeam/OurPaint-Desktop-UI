@@ -5,7 +5,7 @@
 
 UI::CircleMenu::CircleMenu(QWidget* parent)
     : UI::CustomMenu(parent) {
-    circleByDiameter_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.png"), "Circle by diameter");
+    circleByDiameter_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle by diameter");
     circleByDiameter_->setData(QVariant::fromValue(PrimitiveType::CircleByDiameter));
 
     circleByRadius_ = addAction(QIcon(":/Assets/icons/primitives/circleByRadius.svg"), "Circle by radius");

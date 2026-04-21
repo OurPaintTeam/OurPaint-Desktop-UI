@@ -4,19 +4,19 @@
         <file>Assets/icons/window/maximize.png</file>
         <file>Assets/icons/window/close.png</file>
 
-        <file>Assets/icons/primitives/point.png</file>
+        <file>Assets/icons/primitives/point.svg</file>
 
-        <file>Assets/icons/primitives/vector.png</file>
+        <file>Assets/icons/primitives/beze.png</file>
 
-        <file>Assets/icons/primitives/line.png</file>
+        <file>Assets/icons/primitives/line.svg</file>
         <file>Assets/icons/primitives/polyline.svg</file>
         <file>Assets/icons/primitives/infiniteLine.svg</file>
 
-        <file>Assets/icons/primitives/circleByDiameter.png</file>
+        <file>Assets/icons/primitives/circleByDiameter.svg</file>
         <file>Assets/icons/primitives/circleByRadius.svg</file>
         <file>Assets/icons/primitives/ellipseThreePoints.svg</file>
 
-        <file>Assets/icons/primitives/arcByRadius.png</file>
+        <file>Assets/icons/primitives/arcByRadius.svg</file>
         <file>Assets/icons/primitives/arcDiameter.svg</file>
         <file>Assets/icons/primitives/arc3points.svg</file>
 

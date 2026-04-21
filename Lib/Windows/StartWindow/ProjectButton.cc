@@ -13,8 +13,7 @@ UI::ProjectButton::ProjectButton(const QString& name,
     : QPushButton(parent),
       nameLabel_(new QLabel(name, this)),
       pathLabel_(new QLabel(path, this)),
-      layout_(new QVBoxLayout(this)),
-      topLayout_(new QHBoxLayout()) {
+      layout_(new QVBoxLayout(this)) {
     setObjectName("ProjectButton");
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -26,7 +25,6 @@ UI::ProjectButton::ProjectButton(const QString& name,
     layout_->setContentsMargins(y, x, y, x);
     layout_->setSpacing(2);
 
-    topLayout_->addStretch();
     constexpr auto size = QSize(20, 20);
     renameBtn_ = new QPushButton("✏", this);
     renameBtn_->setObjectName("RenameBtnProject");
@@ -36,16 +34,11 @@ UI::ProjectButton::ProjectButton(const QString& name,
     deleteBtn_->setObjectName("DeleteBtnProject");
     deleteBtn_->setFixedSize(size);
 
-    topLayout_->addWidget(renameBtn_);
-    topLayout_->addWidget(deleteBtn_);
-
     nameLabel_->setObjectName("ProjectName");
     pathLabel_->setObjectName("ProjectPath");
 
     nameContainer_ = new QWidget(this);
     nameContainer_->setObjectName("NameContainerProject");
-    nameContainer_->setAttribute(Qt::WA_TranslucentBackground);
-    nameContainer_->setAutoFillBackground(false);
     nameStack_ = new QStackedLayout(nameContainer_);
     nameStack_->setContentsMargins(0, 0, 0, 0);
 
@@ -53,28 +46,50 @@ UI::ProjectButton::ProjectButton(const QString& name,
 
     edit_ = new RenameTabLineEdit(this);
     edit_->setObjectName("ProjectNameEdit");
-    edit_->hide();
+    edit_->setFrame(false);
 
     edit_->setMaximumWidth(200);
     nameLabel_->setMaximumWidth(200);
 
-    edit_->setMinimumHeight(15);
-    nameLabel_->setMinimumHeight(15);
+    nameContainer_->setMinimumHeight(20);
+    edit_->setMinimumHeight(20);
+    nameLabel_->setMinimumHeight(20);
 
     nameStack_->addWidget(edit_);
-    layout_->addLayout(topLayout_);
-    layout_->addWidget(nameContainer_);
+
+    QHBoxLayout* topSectionLayout = new QHBoxLayout();
+    topSectionLayout->setContentsMargins(0, 0, 0, 0);
+    topSectionLayout->setSpacing(5);
+
+    topSectionLayout->addWidget(nameContainer_, 1);
+
+    QHBoxLayout* buttonsLayout = new QHBoxLayout();
+    buttonsLayout->setContentsMargins(0, 0, 0, 0);
+    buttonsLayout->setSpacing(2);
+    buttonsLayout->addStretch();
+    buttonsLayout->addWidget(renameBtn_);
+    buttonsLayout->addWidget(deleteBtn_);
+
+    topSectionLayout->addLayout(buttonsLayout, 0);
+
+    layout_->addLayout(topSectionLayout);
     layout_->addWidget(pathLabel_);
 
     nameLabel_->installEventFilter(this);
     nameLabel_->setToolTip(name);
     pathLabel_->setToolTip(path);
 
+    edit_->setContentsMargins(0, 0, 0, 0);
+    nameLabel_->setContentsMargins(0, 0, 0, 0);
+
+    edit_->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+    nameLabel_->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+
+    nameStack_->setCurrentWidget(nameLabel_);
+
     connect(edit_, &RenameTabLineEdit::focusLost, this, &ProjectButton::cancelRenameInline);
     connect(edit_, &QLineEdit::returnPressed, this, &ProjectButton::finishRenameInline);
     connect(renameBtn_, &QPushButton::clicked, this, &ProjectButton::startRenameInline);
-
-
 
     connect(deleteBtn_, &QPushButton::clicked, this, [this]() {
         auto* confirmDialog = new UI::ConfirmDialog("Delete project " + getName() + "?", "Yes", "No", this);
@@ -116,8 +131,9 @@ void UI::ProjectButton::startRenameInline()
 
 void UI::ProjectButton::finishRenameInline()
 {
-    if (!editing_)
+    if (!editing_) {
         return;
+    }
 
     editing_ = false;
 

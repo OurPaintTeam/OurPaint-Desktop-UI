@@ -83,7 +83,7 @@ QMenu::icon {
     color: #D8D8F6;
     border: none;
     text-align: center;
-    padding: 4px 10px;
+    padding: 2px 20px 2px 10px;
     border-radius: 6px;      /* закругление кнопки */
     font: 12px "Segoe UI";
     font: bold;

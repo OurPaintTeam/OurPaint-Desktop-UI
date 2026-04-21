@@ -90,19 +90,21 @@ QPushButton {
    PROJECT BUTTON
 ========================= */
 
-
-#ProjectNameEdit {
-   background: transparent;
+#ProjectNameEdit{
+ background-color: transparent;
     font-size: 14px;
     font-weight: bold;
-    border: none;
     color: #D8D8F6;
-    text-align: left;
 }
+#ProjectName {
+  background-color: transparent;
 
-#NameContainerProject {
-    background-color: red;
 }
+#NameContainerProject  {
+ background-color: transparent;
+ }
+
+
 
 
 #ConfirmDialogYesButton {

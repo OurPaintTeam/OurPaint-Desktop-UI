@@ -7,7 +7,7 @@
 
 UI::ArcMenu::ArcMenu(QWidget* parent)
     : UI::CustomMenu(parent) {
-    arcCenter_ = addAction(QIcon(":/Assets/icons/primitives/arcByRadius.png"), "Arc by radius");
+    arcCenter_ = addAction(QIcon(":/Assets/icons/primitives/arcByRadius.svg"), "Arc by radius");
     arcCenter_->setData(QVariant::fromValue(PrimitiveType::ArcByRadius));
 
     arc3Points_ = addAction(QIcon(":/Assets/icons/primitives/arcDiameter.svg"), "Arc by diameter");
