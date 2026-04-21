@@ -87,7 +87,7 @@ void UI::ToolBar::initFiguresLane() {
   firstLayout_->addSpacing(spacing);
 
   pointPrimitive_ = figuresContainer_->addButton(
-      QIcon(":/Assets/icons/primitives/point.png"));
+      QIcon(":/Assets/icons/primitives/point.svg"));
   pointPrimitive_->setToolTip("Point");
   pointPrimitive_->setObjectName("NoActiveTool");
   pointPrimitive_->setText(QString());
@@ -109,7 +109,7 @@ void UI::ToolBar::initFiguresLane() {
   arcPrimitive_->setObjectName("NoActiveTool");
 
   cubicBezierPrimitive_ = figuresContainer_->addButton(
-      QIcon(":/Assets/icons/primitives/vector.png"));
+      QIcon(":/Assets/icons/primitives/beze.png"));
   cubicBezierPrimitive_->setToolTip("CubicBezier");
   cubicBezierPrimitive_->setObjectName("NoActiveTool");
 

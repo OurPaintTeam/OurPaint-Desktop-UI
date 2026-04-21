@@ -5,7 +5,7 @@
 
 UI::LineMenu::LineMenu(QWidget* parent)
     : UI::CustomMenu(parent) {
-    line_ = addAction(QIcon(":/Assets/icons/primitives/line.png"), "Line");
+    line_ = addAction(QIcon(":/Assets/icons/primitives/line.svg"), "Line");
     line_->setData(QVariant::fromValue(PrimitiveType::Line));
 
     polyLine_ = addAction(QIcon(":/Assets/icons/primitives/polyline.svg"), "Polyline");
