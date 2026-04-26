@@ -5,21 +5,26 @@
 #include "CustomMenu.h"
 
 namespace UI {
-class ArcMenu final : public CustomMenu {
-    Q_OBJECT
+    class ArcMenu final : public CustomMenu {
+        Q_OBJECT
 
-public:
-    explicit ArcMenu(QWidget* parent = nullptr);
-    QAction* arcCenter() const;
-    QAction* arc3Points() const;
-    QAction* arcRadius() const;
-    QAction* arcSettings() const;
-private:
-    QAction* arcCenter_{nullptr};
-    QAction* arc3Points_{nullptr};
-    QAction* arcRadius_{nullptr};
-    QAction* arcSettings_{nullptr};
-};
+    public:
+        explicit ArcMenu(QWidget *parent = nullptr);
+
+        QAction* arcCenter() const;
+        QAction* arc3Points() const;
+        QAction* arcRadius() const;
+        QAction* arcSettings() const;
+
+    protected:
+        void translate() const override;
+
+    private:
+        QAction *arcCenter_{nullptr};
+        QAction *arc3Points_{nullptr};
+        QAction *arcRadius_{nullptr};
+        QAction *arcSettings_{nullptr};
+    };
 } // namespace UI
 
 

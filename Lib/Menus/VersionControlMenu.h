@@ -8,7 +8,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit VersionControlMenu(QWidget* parent = nullptr);
+        explicit VersionControlMenu(QWidget *parent = nullptr);
 
     signals:
         void initTriggered();
@@ -17,12 +17,15 @@ namespace UI {
         void pullTriggered();
         void commitTriggered();
 
+    protected:
+        void translate() const override;
+
     private:
-        QAction* init_{nullptr};
-        QAction* create_{nullptr};
-        QAction* push_{nullptr};
-        QAction* pull_{nullptr};
-        QAction* commit_{nullptr};
+        QAction *init_{nullptr};
+        QAction *create_{nullptr};
+        QAction *push_{nullptr};
+        QAction *pull_{nullptr};
+        QAction *commit_{nullptr};
     };
 } // namespace UI
 

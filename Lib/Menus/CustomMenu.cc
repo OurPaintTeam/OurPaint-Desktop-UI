@@ -1,5 +1,6 @@
 #include "CustomMenu.h"
 
+#include <QEvent>
 #include <QGraphicsDropShadowEffect>
 
 
@@ -25,4 +26,14 @@ void UI::CustomMenu::setupWindow() {
 
     // Enable transparent background
     setAttribute(Qt::WA_TranslucentBackground, true);
+}
+
+
+void UI::CustomMenu::changeEvent(QEvent* e)
+{
+    if (e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+
+    QMenu::changeEvent(e);
 }

@@ -8,15 +8,18 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit CollaborationMenu(QWidget* parent = nullptr);
+        explicit CollaborationMenu(QWidget *parent = nullptr);
 
     signals:
         void openTriggered();
         void closeTriggered();
 
+    protected:
+        void translate() const override;
+
     private:
-        QAction* close_{nullptr};
-        QAction* open_{nullptr};
+        QAction *close_{nullptr};
+        QAction *open_{nullptr};
     };
 } // namespace UI
 

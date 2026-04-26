@@ -9,13 +9,18 @@ namespace UI {
         Q_OBJECT
 
     protected:
-        void showEvent(QShowEvent* event) override;
+        void showEvent(QShowEvent *event) override;
 
     public:
-        explicit CustomMenu(QWidget* parent = nullptr);
+        explicit CustomMenu(QWidget *parent = nullptr);
 
     signals:
-        void actionSelected(QAction* action);
+        void actionSelected(QAction *action);
+
+    protected:
+        void changeEvent(QEvent *e) override;
+
+        virtual void translate() const = 0;
 
     private:
         void setupWindow();

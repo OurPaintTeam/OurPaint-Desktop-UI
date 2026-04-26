@@ -1,35 +1,60 @@
 #include "TabMenu.h"
 
+#include <QEvent>
 
-UI::TabMenu::TabMenu(QWidget* parent)
+
+UI::TabMenu::TabMenu(QWidget *parent)
     : UI::CustomMenu(parent) {
+    setObjectName(QStringLiteral("TabMenu"));
+    setAttribute(Qt::WA_StyledBackground, true);
 
-  setObjectName(QStringLiteral("TabMenu"));
-  setAttribute(Qt::WA_StyledBackground, true);
+    renameTab_ = addAction("");
+    deleteTab_ = addAction("");
+    closeTab_ = addAction("");
 
-  renameTab_ = addAction("Rename tab");
-  deleteTab_ = addAction("Delete file");
-  closeTab_ = addAction("Close tab");
+    addSeparator();
 
-  addSeparator();
+    closeAllLeftTabs_ = addAction("");
+    closeAllRightTabs_ = addAction("");
+    closeAllTabs_ = addAction("");
 
-    closeAllLeftTabs_ = addAction("Close all left tabs");
-    closeAllRightTabs_ = addAction("Close all right tabs");
-  closeAllTabs_ = addAction("Close all tabs");
+    connect(deleteTab_, &QAction::triggered,
+            this, &UI::TabMenu::deleteTabTriggered);
 
-  connect(deleteTab_, &QAction::triggered,
-          this, &UI::TabMenu::deleteTabTriggered);
+    connect(renameTab_, &QAction::triggered,
+            this, &UI::TabMenu::renameTabTriggered);
 
-  connect(renameTab_, &QAction::triggered,
-          this, &UI::TabMenu::renameTabTriggered);
+    connect(closeTab_, &QAction::triggered,
+            this, &UI::TabMenu::closeTabTriggered);
 
-  connect(closeTab_, &QAction::triggered,
-          this, &UI::TabMenu::closeTabTriggered);
-
-  connect(closeAllTabs_, &QAction::triggered,
-          this, &UI::TabMenu::closeAllTabsTriggered);
+    connect(closeAllTabs_, &QAction::triggered,
+            this, &UI::TabMenu::closeAllTabsTriggered);
     connect(closeAllLeftTabs_, &QAction::triggered,
-        this, &UI::TabMenu::closeAllLeftTabsTriggered);
+            this, &UI::TabMenu::closeAllLeftTabsTriggered);
     connect(closeAllRightTabs_, &QAction::triggered,
-        this, &UI::TabMenu::closeAllRightTabsTriggered);
+            this, &UI::TabMenu::closeAllRightTabsTriggered);
+
+    translate();
+}
+
+
+void UI::TabMenu::translate() const {
+    if (renameTab_) {
+        renameTab_->setText(tr("Rename tab"));
+    }
+    if (deleteTab_) {
+        deleteTab_->setText(tr("Delete file"));
+    }
+    if (closeTab_) {
+        closeTab_->setText(tr("Close tab"));
+    }
+    if (closeAllLeftTabs_) {
+        closeAllLeftTabs_->setText(tr("Close all left tabs"));
+    }
+    if (closeAllRightTabs_) {
+        closeAllRightTabs_->setText(tr("Close all right tabs"));
+    }
+    if (closeAllTabs_) {
+        closeAllTabs_->setText(tr("Close all tabs"));
+    }
 }

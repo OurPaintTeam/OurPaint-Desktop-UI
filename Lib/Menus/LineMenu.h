@@ -8,16 +8,21 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit LineMenu(QWidget* parent = nullptr);
-      QAction* line() const;
-      QAction* polyLine() const;
-      QAction* infiniteLine() const;
-      QAction* settingsLine() const;
+        explicit LineMenu(QWidget *parent = nullptr);
+
+        QAction* line() const;
+        QAction* polyLine() const;
+        QAction* infiniteLine() const;
+        QAction* settingsLine() const;
+
+    protected:
+        void translate() const override;
+
     private:
-        QAction* line_{nullptr};
-        QAction* polyLine_{nullptr};
-        QAction* infiniteLine_{nullptr};
-        QAction* settingsLine_{nullptr};
+        QAction *line_{nullptr};
+        QAction *polyLine_{nullptr};
+        QAction *infiniteLine_{nullptr};
+        QAction *settingsLine_{nullptr};
     };
 } // namespace UI
 

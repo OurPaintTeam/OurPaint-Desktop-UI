@@ -9,7 +9,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit ProjectMenu(QWidget* parent = nullptr);
+        explicit ProjectMenu(QWidget *parent = nullptr);
 
     signals:
         void createProjectTriggered();
@@ -19,13 +19,16 @@ namespace UI {
         void exportFileTriggered();
         void scriptTriggered();
 
+    protected:
+        void translate() const override;
+
     private:
-        QAction* createProject_{nullptr};
-        QAction* openProject_{nullptr};
-        QAction* createFile_{nullptr};
-        QAction* exportFile_{nullptr};
-        QAction* openFile_{nullptr};
-        QAction* script_{nullptr};
+        QAction *createProject_{nullptr};
+        QAction *openProject_{nullptr};
+        QAction *createFile_{nullptr};
+        QAction *exportFile_{nullptr};
+        QAction *openFile_{nullptr};
+        QAction *script_{nullptr};
     };
 } // namespace UI
 

@@ -15,8 +15,8 @@ namespace UI {
 
         void addLeftWidget(QWidget* widget) const;
         void addCenterWidget(QWidget* widget) const;
-
     protected:
+        void changeEvent(QEvent* e) override;
         QPushButton* createWindowButton();
         QPushButton* createWindowButton(const QString& text);
         QPushButton* createWindowButton(const QIcon& icon);
@@ -24,6 +24,7 @@ namespace UI {
         void mouseReleaseEvent(QMouseEvent *event) override;
 
     private:
+        void translate() const;
         QHBoxLayout* mainLayout_{nullptr};
         QWidget* leftContainer_{nullptr};
         QHBoxLayout* rightCombinedLayout_{nullptr};

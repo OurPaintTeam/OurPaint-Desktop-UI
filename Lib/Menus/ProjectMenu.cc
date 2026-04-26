@@ -1,20 +1,22 @@
 #include "ProjectMenu.h"
 
+#include <QEvent>
 
-UI::ProjectMenu::ProjectMenu(QWidget* parent)
+
+UI::ProjectMenu::ProjectMenu(QWidget *parent)
     : UI::CustomMenu(parent) {
-    createProject_ = addAction(QIcon(":/Assets/icons/menus/projectCreate.ico"), "Create new project");
-    openProject_ = addAction(QIcon(":/Assets/icons/menus/projectOpen.ico"), "Open project");
+    createProject_ = addAction(QIcon(":/Assets/icons/menus/projectCreate.ico"), "");
+    openProject_ = addAction(QIcon(":/Assets/icons/menus/projectOpen.ico"), "");
 
     addSeparator();
 
-    createFile_ = addAction(QIcon(":/Assets/icons/menus/fileCreate.ico"), "Create new file");
-    openFile_ = addAction(QIcon(":/Assets/icons/menus/fileCreate.ico"), "Open file");
+    createFile_ = addAction(QIcon(":/Assets/icons/menus/fileCreate.ico"), "");
+    openFile_ = addAction(QIcon(":/Assets/icons/menus/fileCreate.ico"), "");
     exportFile_ = addAction("Export file to...");
 
     addSeparator();
 
-    script_ = addAction("Script");
+    script_ = addAction("");
 
     setObjectName(QStringLiteral("ProjectMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
@@ -25,4 +27,28 @@ UI::ProjectMenu::ProjectMenu(QWidget* parent)
     connect(openFile_, &QAction::triggered, this, &ProjectMenu::openFileTriggered);
     connect(exportFile_, &QAction::triggered, this, &ProjectMenu::exportFileTriggered);
     connect(script_, &QAction::triggered, this, &ProjectMenu::scriptTriggered);
+
+    translate();
+}
+
+
+void UI::ProjectMenu::translate() const {
+    if (createProject_) {
+        createProject_->setText(tr("Create new project"));
+    }
+    if (openProject_) {
+        openProject_->setText(tr("Open project"));
+    }
+    if (createFile_) {
+        createFile_->setText(tr("Create new file"));
+    }
+    if (openFile_) {
+        openFile_->setText(tr("Open file"));
+    }
+    if (exportFile_) {
+        exportFile_->setText(tr("Export file to..."));
+    }
+    if (script_) {
+        script_->setText(tr("Script"));
+    }
 }

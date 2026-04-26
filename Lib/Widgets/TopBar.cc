@@ -140,10 +140,6 @@ void UI::TopBar::setupWindowButtons() {
     maxButton_->setIcon(QIcon(":/Assets/icons/window/maximize.png"));
     closeButton_->setIcon(QIcon(":/Assets/icons/window/close.png"));
 
-    minButton_->setToolTip("Minimize");
-    maxButton_->setToolTip("Maximize");
-    closeButton_->setToolTip("Close");
-
     rightLayout_->addWidget(minButton_);
     rightLayout_->addWidget(maxButton_);
     rightLayout_->addWidget(closeButton_);
@@ -163,4 +159,27 @@ void UI::TopBar::setupWindowButtons() {
             window->close();
         }
     });
+}
+
+
+
+void UI::TopBar::changeEvent(QEvent* e)
+{
+    if (e->type() == QEvent::LanguageChange) {
+  translate();
+    }
+
+    QWidget::changeEvent(e);
+}
+
+void UI::TopBar::translate() const {
+    if (minButton_) {
+        minButton_->setToolTip(tr("Minimize window"));
+    }
+    if (maxButton_) {
+        maxButton_->setToolTip(tr("Maximize window"));
+    }
+    if (closeButton_) {
+        closeButton_->setToolTip(tr("Close"));
+    }
 }
