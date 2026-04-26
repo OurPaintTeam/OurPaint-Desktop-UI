@@ -4,20 +4,27 @@
 #include "CustomMenu.h"
 
 namespace UI {
-    class CircleMenu final : public CustomMenu
-    {
+    class CircleMenu final : public CustomMenu {
         Q_OBJECT
+
     public:
         explicit CircleMenu(QWidget* parent = nullptr);
-      QAction* circleByDiameter() const;
-      QAction* circleByRadius() const;
-      QAction* ellipse() const;
-      QAction* circleSettings() const;
-        private:
-        QAction* circleByDiameter_{nullptr};
+        QAction* circleByRadius() const;
+        QAction* circleByDiameter() const;
+        QAction* circleByTwoPoints() const;
+        QAction* circleByThreePoints() const;
+        QAction* circleTangentTwoLines() const;
+        QAction* circleTangentThreeLines() const;
+
+
+
+    private:
         QAction* circleByRadius_{nullptr};
-        QAction* ellipse_{nullptr};
-        QAction* circleSettings_{nullptr};
+        QAction* circleByDiameter_{nullptr};
+        QAction* circleByTwoPoints_{nullptr};
+        QAction* circleByThreePoints_{nullptr};
+        QAction* circleTangentTwoLines_{nullptr};
+        QAction* circleTangentThreeLines_{nullptr};
     };
 }// namespace UI
 

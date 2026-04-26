@@ -5,18 +5,35 @@
 
 UI::CircleMenu::CircleMenu(QWidget* parent)
     : UI::CustomMenu(parent) {
-    circleByDiameter_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle by diameter");
-    circleByDiameter_->setData(QVariant::fromValue(PrimitiveType::CircleByDiameter));
 
+    // Radius
     circleByRadius_ = addAction(QIcon(":/Assets/icons/primitives/circleByRadius.svg"), "Circle by radius");
     circleByRadius_->setData(QVariant::fromValue(PrimitiveType::CircleByRadius));
 
-    ellipse_ = addAction(QIcon(":/Assets/icons/primitives/ellipseThreePoints.svg"), "Ellipse by 3 points");
-    ellipse_->setData(QVariant::fromValue(PrimitiveType::EllipseThreePoints));
+    // Diameter
+    circleByDiameter_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle by diameter");
+    circleByDiameter_->setData(QVariant::fromValue(PrimitiveType::CircleByDiameter));
+
+    // Two points
+    circleByTwoPoints_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle by two points");
+    circleByTwoPoints_->setData(QVariant::fromValue(PrimitiveType::CircleByTwoPoints));
+
+    // Three points
+    circleByThreePoints_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle by three points");
+    circleByThreePoints_->setData(QVariant::fromValue(PrimitiveType::CircleByThreePoints));
+
+    // Tangent two lines
+    circleTangentTwoLines_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle tangent two lines");
+    circleTangentTwoLines_->setData(QVariant::fromValue(PrimitiveType::CircleTangentTwoLines));
+
+    // Tangent three lines
+    circleTangentThreeLines_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "Circle tangent three lines");
+    circleTangentThreeLines_->setData(QVariant::fromValue(PrimitiveType::CircleTangentThreeLines));
+
 
     addSeparator();
-    circleSettings_ = addAction(QIcon(":/Assets/icons/tools/settings.svg"), "Circle settings...");
-    circleSettings_->setData(QVariant::fromValue(PrimitiveType::CircleSettings));
+    // circleSettings_ = addAction(QIcon(":/Assets/icons/tools/settings.svg"), "Circle settings...");
+    // circleSettings_->setData(QVariant::fromValue(PrimitiveType::CircleSettings));
 
     for (auto* a: actions()) {
         if (!a->isSeparator()) {
@@ -28,19 +45,27 @@ UI::CircleMenu::CircleMenu(QWidget* parent)
     setAttribute(Qt::WA_StyledBackground, true);
 }
 
+QAction* UI::CircleMenu::circleByRadius() const {
+    return circleByRadius_;
+}
 
 QAction* UI::CircleMenu::circleByDiameter() const {
-  return circleByDiameter_;
+    return circleByDiameter_;
 }
 
-QAction* UI::CircleMenu::circleByRadius() const {
-  return circleByRadius_;
+QAction* UI::CircleMenu::circleByTwoPoints() const {
+    return circleByTwoPoints_;
 }
 
-QAction* UI::CircleMenu::ellipse() const {
-  return ellipse_;
+QAction* UI::CircleMenu::circleByThreePoints() const {
+    return circleByThreePoints_;
 }
 
-QAction* UI::CircleMenu::circleSettings() const {
-  return circleSettings_;
+QAction* UI::CircleMenu::circleTangentTwoLines() const {
+    return circleTangentTwoLines_;
 }
+
+QAction* UI::CircleMenu::circleTangentThreeLines() const {
+    return circleTangentThreeLines_;
+}
+

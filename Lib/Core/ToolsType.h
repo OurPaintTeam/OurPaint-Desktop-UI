@@ -19,10 +19,12 @@ namespace UI {
         InfiniteLine,
         LineSettings,
 
-        CircleByDiameter,
         CircleByRadius,
-        EllipseThreePoints,
-        CircleSettings,
+        CircleByDiameter,
+        CircleByTwoPoints,
+        CircleByThreePoints,
+        CircleTangentTwoLines,
+        CircleTangentThreeLines,
 
         ArcByRadius,
         ArcByDiameter,

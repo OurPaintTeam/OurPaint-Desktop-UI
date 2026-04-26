@@ -281,68 +281,77 @@ void UI::ToolBar::setActiveTool(ToolsType tool) {
 }
 
 void UI::ToolBar::setActiveTool(PrimitiveType tool) {
-  switch (tool) {
+    switch (tool) {
 
-  case PrimitiveType::Point:
-    setActiveTool(pointPrimitive_);
-    break;
+        case PrimitiveType::Point:
+            setActiveTool(pointPrimitive_);
+            break;
 
-  case PrimitiveType::CubicBezier:
-    setActiveTool(cubicBezierPrimitive_);
-    break;
+        case PrimitiveType::CubicBezier:
+            setActiveTool(cubicBezierPrimitive_);
+            break;
 
-  case PrimitiveType::Line:
-    linePrimitive_->applyAction(lineMenu_->line());
-    setActiveTool(linePrimitive_);
-    break;
-  case PrimitiveType::LineSettings:
-    linePrimitive_->applyAction(lineMenu_->settingsLine());
-    setActiveTool(linePrimitive_);
-  case PrimitiveType::Polyline:
-    linePrimitive_->applyAction(lineMenu_->polyLine());
-    setActiveTool(linePrimitive_);
-  case PrimitiveType::InfiniteLine:
-    linePrimitive_->applyAction(lineMenu_->infiniteLine());
-    setActiveTool(linePrimitive_);
-    break;
+        case PrimitiveType::Line:
+            linePrimitive_->applyAction(lineMenu_->line());
+            setActiveTool(linePrimitive_);
+            break;
+        case PrimitiveType::LineSettings:
+            linePrimitive_->applyAction(lineMenu_->settingsLine());
+            setActiveTool(linePrimitive_);
+        case PrimitiveType::Polyline:
+            linePrimitive_->applyAction(lineMenu_->polyLine());
+            setActiveTool(linePrimitive_);
+        case PrimitiveType::InfiniteLine:
+            linePrimitive_->applyAction(lineMenu_->infiniteLine());
+            setActiveTool(linePrimitive_);
+            break;
 
-  case PrimitiveType::CircleByDiameter:
-    circlePrimitive_->applyAction(circleMenu_->circleByDiameter());
-    setActiveTool(circlePrimitive_);
-    break;
-  case PrimitiveType::CircleByRadius:
-    circlePrimitive_->applyAction(circleMenu_->circleByRadius());
-    setActiveTool(circlePrimitive_);
-    break;
-  case PrimitiveType::CircleSettings:
-    circlePrimitive_->applyAction(circleMenu_->circleSettings());
-    setActiveTool(circlePrimitive_);
-    break;
-  case PrimitiveType::EllipseThreePoints:
-    circlePrimitive_->applyAction(circleMenu_->ellipse());
-    setActiveTool(circlePrimitive_);
-    break;
 
-  case PrimitiveType::ArcByRadius:
-    arcPrimitive_->applyAction(arcMenu_->arcRadius());
-    setActiveTool(arcPrimitive_);
-    break;
-  case PrimitiveType::ArcByDiameter:
-    arcPrimitive_->applyAction(arcMenu_->arcRadius());
-    setActiveTool(arcPrimitive_);
-    break;
-  case PrimitiveType::ArcThreePoints:
-    arcPrimitive_->applyAction(arcMenu_->arc3Points());
-    setActiveTool(arcPrimitive_);
-    break;
-  case PrimitiveType::ArcSettings:
-    arcPrimitive_->applyAction(arcMenu_->arc3Points());
-    setActiveTool(arcPrimitive_);
-    break;
+        case PrimitiveType::CircleByRadius:
+            circlePrimitive_->applyAction(circleMenu_->circleByRadius());
+            setActiveTool(circlePrimitive_);
+            break;
+          case PrimitiveType::CircleByDiameter:
+            circlePrimitive_->applyAction(circleMenu_->circleByDiameter());
+            setActiveTool(circlePrimitive_);
+        case PrimitiveType::CircleByTwoPoints:
+            circlePrimitive_->applyAction(circleMenu_->circleByTwoPoints());
+            setActiveTool(circlePrimitive_);
+            break;
+        case PrimitiveType::CircleByThreePoints:
+            circlePrimitive_->applyAction(circleMenu_->circleByThreePoints());
+            setActiveTool(circlePrimitive_);
+            break;
+        case PrimitiveType::CircleTangentTwoLines:
+            circlePrimitive_->applyAction(circleMenu_->circleTangentTwoLines());
+            setActiveTool(circlePrimitive_);
+            break;
+        case PrimitiveType::CircleTangentThreeLines:
+            circlePrimitive_->applyAction(circleMenu_->circleTangentThreeLines());
+            setActiveTool(circlePrimitive_);
+            break;
 
-  default:
-    break;
-  }
+
+        case PrimitiveType::ArcByRadius:
+            arcPrimitive_->applyAction(arcMenu_->arcRadius());
+            setActiveTool(arcPrimitive_);
+            break;
+        case PrimitiveType::ArcByDiameter:
+            arcPrimitive_->applyAction(arcMenu_->arcRadius());
+            setActiveTool(arcPrimitive_);
+            break;
+        case PrimitiveType::ArcThreePoints:
+            arcPrimitive_->applyAction(arcMenu_->arc3Points());
+            setActiveTool(arcPrimitive_);
+            break;
+        case PrimitiveType::ArcSettings:
+            arcPrimitive_->applyAction(arcMenu_->arc3Points());
+            setActiveTool(arcPrimitive_);
+            break;
+
+        default:
+            break;
+    }
 }
 
 void UI::ToolBar::setActiveTool(QPushButton *tool) {
