@@ -40,21 +40,21 @@ UI::TabMenu::TabMenu(QWidget *parent)
 
 void UI::TabMenu::translate() const {
     if (renameTab_) {
-        renameTab_->setText(tr("Rename tab"));
+        renameTab_->setText(UI::TabMenu::tr("Rename tab"));
     }
     if (deleteTab_) {
-        deleteTab_->setText(tr("Delete file"));
+        deleteTab_->setText(UI::TabMenu::tr("Delete file"));
     }
     if (closeTab_) {
-        closeTab_->setText(tr("Close tab"));
+        closeTab_->setText(UI::TabMenu::tr("Close tab"));
     }
     if (closeAllLeftTabs_) {
-        closeAllLeftTabs_->setText(tr("Close all left tabs"));
+        closeAllLeftTabs_->setText(UI::TabMenu::tr("Close all left tabs"));
     }
     if (closeAllRightTabs_) {
-        closeAllRightTabs_->setText(tr("Close all right tabs"));
+        closeAllRightTabs_->setText(UI::TabMenu::tr("Close all right tabs"));
     }
     if (closeAllTabs_) {
-        closeAllTabs_->setText(tr("Close all tabs"));
+        closeAllTabs_->setText(UI::TabMenu::tr("Close all tabs"));
     }
 }

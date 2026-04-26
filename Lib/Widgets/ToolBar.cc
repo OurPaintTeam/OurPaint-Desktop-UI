@@ -154,23 +154,23 @@ void UI::ToolBar::initSignals() {
 
     // CONSTRAINTS
     constraints_ = {
-        {":/Assets/icons/constraints/ObjObjDist.svg", "Object – Object Distance", new QAction("", this)},
-        {":/Assets/icons/constraints/pointOnLine.svg", "Point on Line", new QAction("", this)},
-        {":/Assets/icons/constraints/pointOnPoint.svg", "Coincident Points", new QAction("", this)},
-        {":/Assets/icons/constraints/lineOnCircle.svg", "Line on Circle", new QAction("", this)},
-        {":/Assets/icons/constraints/lineInCircle.svg", "Line Inside Circle", new QAction("", this)},
-        {":/Assets/icons/constraints/lineLineParallel.svg", "Parallel Lines", new QAction("", this)},
-        {":/Assets/icons/constraints/lineLinePerpendicular.svg", "Perpendicular Lines", new QAction("", this)},
-        {":/Assets/icons/constraints/lineLineAngle.svg", "Angle Between Lines", new QAction("", this)}
+        {":/Assets/icons/constraints/ObjObjDist.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/pointOnLine.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/pointOnPoint.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/lineOnCircle.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/lineInCircle.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/lineLineParallel.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/lineLinePerpendicular.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/lineLineAngle.svg", new QAction("", this), nullptr}
     };
 
-    for (const auto& item: constraints_) {
+    for (auto& item : constraints_) {
         auto *btn = reqsContainer_->addButton(QIcon(item.icon));
         btn->setFixedSize(buttonSize);
         btn->setCursor(Qt::PointingHandCursor);
         btn->setObjectName("NoActiveTool");
 
-        btn->setToolTip(tr(item.tooltipKey.toUtf8().constData()));
+        item.button = btn;
 
         connect(btn, &QPushButton::clicked, this, [this, act = item.action]() {
             act->trigger();
@@ -291,22 +291,27 @@ void UI::ToolBar::setActiveTool(QPushButton *tool) {
 // TRANSLATE
 void UI::ToolBar::translate() const {
     if (pointPrimitive_) {
-        pointPrimitive_->setToolTip(tr("Point"));
+        pointPrimitive_->setToolTip(UI::ToolBar::tr("Point"));
     }
     if (cubicBezierPrimitive_) {
-        cubicBezierPrimitive_->setToolTip(tr("CubicBezier"));
+        cubicBezierPrimitive_->setToolTip(UI::ToolBar::tr("CubicBezier"));
     }
     if (cursorTool_) {
-        cursorTool_->setToolTip(tr("Cursor tool"));
+        cursorTool_->setToolTip(UI::ToolBar::tr("Cursor tool"));
     }
     if (sizeTool_) {
-        sizeTool_->setToolTip(tr("Show size"));
+        sizeTool_->setToolTip(UI::ToolBar::tr("Show size"));
     }
 
-    for (const auto& item: constraints_) {
-        if (!item.action) {
-            continue;
-        }
-        item.action->setToolTip(tr(item.tooltipKey.toUtf8().constData()));
+    // CONSTRAINTS
+    if (constraints_.size() >= 8) {
+        constraints_[0].button->setToolTip(UI::ToolBar::tr("Object – Object Distance"));
+        constraints_[1].button->setToolTip(UI::ToolBar::tr("Point on Line"));
+        constraints_[2].button->setToolTip(UI::ToolBar::tr("Coincident Points"));
+        constraints_[3].button->setToolTip(UI::ToolBar::tr("Line on Circle"));
+        constraints_[4].button->setToolTip(UI::ToolBar::tr("Line Inside Circle"));
+        constraints_[5].button->setToolTip(UI::ToolBar::tr("Parallel Lines"));
+        constraints_[6].button->setToolTip(UI::ToolBar::tr("Perpendicular Lines"));
+        constraints_[7].button->setToolTip(UI::ToolBar::tr("Angle Between Lines"));
     }
 }

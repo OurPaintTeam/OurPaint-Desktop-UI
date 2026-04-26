@@ -54,6 +54,8 @@ namespace UI {
         void versionCommitTriggered();
 
       void applySettings(double value1, double value2, double value3);
+    protected:
+        void changeEvent(QEvent *e) override;
     private:
         // Pointers to linked UI components
         TabBar* tabBar_{nullptr};
@@ -70,6 +72,7 @@ namespace UI {
 
         void createProjectButtons();
         void setupSettings();
+        void translate() const;
     };
 } // namespace UI
 

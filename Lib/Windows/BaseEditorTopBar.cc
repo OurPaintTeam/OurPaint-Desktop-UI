@@ -15,6 +15,7 @@ namespace {
 
 UI::BaseEditorTopBar::BaseEditorTopBar(QWidget* parent)
     : TopBar(parent) {
+    translate();
 }
 
 
@@ -36,12 +37,12 @@ void UI::BaseEditorTopBar::toggleWidgetVisibility(QWidget* widget) {
 
 
 void UI::BaseEditorTopBar::setLeftPanel(QWidget* panel) {
-    setLeftPanel(panel, QIcon(LEFT_ICON_PATH), QStringLiteral("Show/size left panel"));
+    setLeftPanel(panel, QIcon(LEFT_ICON_PATH),"");
 }
 
 
 void UI::BaseEditorTopBar::setRightPanel(QWidget* panel) {
-    setRightPanel(panel, QIcon(RIGHT_ICON_PATH), QStringLiteral("Show/size right panel"));
+    setRightPanel(panel, QIcon(RIGHT_ICON_PATH), "");
 }
 
 
@@ -77,7 +78,7 @@ void UI::BaseEditorTopBar::setRightPanel(QWidget* panel, const QIcon& icon, cons
 void UI::BaseEditorTopBar::setCommandConsoleWidget(QWidget* consoleWidget) {
     commandConsoleWidget_ = consoleWidget;
     if (!consoleButton_) {
-        consoleButton_ = createToggleButton(QIcon(CONSOLE_ICON_PATH), QStringLiteral("Show/size console"), [this]() {
+        consoleButton_ = createToggleButton(QIcon(CONSOLE_ICON_PATH),"", [this]() {
             if (commandConsoleWidget_) {
                 toggleWidgetVisibility(commandConsoleWidget_);
             }
@@ -96,4 +97,23 @@ QPushButton* UI::BaseEditorTopBar::createToggleButton(const QIcon& icon,
     connect(button, &QPushButton::clicked, this, onClick);
 
     return button;
+}
+
+void UI::BaseEditorTopBar::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::BaseEditorTopBar::translate() const {
+    if (leftButton_) {
+        leftButton_->setToolTip(UI::BaseEditorTopBar::tr("Show/Hide left panel"));
+    }
+    if (rightButton_) {
+        rightButton_->setToolTip(UI::BaseEditorTopBar::tr("Show/Hide right panel"));
+    }
+    if (consoleButton_) {
+        consoleButton_->setToolTip(UI::BaseEditorTopBar::tr("Show/Hide concole"));
+    }
 }

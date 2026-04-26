@@ -79,8 +79,8 @@ namespace UI {
         // CONSTRAINTS
         struct ConstraintConfig {
             QString icon;
-            QString tooltipKey;
             QAction *action;
+            QPushButton* button;
         };
 
 

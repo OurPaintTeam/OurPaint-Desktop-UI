@@ -36,6 +36,7 @@ class TabWidget;
         void addTabSlot(const QString& name);
         void createTabSlot();
 
+
     private slots:
         void setActiveTabSlot(UI::TabWidget* tab);
         void openTabMenuSlot(TabWidget* tab, const QPoint& localPos);
@@ -44,8 +45,12 @@ class TabWidget;
         void dragEnterEvent(QDragEnterEvent* event) override;
         void dragMoveEvent(QDragMoveEvent* event) override;
         void dropEvent(QDropEvent* event) override;
+        void changeEvent(QEvent *e) override;
+
 
     private:
+        void translate() const;
+
         QWidget* tabBar_{nullptr};
         QHBoxLayout* tabLayout_{nullptr};
         QPushButton* plusButton_{nullptr};

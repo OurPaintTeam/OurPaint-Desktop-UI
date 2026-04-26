@@ -106,6 +106,8 @@ UI::ProjectButton::ProjectButton(const QString& name,
     connect(this, &QPushButton::clicked, this, [this]() {
         emit pressProjectTriggered(getPath());
     });
+
+    translate();
 }
 
 bool UI::ProjectButton::eventFilter(QObject* obj, QEvent* event)
@@ -159,4 +161,20 @@ QString UI::ProjectButton::getName() const {
 
 QString UI::ProjectButton::getPath() const {
     return pathLabel_->text();
+}
+
+void UI::ProjectButton::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::ProjectButton::translate() const {
+    if (renameBtn_) {
+        renameBtn_->setToolTip(UI::ProjectButton::tr("Rename project"));
+    }
+    if (deleteBtn_) {
+        deleteBtn_->setToolTip(UI::ProjectButton::tr("Delete project"));
+    }
 }

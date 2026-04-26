@@ -1,5 +1,7 @@
 #include "FramelessWindow.h"
 
+#include <qdir.h>
+
 #ifdef Q_OS_WIN
 #include <dwmapi.h>
 #include <windows.h>
@@ -26,13 +28,25 @@ enum DWM_WINDOW_CORNER_PREFERENCE {
 #include <QApplication>
 #include <QFile>
 #include <QMouseEvent>
+#include <QTranslator>
+#include <QEvent>
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
+
+  /*
+ * lupdate . -ts Lib/translations/app_ru.ts
+ * lrelease Lib/translations/app_ru.ts
+ */
+
+  static QTranslator translator;
+  translator.load(":/translations/app_ru.qm");
+  qApp->installTranslator(&translator);
+
   // setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   setAttribute(Qt::WA_TranslucentBackground);
   setAttribute(Qt::WA_NoSystemBackground);
   setObjectName(QStringLiteral("FramelessWindow"));
-  setWindowTitle("OurPaint");
+  setWindowTitle(tr("OurPaint"));
   setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
 
   const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss",
@@ -175,6 +189,11 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray &eventType,
 
 void UI::FramelessWindow::changeEvent(QEvent *event) {
 #ifdef Q_OS_WIN
+    if (event->type() == QEvent::LanguageChange) {
+        setWindowTitle(tr("OurPaint"));
+        update();
+    }
+
   if (event->type() == QEvent::WindowStateChange) {
     /*
      * Если initWindowForWindowsWithoutFrame()

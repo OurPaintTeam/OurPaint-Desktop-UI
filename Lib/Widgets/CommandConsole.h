@@ -15,10 +15,14 @@ namespace UI {
         explicit CommandConsole(QWidget* parent = nullptr);
         void setLineEditEngine(QLineEdit* lineEdit);
 
+
     signals:
         void sentCommandTriggered(const QString& command);
-
+    protected:
+        void changeEvent(QEvent *e) override;
     private:
+        void translate() const;
+
         QHBoxLayout* layout_{nullptr};
         QLineEdit* lineEdit_{nullptr};
         QPushButton* button_{nullptr};

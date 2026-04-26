@@ -23,9 +23,9 @@ UI::CollaborationMenu::CollaborationMenu(QWidget *parent)
 
 void UI::CollaborationMenu::translate() const {
     if (open_) {
-        open_->setText(tr("Open"));
+        open_->setText(UI::CollaborationMenu::tr("Open"));
     }
     if (close_) {
-        close_->setText(tr("Close"));
+        close_->setText(UI::CollaborationMenu::tr("Close"));
     }
 }

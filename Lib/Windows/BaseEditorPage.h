@@ -33,13 +33,13 @@ namespace UI {
         void setCommandConsoleEngine(QLineEdit* engine) const;
         void setActiveTool(ToolsType tool);
         void setActiveTool(PrimitiveType tool);
-        void setActiveName(const QString& name);
+        void setActiveName(const QString name);
 
     signals:
-        void sentCommandTriggered(const QString tabName, const QString& command);
-        void primitiveTriggered(const QString tabName,PrimitiveType& type);
-        void constraintTriggered(const QString tabName,ConstraintType& type);
-        void toolsTriggered(const QString tabName, ToolsType& type);
+        void sentCommandTriggered(const QString tabName, const QString command);
+        void primitiveTriggered(const QString tabName,PrimitiveType type);
+        void constraintTriggered(const QString tabName,ConstraintType type);
+        void toolsTriggered(const QString tabName, ToolsType type);
 
     protected:
         void initBaseEditorPage();

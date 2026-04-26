@@ -19,8 +19,9 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit ProjectsListWidget(QWidget* parent = nullptr);
+        explicit ProjectsListWidget(QWidget *parent = nullptr);
         void setProjects(const QVector<QPair<QString, QString> >& projects);
+
     signals:
         void renameProjectTriggered(const QString& newName, const QString& path);
         void deleteProjectTriggered(const QString& path);
@@ -29,23 +30,26 @@ namespace UI {
         void pressCreateButtonTriggered();
         void pressOpenButtonTriggered();
 
+        protected:
+        void changeEvent(QEvent *e) override;
     private slots:
         void filterProjectsSlot(const QString& text);
 
     private:
+        void translate() const;
         // Private variables with namePtr_ style
-        QVBoxLayout* rootLayoutPtr_{nullptr};
-        QWidget* openPanelPtr_{nullptr};
-        QVBoxLayout* panelLayoutPtr_{nullptr};
-        QWidget* inputContainerPtr_{nullptr};
-        QHBoxLayout* inputLayoutPtr_{nullptr};
-        QLineEdit* projectInput_{nullptr};
-        QPushButton* createButtonPtr_{nullptr};
-        QPushButton* openButtonPtr_{nullptr};
-        QFrame* linePtr_{nullptr};
-        QScrollArea* scrollAreaPtr_{nullptr};
-        QWidget* scrollContent_{nullptr};
-        QVBoxLayout* projectsLayout_{nullptr};
+        QVBoxLayout *rootLayoutPtr_{nullptr};
+        QWidget *openPanelPtr_{nullptr};
+        QVBoxLayout *panelLayoutPtr_{nullptr};
+        QWidget *inputContainerPtr_{nullptr};
+        QHBoxLayout *inputLayoutPtr_{nullptr};
+        QLineEdit *projectInput_{nullptr};
+        QPushButton *createButtonPtr_{nullptr};
+        QPushButton *openButtonPtr_{nullptr};
+        QFrame *linePtr_{nullptr};
+        QScrollArea *scrollAreaPtr_{nullptr};
+        QWidget *scrollContent_{nullptr};
+        QVBoxLayout *projectsLayout_{nullptr};
         QList<ProjectButton*> allProjects_{};
 
         // Constants

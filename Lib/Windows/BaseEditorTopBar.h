@@ -29,6 +29,7 @@ namespace UI {
         QPushButton* createToggleButton(const QIcon& icon,
                                         const QString& toolTip,
                                         const std::function<void()>& onClick);
+        void changeEvent(QEvent *e) override;
 
         QWidget* leftPanel_{nullptr};
         QWidget* rightPanel_{nullptr};
@@ -37,6 +38,8 @@ namespace UI {
         QPushButton* leftButton_{nullptr};
         QPushButton* rightButton_{nullptr};
         QPushButton* consoleButton_{nullptr};
+    private:
+        void translate() const;
     };
 } // namespace UI
 

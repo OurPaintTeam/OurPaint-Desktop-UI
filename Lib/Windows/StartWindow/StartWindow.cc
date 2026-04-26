@@ -47,7 +47,7 @@ void UI::StartWindow::setProjectsList(const QVector<QPair<QString, QString>>& pr
 }
 
 
-void UI::StartWindow::setDefaultProjectsPath(const QString& projectPath) {
+void UI::StartWindow::setDefaultProjectsPath(const QString& projectPath) const {
     if (startPage_) {
         startPage_->setDefaultProjectsPath(projectPath);
     }

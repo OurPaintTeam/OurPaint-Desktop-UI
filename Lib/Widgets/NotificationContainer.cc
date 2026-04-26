@@ -17,10 +17,9 @@ UI::NotificationContainer::NotificationContainer(QWidget *parent)
       scrollArea_(new QScrollArea(this)),
       hideTimer_(new QTimer(this)) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-    layout_->setContentsMargins(0, 0, 0, 0);
+  setFixedWidth(320);
     containerLayout_ = new QVBoxLayout(containerWidget_);
     containerLayout_->setAlignment(Qt::AlignTop);
-    containerLayout_->setContentsMargins(0, 0, 0, 0);
     containerWidget_->setLayout(containerLayout_);
 
     scrollArea_->setWidget(containerWidget_);
@@ -43,8 +42,7 @@ UI::NotificationContainer::NotificationContainer(QWidget *parent)
     setObjectName("NotificationContainer");
     containerWidget_->setObjectName("NotificationContainerWidget");
 
-    constexpr auto x = 300;
-    setFixedWidth(x);
+
 
     if (parent) {
         parent->installEventFilter(this);
@@ -161,19 +159,23 @@ void UI::NotificationContainer::removeNotification(NotificationWidget *widget) {
 
 
 void UI::NotificationContainer::updateContainerSize() {
-    const auto count = notifications_.size();
-    constexpr auto widgetHeight = 50;
-    const auto result = widgetHeight * count;
+  int totalHeight = 0;
 
-    if (count <= 3) {
-        containerWidget_->setFixedHeight(result);
-        scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        setFixedHeight(result + 4);
-    } else {
-        containerWidget_->setFixedHeight(result);
-        scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        setFixedHeight(3 * widgetHeight + 4);
-    }
+  for (auto *w : notifications_) {
+    totalHeight += w->sizeHint().height();
+  }
 
-    updatePosition();
+  const int maxVisibleHeight = 240;
+
+  if (totalHeight <= maxVisibleHeight) {
+    containerWidget_->setFixedHeight(totalHeight);
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setFixedHeight(totalHeight);
+  } else {
+    containerWidget_->setFixedHeight(totalHeight);
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    setFixedHeight(maxVisibleHeight);
+  }
+
+  updatePosition();
 }

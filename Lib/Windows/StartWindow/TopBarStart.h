@@ -10,10 +10,14 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit TopBarStart(QWidget* parent = nullptr);
+        explicit TopBarStart(QWidget *parent = nullptr);
+
+    protected:
+        void changeEvent(QEvent *e) override;
 
     private:
-        QLabel* title_{nullptr};
+        void translate() const;
+        QLabel *title_{nullptr};
     };
 } // namespace UI
 

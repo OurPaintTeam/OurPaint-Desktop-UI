@@ -18,11 +18,15 @@ namespace UI {
 
     signals:
         void settingsApplied(double value1, double value2, double value3);
-
+    protected:
+        void changeEvent(QEvent *e) override;
     private slots:
         void onApplyClicked();
 
+
+
     private:
+        void translate() const;
         QPushButton *closeButton_{nullptr};
         QVBoxLayout *layout_{nullptr};
 

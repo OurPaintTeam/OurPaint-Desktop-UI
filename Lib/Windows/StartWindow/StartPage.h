@@ -17,8 +17,8 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit StartPage(QWidget* parent = nullptr);
-        void setProjectsList(const QVector<QPair<QString, QString>>& projects) const;
+        explicit StartPage(QWidget *parent = nullptr);
+        void setProjectsList(const QVector<QPair<QString, QString> >& projects) const;
         void setDefaultProjectsPath(const QString& projectPath);
 
     public slots:
@@ -30,14 +30,18 @@ namespace UI {
         void renameProjectTriggered(const QString& newName, const QString& path);
         void deleteProjectTriggered(const QString& path);
 
+    protected:
+        void changeEvent(QEvent *e) override;
+
     private:
         void initUI();
+        void translate() const;
 
-        TopBarStart* topBar_{nullptr};
-        ProjectsListWidget* projectsListWidget_{nullptr};
-        AnimationArea* animationArea_{nullptr};
+        TopBarStart *topBar_{nullptr};
+        ProjectsListWidget *projectsListWidget_{nullptr};
+        AnimationArea *animationArea_{nullptr};
 
-        QHBoxLayout* contentLayout_{nullptr};
+        QHBoxLayout *contentLayout_{nullptr};
 
         QString defaultProjectsPath_;
     };

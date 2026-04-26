@@ -29,12 +29,18 @@ namespace UI {
         QString getName() const;
         QString getPath() const;
 
-        signals:
+
+
+    signals:
             void renameProjectTriggered(const QString& newName, const QString& path);
         void deleteProjectTriggered(const QString& path);
         void pressProjectTriggered(const QString& path);
+    protected:
+        void changeEvent(QEvent *e) override;
 
     private:
+        void translate() const;
+
         QLabel* nameLabel_{nullptr};
         QLabel* pathLabel_{nullptr};
 

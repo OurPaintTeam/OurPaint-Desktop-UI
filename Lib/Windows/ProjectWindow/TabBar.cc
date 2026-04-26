@@ -115,6 +115,8 @@ UI::TabBar::TabBar(QWidget *parent)
   createPlusButton();
   tabLayout_->addWidget(plusButton_);
   tabLayout_->addStretch();
+
+    translate();
 }
 
 void UI::TabBar::addTabSlot(const QString &name) {
@@ -360,4 +362,18 @@ void UI::TabBar::createTabSlot() {
         tab->deleteLater();
     });
 
+}
+
+
+void UI::TabBar::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::TabBar::translate() const {
+    if (plusButton_) {
+        plusButton_->setToolTip(UI::TabBar::tr("Create new file"));
+    }
 }

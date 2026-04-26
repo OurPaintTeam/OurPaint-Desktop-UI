@@ -27,6 +27,7 @@ namespace UI {
         void dragEnterEvent(QDragEnterEvent* e) override;
         void dropEvent(QDropEvent* e) override;
         bool eventFilter(QObject *obj, QEvent *event) override;
+        void changeEvent(QEvent *e) override;
 
     private:
         QSet<ContainerType> acceptedTypes_;
@@ -42,6 +43,7 @@ namespace UI {
 
         void removeContainer(ContainerWidget* c);
         void createPlaceholder();
+        void translate() const;
         void removePlaceholder();
 
         void addStretch();

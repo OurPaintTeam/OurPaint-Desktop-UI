@@ -58,15 +58,15 @@ QAction* UI::ArcMenu::arcSettings() const {
 
 void UI::ArcMenu::translate() const {
     if (arcCenter_) {
-        arcCenter_->setText(tr("Arc by radius"));
+        arcCenter_->setText(UI::ArcMenu::tr("Arc by radius"));
     }
     if (arc3Points_) {
-        arc3Points_->setText(tr("Arc by diameter"));
+        arc3Points_->setText(UI::ArcMenu::tr("Arc by diameter"));
     }
     if (arcRadius_) {
-        arcRadius_->setText(tr("Arc by 3 point"));
+        arcRadius_->setText(UI::ArcMenu::tr("Arc by 3 point"));
     }
     if (arcSettings_) {
-        arcSettings_->setText(tr("Arc settings..."));
+        arcSettings_->setText(UI::ArcMenu::tr("Arc settings..."));
     }
 }

@@ -19,6 +19,7 @@ UI::TopBar::TopBar(QWidget *parent)
     setObjectName("TopBar");
 
     setCursor(Qt::OpenHandCursor);
+    translate();
 }
 
 
@@ -174,12 +175,12 @@ void UI::TopBar::changeEvent(QEvent* e)
 
 void UI::TopBar::translate() const {
     if (minButton_) {
-        minButton_->setToolTip(tr("Minimize window"));
+        minButton_->setToolTip(UI::TopBar::tr("Minimize window"));
     }
     if (maxButton_) {
-        maxButton_->setToolTip(tr("Maximize window"));
+        maxButton_->setToolTip(UI::TopBar::tr("Maximize window"));
     }
     if (closeButton_) {
-        closeButton_->setToolTip(tr("Close"));
+        closeButton_->setToolTip(UI::TopBar::tr("Close"));
     }
 }

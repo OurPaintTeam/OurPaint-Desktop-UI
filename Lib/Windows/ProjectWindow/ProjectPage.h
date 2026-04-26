@@ -60,6 +60,9 @@ namespace UI {
 
       void applySettings(double value1, double value2, double value3);
 
+    protected:
+        void changeEvent(QEvent *e) override;
+
     private:
         void initUI() override;
         void setupConnections();
@@ -88,6 +91,8 @@ namespace UI {
         void onRenameTabSlot(const QString& oldName, const QString& newName) const;
 
     private:
+        void translate() const;
+        
         QStackedWidget* centerStack_{nullptr};
         QWidget* workspacePage_{nullptr};
         NavigationWidget* navigationPage_{nullptr};

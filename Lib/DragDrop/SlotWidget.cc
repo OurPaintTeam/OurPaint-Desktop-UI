@@ -12,7 +12,6 @@
 namespace {
     constexpr int K_SLOT_MARGINS_PX = 0;
     constexpr int K_SLOT_SPACING_PX = 25;
-    constexpr auto K_SLOT_PLACEHOLDER_TEXT = "Drop here";
 } // namespace
 
 UI::SlotWidget::SlotWidget(const QSet<ContainerType>& acceptedTypes,
@@ -33,6 +32,7 @@ UI::SlotWidget::SlotWidget(const QSet<ContainerType>& acceptedTypes,
     createPlaceholder();
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName(QStringLiteral("SlotWidget"));
+    translate();
 }
 
 
@@ -155,7 +155,7 @@ void UI::SlotWidget::createPlaceholder() {
         return;
     }
 
-    placeholder_ = new UI::RotatedLabel(K_SLOT_PLACEHOLDER_TEXT, this);
+    placeholder_ = new UI::RotatedLabel("", this);
     placeholder_->setAlignment(Qt::AlignCenter);
     placeholder_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -165,6 +165,19 @@ void UI::SlotWidget::createPlaceholder() {
     }
 
     layout_->addWidget(placeholder_);
+}
+
+void UI::SlotWidget::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::SlotWidget::translate() const {
+    if (placeholder_) {
+        placeholder_->setToolTip(UI::SlotWidget::tr("Drop here"));
+    }
 }
 
 
@@ -219,7 +232,6 @@ void UI::SlotWidget::updateStretchPosition() {
         return;
     }
 
-    // Перемещаем пружину в конец
     layout_->removeWidget(stretchWidget_);
     layout_->addWidget(stretchWidget_);
 }

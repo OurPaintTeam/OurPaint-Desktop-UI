@@ -16,8 +16,10 @@ namespace UI {
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void paintEvent(QPaintEvent* event) override;
+        void changeEvent(QEvent *e) override;
 
     private:
+        void translate() const;
         QLabel* label_{nullptr};
     };
 } // namespace UI

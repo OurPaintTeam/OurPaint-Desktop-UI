@@ -18,7 +18,6 @@ UI::CommandConsole::CommandConsole(QWidget* parent)
     constexpr auto bSize = QSize(25, 25);
     button_->setIconSize(QSize(bSize));
     button_->setIcon(QIcon(":/Assets/icons/console/enter.ico"));
-    button_->setToolTip("Enter command");
     lineEdit_->setObjectName(QStringLiteral("CommandLineEdit"));
     button_->setObjectName(QStringLiteral("CommandEnter"));
 
@@ -39,6 +38,7 @@ UI::CommandConsole::CommandConsole(QWidget* parent)
     layout_->addWidget(lineEdit_);
     layout_->addWidget(button_);
     setObjectName(QStringLiteral("CommandConsole"));
+    translate();
 }
 
 
@@ -65,4 +65,18 @@ void UI::CommandConsole::setLineEditEngine(QLineEdit* lineEdit) {
         emit sentCommandTriggered(lineEdit_->text());
         lineEdit_->clear();
     });
+}
+
+
+void UI::CommandConsole::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::CommandConsole::translate() const {
+    if (button_) {
+        button_->setToolTip(UI::CommandConsole::tr("Enter command"));
+    }
 }

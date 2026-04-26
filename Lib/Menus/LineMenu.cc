@@ -51,15 +51,15 @@ QAction* UI::LineMenu::settingsLine() const {
 
 void UI::LineMenu::translate() const {
     if (line_) {
-        line_-> setText(tr("Line"));
+        line_-> setText(UI::LineMenu::tr("Line"));
     }
     if (infiniteLine_) {
-        infiniteLine_ -> setText(tr("Infinite line"));
+        infiniteLine_ -> setText(UI::LineMenu::tr("Infinite line"));
     }
     if (settingsLine_) {
-        settingsLine_ -> setText(tr("Line settings..."));
+        settingsLine_ -> setText(UI::LineMenu::tr("Line settings..."));
     }
     if (polyLine_) {
-        polyLine_ -> setText(tr("Polyline"));
+        polyLine_ -> setText(UI::LineMenu::tr("Polyline"));
     }
 }

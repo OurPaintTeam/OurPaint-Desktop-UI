@@ -1,5 +1,7 @@
 #include "TopBarTab.h"
 
+#include <QEvent>
+
 #include "SideTool.h"
 
 #include <QLabel>
@@ -10,18 +12,17 @@ UI::TopBarTab::TopBarTab(QWidget* parent)
     : BaseEditorTopBar(parent) {
     createTabWidgets();
     setObjectName(QStringLiteral("TopBarTab"));
+    translate();
 }
 
 
 void UI::TopBarTab::setLeftTool(SideTool* tool) {
-    setLeftPanel(tool, QIcon(":/Assets/icons/showHidePanels/left.svg"),
-                 QStringLiteral("Show/size left.svg panel"));
+    setLeftPanel(tool);
 }
 
 
 void UI::TopBarTab::setRightTool(SideTool* tool) {
-    setRightPanel(tool, QIcon(":/Assets/icons/showHidePanels/right.svg"),
-                  QStringLiteral("Show/size right panel"));
+    setRightPanel(tool);
 }
 
 
@@ -31,14 +32,30 @@ void UI::TopBarTab::setConsole(QWidget* console) {
 
 
 void UI::TopBarTab::createTabWidgets() {
-    title_ = new QLabel(QStringLiteral("OurPaint"), this);
+    title_ = new QLabel((""), this);
     title_->setObjectName(QStringLiteral("TitleOurPaint"));
 
-    const auto x = new QPushButton(this);
-    connect(x, &QPushButton::clicked, this,&TopBarTab::returnTabWindowTriggered);
-    x->setToolTip("Return");
-    x->setObjectName("ReturnTab");
-    x->setIcon( QIcon(":/Assets/icons/showHidePanels/home.svg"));
+    returnBtn_ = new QPushButton(this);
+    connect(returnBtn_, &QPushButton::clicked, this,&TopBarTab::returnTabWindowTriggered);
+    returnBtn_->setObjectName("ReturnTab");
+    returnBtn_->setIcon( QIcon(":/Assets/icons/showHidePanels/home.svg"));
     addLeftWidget(title_);
-    addLeftWidget(x);
+    addLeftWidget(returnBtn_);
+}
+
+
+void UI::TopBarTab::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::TopBarTab::translate() const {
+    if (title_) {
+        title_->setText(UI::TopBarTab::tr("OurPaint"));
+    }
+    if (returnBtn_) {
+        returnBtn_->setToolTip(UI::TopBarTab::tr("Return"));
+    }
 }

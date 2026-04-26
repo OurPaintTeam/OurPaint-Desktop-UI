@@ -67,6 +67,7 @@ UI::TabWidget::TabWidget(QWidget* parent,const QString& name)
 
   nameButton_->installEventFilter(this);
     setObjectName(QStringLiteral("TabWidgetActive"));
+    translate();
 }
 
 
@@ -199,4 +200,18 @@ QString UI::TabWidget::elideText(const QString& text, int maxWidth) const
 {
     QFontMetrics fm(nameButton_->font());
     return fm.elidedText(text, Qt::ElideRight, maxWidth);
+}
+
+
+void UI::TabWidget::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::TabWidget::translate() const {
+    if (closeButton_) {
+        closeButton_->setToolTip(UI::TabWidget::tr("Close tab"));
+    }
 }

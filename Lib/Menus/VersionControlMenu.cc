@@ -28,18 +28,18 @@ UI::VersionControlMenu::VersionControlMenu(QWidget *parent)
 
 void UI::VersionControlMenu::translate() const {
     if (init_) {
-        init_->setText(tr("Init"));
+        init_->setText(UI::VersionControlMenu::tr("Init"));
     }
     if (create_) {
-        create_->setText(tr("Create"));
+        create_->setText(UI::VersionControlMenu::tr("Create"));
     }
     if (push_) {
-        push_->setText(tr("Push"));
+        push_->setText(UI::VersionControlMenu::tr("Push"));
     }
     if (pull_) {
-        pull_->setText(tr("Pull"));
+        pull_->setText(UI::VersionControlMenu::tr("Pull"));
     }
     if (commit_) {
-        commit_->setText(tr("Commit"));
+        commit_->setText(UI::VersionControlMenu::tr("Commit"));
     }
 }

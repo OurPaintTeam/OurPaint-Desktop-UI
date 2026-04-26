@@ -34,21 +34,21 @@ UI::ProjectMenu::ProjectMenu(QWidget *parent)
 
 void UI::ProjectMenu::translate() const {
     if (createProject_) {
-        createProject_->setText(tr("Create new project"));
+        createProject_->setText(UI::ProjectMenu::tr("Create new project"));
     }
     if (openProject_) {
-        openProject_->setText(tr("Open project"));
+        openProject_->setText(UI::ProjectMenu::tr("Open project"));
     }
     if (createFile_) {
-        createFile_->setText(tr("Create new file"));
+        createFile_->setText(UI::ProjectMenu::tr("Create new file"));
     }
     if (openFile_) {
-        openFile_->setText(tr("Open file"));
+        openFile_->setText(UI::ProjectMenu::tr("Open file"));
     }
     if (exportFile_) {
-        exportFile_->setText(tr("Export file to..."));
+        exportFile_->setText(UI::ProjectMenu::tr("Export file to..."));
     }
     if (script_) {
-        script_->setText(tr("Script"));
+        script_->setText(UI::ProjectMenu::tr("Script"));
     }
 }

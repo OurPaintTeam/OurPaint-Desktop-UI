@@ -14,20 +14,26 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit TopBarTab(QWidget* parent = nullptr);
+        explicit TopBarTab(QWidget *parent = nullptr);
         ~TopBarTab() override = default;
 
-        void setLeftTool(SideTool* tool);
-        void setRightTool(SideTool* tool);
-        void setConsole(QWidget* console);
-        signals:
+        void setLeftTool(SideTool *tool);
+        void setRightTool(SideTool *tool);
+        void setConsole(QWidget *console);
+    signals:
         void returnTabWindowTriggered();
+
+    protected:
+        void changeEvent(QEvent *e) override;
 
     private:
         // UI elements
-        QLabel* title_{nullptr};
+        QLabel *title_{nullptr};
+        QPushButton *returnBtn_{nullptr};
 
         void createTabWidgets();
+
+        void translate() const;
     };
 } // namespace UI
 

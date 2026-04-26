@@ -57,7 +57,7 @@ void UI::BaseEditorPage::setActiveTool(PrimitiveType tool) {
 }
 
 
-void UI::BaseEditorPage::setActiveName(const QString& name) {
+void UI::BaseEditorPage::setActiveName(const QString name) {
     activeName_ = name;
 }
 
@@ -108,7 +108,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
     workspaceLayout_->setStretchFactor(consoleWrapper_, 0);
 
     connect(console_, &CommandConsole::sentCommandTriggered,
-            this, [this](const QString& command) {
+            this, [this](const QString command) {
                 if (activeName_.isEmpty()) {
                     return;
                 }
@@ -117,7 +117,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
             });
 
     connect(toolBar_, &ToolBar::primitiveTriggered,
-            this, [this](PrimitiveType& type) {
+            this, [this](PrimitiveType type) {
                 if (activeName_.isEmpty()) {
                     return;
                 }
@@ -127,7 +127,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
 
     connect(toolBar_, &ToolBar::constraintTriggered,
-            this, [this](ConstraintType& type) {
+            this, [this](ConstraintType type) {
                 if (activeName_.isEmpty()) {
                     return;
                 }
@@ -137,7 +137,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
 
     connect(toolBar_, &ToolBar::toolsTriggered,
-            this, [this](ToolsType& type) {
+            this, [this](ToolsType type) {
                 if (activeName_.isEmpty()) {
                     return;
                 }

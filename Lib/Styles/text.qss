@@ -84,7 +84,6 @@ font-weight: bold;
 
 /* === Текстовые и заголовочные элементы === */
 #RotatedLabel {
-    border: 1px dashed #666;
     background-color: transparent;
     color: #D8D8F6;
     font: bold 12px "Segoe UI"; /* исправлено font */

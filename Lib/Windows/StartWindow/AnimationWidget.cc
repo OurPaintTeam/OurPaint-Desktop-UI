@@ -9,7 +9,7 @@ UI::AnimationWidget::AnimationWidget(QWidget* parent)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    label_ = new QLabel("In development...", this);
+    label_ = new QLabel("", this);
 
     auto font = label_->font();
     constexpr auto x = 24;
@@ -18,6 +18,7 @@ UI::AnimationWidget::AnimationWidget(QWidget* parent)
 
     label_->setFont(font);
     label_->adjustSize();
+    translate();
 }
 
 
@@ -43,4 +44,17 @@ void UI::AnimationWidget::paintEvent(QPaintEvent*)
     constexpr QColor backgroundColor(73,72,80);
 
     painter.fillRect(rect(), backgroundColor);
+}
+
+void UI::AnimationWidget::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::AnimationWidget::translate() const {
+    if (label_) {
+        label_->setText(UI::AnimationWidget::tr("In development..."));
+    }
 }

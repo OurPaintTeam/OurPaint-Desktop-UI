@@ -38,12 +38,16 @@ UI::CircleMenu::CircleMenu(QWidget *parent)
 
     for (auto *a: actions()) {
         if (!a->isSeparator()) {
-            connect(a, &QAction::triggered, this, [this, a]() { emit actionSelected(a); });
+            connect(a, &QAction::triggered, this, [this, a]() {
+                emit actionSelected(a);
+            });
         }
     }
 
     setObjectName(QStringLiteral("CircleMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
+
+    translate();
 }
 
 
@@ -80,24 +84,24 @@ QAction* UI::CircleMenu::circleTangentThreeLines() const {
 void UI::CircleMenu::translate() const {
     if (circleByRadius_) {
         // Radius
-        circleByRadius_->setText(tr("Circle by radius"));
+        circleByRadius_->setText(UI::CircleMenu::tr("Circle by radius"));
     }
     if (circleByDiameter_) { // Diameter
-        circleByDiameter_->setText(tr("Circle by diameter"));
+        circleByDiameter_->setText(UI::CircleMenu::tr("Circle by diameter"));
     }
     if (circleByTwoPoints_) { // Two points
-        circleByTwoPoints_->setText(tr("Circle by two points"));
+        circleByTwoPoints_->setText(UI::CircleMenu::tr("Circle by two points"));
     }
     if (circleByThreePoints_) {
         // Three points
-        circleByThreePoints_->setText(tr("Circle by three points"));
+        circleByThreePoints_->setText(UI::CircleMenu::tr("Circle by three points"));
     }
     if (circleTangentTwoLines_) {
         // Tangent two lines
-        circleTangentTwoLines_->setText(tr("Circle tangent two lines"));
+        circleTangentTwoLines_->setText(UI::CircleMenu::tr("Circle tangent two lines"));
     }
     if (circleTangentThreeLines_) {
         // Tangent three lines
-        circleTangentThreeLines_->setText(tr("Circle tangent three lines"));
+        circleTangentThreeLines_->setText(UI::CircleMenu::tr("Circle tangent three lines"));
     }
 }

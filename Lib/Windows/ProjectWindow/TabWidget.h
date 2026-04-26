@@ -48,8 +48,10 @@ namespace UI {
       void finishRename();
       void cancelRename();
         QString elideText(const QString& text, int maxWidth) const;
+        void changeEvent(QEvent *e);
+        void translate() const;
 
-      void applyInactiveStyle();
+        void applyInactiveStyle();
         void applyActiveStyle();
     };
 } // namespace UI

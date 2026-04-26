@@ -1,5 +1,6 @@
 #include "SettingsWidget.h"
 
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -29,7 +30,7 @@ UI::SettingsWidget::SettingsWidget(QWidget *parent)
     layout_->addWidget(closeButton_, 0, Qt::AlignRight | Qt::AlignTop);
 
     auto *row1 = new QHBoxLayout();
-    label1_ = new QLabel("Текст 1:", this);
+    label1_ = new QLabel(this);
     valueEdit1_ = new QLineEdit(this);
     valueEdit1_->setText("0.00");
     valueEdit1_->setFixedWidth(60);
@@ -42,7 +43,7 @@ UI::SettingsWidget::SettingsWidget(QWidget *parent)
     row1->addWidget(slider1_);
 
     auto *row2 = new QHBoxLayout();
-    label2_ = new QLabel("Текст 2:", this);
+    label2_ = new QLabel(this);
     valueEdit2_ = new QLineEdit(this);
     valueEdit2_->setText("0.00");
     valueEdit2_->setFixedWidth(60);
@@ -55,7 +56,7 @@ UI::SettingsWidget::SettingsWidget(QWidget *parent)
     row2->addWidget(slider2_);
 
     auto *row3 = new QHBoxLayout();
-    label3_ = new QLabel("Текст 3:", this);
+    label3_ = new QLabel( this);
     valueEdit3_ = new QLineEdit(this);
     valueEdit3_->setText("0.00");
     valueEdit3_->setFixedWidth(60);
@@ -71,7 +72,7 @@ UI::SettingsWidget::SettingsWidget(QWidget *parent)
     layout_->addLayout(row2);
     layout_->addLayout(row3);
 
-    applyButton_ = new QPushButton("Apply", this);
+    applyButton_ = new QPushButton(this);
     applyButton_->setFixedSize(80, 30);
     applyButton_->setCursor(Qt::PointingHandCursor);
 
@@ -126,6 +127,7 @@ UI::SettingsWidget::SettingsWidget(QWidget *parent)
     layout_->addStretch();
 
     setObjectName(QStringLiteral("SettingsWidget"));
+    translate();
 }
 
 void UI::SettingsWidget::onApplyClicked()
@@ -136,4 +138,30 @@ void UI::SettingsWidget::onApplyClicked()
 
     emit settingsApplied(value1, value2, value3);
     close();
+}
+
+void UI::SettingsWidget::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::SettingsWidget::translate() const {
+    if (applyButton_) {
+        applyButton_->setToolTip(UI::SettingsWidget::tr("Apply"));
+        applyButton_->setText(UI::SettingsWidget::tr("Apply"));
+    }
+    if (label1_) {
+        label1_->setToolTip(UI::SettingsWidget::tr("Text 1: "));
+        label1_->setText(UI::SettingsWidget::tr("Text 1: "));
+    }
+    if (label2_) {
+        label2_->setToolTip(UI::SettingsWidget::tr("Text 2: "));
+        label2_->setText(UI::SettingsWidget::tr("Text 2: "));
+    }
+    if (label3_) {
+        label3_->setToolTip(UI::SettingsWidget::tr("Text 3: "));
+        label3_->setText(UI::SettingsWidget::tr("Text 3: "));
+    }
 }

@@ -69,10 +69,10 @@ namespace UI {
         void setCommandConsoleEngine(QLineEdit* engine) const;
 
         signals:
-        void sentCommandTriggered(const QString tabName, const QString& command);
-        void primitiveTriggered(const QString tabName,PrimitiveType& type);
-        void constraintTriggered(const QString tabName,ConstraintType& type);
-        void toolsTriggered(const QString tabName, ToolsType& type);
+        void sentCommandTriggered(const QString tabName, const QString command);
+        void primitiveTriggered(const QString tabName,PrimitiveType type);
+        void constraintTriggered(const QString tabName,ConstraintType type);
+        void toolsTriggered(const QString tabName, ToolsType type);
 
         void openProjectThisWindowTriggered(const QString& path);
         void createProjectThisWindowTriggered(const QString& path);

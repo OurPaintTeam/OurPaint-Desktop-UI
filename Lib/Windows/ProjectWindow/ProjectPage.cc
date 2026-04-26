@@ -1,5 +1,6 @@
 #include "ProjectPage.h"
 
+#include <QEvent>
 #include <QFileDialog>
 #include <QIcon>
 #include <QPushButton>
@@ -321,3 +322,20 @@ void UI::ProjectPage::onRenameTabSlot(const QString& oldName, const QString& new
 
     tabBar_->renameTab(oldName, newName);
 }
+
+void UI::ProjectPage::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::ProjectPage::translate() const {
+    if (infoButton_) {
+        infoButton_->setToolTip(UI::ProjectPage::tr("Information menu"));
+    }
+    if (messengerButton_) {
+        messengerButton_->setObjectName(UI::ProjectPage::tr("Messanger"));
+    }
+}
+

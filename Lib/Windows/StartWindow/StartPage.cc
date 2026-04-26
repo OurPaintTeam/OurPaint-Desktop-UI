@@ -1,5 +1,7 @@
 #include "StartPage.h"
 
+#include <QEvent>
+
 #include "AnimationArea.h"
 #include "InputWidget.h"
 #include "ProjectsListWidget.h"
@@ -15,6 +17,7 @@ UI::StartPage::StartPage(QWidget* parent)
     : BasePage(parent) {
     setObjectName("StartPage");
     initUI();
+    translate();
     connect(projectsListWidget_, &ProjectsListWidget::pressProjectTriggered, this,
             &StartPage::openProjectInThisWindowTriggered);
     connect(projectsListWidget_, &ProjectsListWidget::renameProjectTriggered, this, &StartPage::renameProjectTriggered);
@@ -53,7 +56,7 @@ void UI::StartPage::onOpenProjectSlot() {
 
 
 void UI::StartPage::onCreateProjectSlot() {
-    auto* prompt = new PathInputWidget("Project Path:", this);
+    auto* prompt = new PathInputWidget(tr("Project Path:"), this);
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
 
@@ -90,4 +93,14 @@ void UI::StartPage::initUI() {
 
     contentLayout_->addWidget(projectsListWidget_);
     contentLayout_->addWidget(animationArea_, 1);
+}
+
+void UI::StartPage::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::StartPage::translate() const {
 }

@@ -156,6 +156,7 @@ set(FILE_SYSTEM
 
 add_library(ourpaint_ui STATIC
         resources.qrc
+        translations.qrc
         ${CORE}
         ${WIDGETS}
         ${PANELS}

@@ -18,7 +18,7 @@ namespace UI {
 
         void initUI() override;
         void setProjectsList(const QVector<QPair<QString, QString>>& projectsList) const;
-        void setDefaultProjectsPath(const QString& projectPath);
+        void setDefaultProjectsPath(const QString& projectPath) const;
 
     signals:
         void openProjectThisWindowTriggered(const QString& projectPath);

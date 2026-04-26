@@ -334,17 +334,17 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
             });
 
     connect(&manager, &UI::ProjectManager::primitiveTriggered, this,
-            [this, &manager](const QString& name,UI::PrimitiveType& type) {
+            [this, &manager](const QString& name,UI::PrimitiveType type) {
                 primitiveSlot(&manager, type,name);
             });
 
     connect(&manager, &UI::ProjectManager::constraintTriggered, this,
-            [this, &manager](const QString& name,UI::ConstraintType& type) {
+            [this, &manager](const QString& name,UI::ConstraintType type) {
                 constraintSlot(&manager, type,name);
             });
 
     connect(&manager, &UI::ProjectManager::toolsTriggered, this,
-            [this, &manager](const QString& name,UI::ToolsType& type) {
+            [this, &manager](const QString& name,UI::ToolsType type) {
                 toolsSlot(&manager, type,name);
             });
 

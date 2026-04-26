@@ -1,5 +1,6 @@
 #include "ProjectsListWidget.h"
 
+#include <QEvent>
 #include <QLineEdit>
 #include <QScrollArea>
 
@@ -41,7 +42,6 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
     inputLayoutPtr_->setSpacing(x);
     inputLayoutPtr_->setObjectName("inputLayout");
 
-    projectInput_->setPlaceholderText("Enter the project name...");
     projectInput_->setMaximumHeight(INPUT_MAX_HEIGHT);
     projectInput_->setObjectName("projectInput");
 
@@ -50,13 +50,11 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
     createButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/createProject.svg"));
     createButtonPtr_->setObjectName("createButtonStartWindow");
     createButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
-    createButtonPtr_->setToolTip("Create Project");
     connect(createButtonPtr_, &QPushButton::clicked, this, &ProjectsListWidget::pressCreateButtonTriggered);
 
     openButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/openProjectDark.svg"));
     openButtonPtr_->setObjectName("createButtonStartWindow");
     openButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
-    openButtonPtr_->setToolTip("Open Project");
     connect(openButtonPtr_, &QPushButton::clicked, this, &ProjectsListWidget::pressOpenButtonTriggered);
 
     inputLayoutPtr_->addWidget(openButtonPtr_);
@@ -92,6 +90,8 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
 
     connect(projectInput_, &QLineEdit::textChanged,
             this, &ProjectsListWidget::filterProjectsSlot);
+
+    translate();
 }
 
 
@@ -170,5 +170,25 @@ void UI::ProjectsListWidget::filterProjectsSlot(const QString& text) {
             projectsLayout_->addWidget(project);
             project->show();
         }
+    }
+}
+
+
+void UI::ProjectsListWidget::changeEvent(QEvent* e) {
+    if (e && e->type() == QEvent::LanguageChange) {
+        translate();
+    }
+    QWidget::changeEvent(e);
+}
+
+void UI::ProjectsListWidget::translate() const {
+    if (createButtonPtr_) {
+        createButtonPtr_->setToolTip(UI::ProjectsListWidget::tr("Create Project"));
+    }
+    if (openButtonPtr_) {
+        openButtonPtr_->setToolTip(UI::ProjectsListWidget::tr("Open Project"));
+    }
+    if (projectInput_) {
+        projectInput_->setPlaceholderText(UI::ProjectsListWidget::tr("Enter the project name..."));
     }
 }
