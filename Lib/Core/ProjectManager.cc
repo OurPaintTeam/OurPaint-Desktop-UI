@@ -245,7 +245,7 @@ void UI::ProjectManager::setCommandConsoleEngine(QLineEdit* engine) const {
 
 
 void UI::ProjectManager::closeEvent(QCloseEvent* event) {
-    emit saveAllTriggered();
+    emit saveFullProjectTriggered();
 }
 
 

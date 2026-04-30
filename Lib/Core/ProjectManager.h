@@ -75,7 +75,7 @@ namespace UI {
         void constraintTriggered(const QString tabName, ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
 
-        void saveAllTriggered();
+        void saveFullProjectTriggered();
         void openProjectThisWindowTriggered(const QString& path);
         void createProjectThisWindowTriggered(const QString& path);
         void openNewWindowOpenProjectTriggered(const QString& path);
