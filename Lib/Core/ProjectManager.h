@@ -1,6 +1,7 @@
 #ifndef OURPAINT_DESKTOP_UI_PROJECTMANAGER_H
 #define OURPAINT_DESKTOP_UI_PROJECTMANAGER_H
 
+#include <qevent.h>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -33,13 +34,13 @@ namespace UI {
         // Creates only StartWindow. ProjectWindow is created later via openProjectWindow().
         explicit ProjectManager(ProjectData data = {{}, {}});
         // Creates and opens ProjectWindow immediately (no StartWindow).
-        ProjectManager(ProjectData data, QWindow* windowRender, QLineEdit* consoleEngine);
+        ProjectManager(ProjectData data, QWindow *windowRender, QLineEdit *consoleEngine);
         ~ProjectManager() override;
 
-      void setActiveToolProjectWindow(ToolsType tool) const;
-      void setActiveToolProjectWindow(PrimitiveType tool);
-      void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
-      void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
+        void setActiveToolProjectWindow(ToolsType tool) const;
+        void setActiveToolProjectWindow(PrimitiveType tool);
+        void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
+        void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
 
         QString projectPath() const;
         QString projectID() const;
@@ -49,31 +50,32 @@ namespace UI {
 
         void setDefaultProjectsPath(const QString& projectPath);
         void setProjectsList(const QVector<QPair<QString, QString> >& projectsList);
-        void addNotification(const QString& tabName,const QString& text) const;
+        void addNotification(const QString& tabName, const QString& text) const;
         void addNotification(const QString& text) const;
 
         // StartWindow is created (if needed) and ProjectWindow is removed.
         void openStartWindow();
         // ProjectWindow is created (or recreated), StartWindow is removed.
         void openProjectWindow();
-        void openProjectWindow(const ProjectData& data, QWindow* windowRender, QLineEdit* consoleEngine);
-        void openTabWindow(const QString& tabName, QWindow* windowRender, QLineEdit* consoleEngine);
+        void openProjectWindow(const ProjectData& data, QWindow *windowRender, QLineEdit *consoleEngine);
+        void openTabWindow(const QString& tabName, QWindow *windowRender, QLineEdit *consoleEngine);
         void checkOpenedTabWindow(const QString& tabName);
 
         void addTabSlot(const QString& name);
         void deleteTabSlot(const QString& name);
         void renameTabSlot(const QString& oldName, const QString& newName);
 
-        void setQOpenGLPainter(QOpenGLWindow* engine) const;
-        void setQWindowRender(QWindow* engine) const;
-        void setCommandConsoleEngine(QLineEdit* engine) const;
+        void setQOpenGLPainter(QOpenGLWindow *engine) const;
+        void setQWindowRender(QWindow *engine) const;
+        void setCommandConsoleEngine(QLineEdit *engine) const;
 
-        signals:
+    signals:
         void sentCommandTriggered(const QString tabName, const QString command);
-        void primitiveTriggered(const QString tabName,PrimitiveType type);
-        void constraintTriggered(const QString tabName,ConstraintType type);
+        void primitiveTriggered(const QString tabName, PrimitiveType type);
+        void constraintTriggered(const QString tabName, ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
 
+        void saveAllTriggered();
         void openProjectThisWindowTriggered(const QString& path);
         void createProjectThisWindowTriggered(const QString& path);
         void openNewWindowOpenProjectTriggered(const QString& path);
@@ -91,7 +93,10 @@ namespace UI {
         void scriptTriggered(const QString& text);
         void goToStartWindowTriggered();
 
-      void applySettings(double value1, double value2, double value3);
+        void applySettings(double value1, double value2, double value3);
+
+    protected:
+        void closeEvent(QCloseEvent* event);
 
     private:
         void connectStartWindowSignals();
@@ -112,8 +117,8 @@ namespace UI {
         QString defaultProjectPath_{};
         QVector<QPair<QString, QString> > projectsList_{};
 
-        StartWindow* startWindow_{nullptr};
-        ProjectWindow* projectWindow_{nullptr};
+        StartWindow *startWindow_{nullptr};
+        ProjectWindow *projectWindow_{nullptr};
         QVector<TabWindow*> tabWindows_{};
         bool removingProjectWindow_{false};
     };

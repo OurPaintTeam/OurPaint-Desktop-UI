@@ -244,6 +244,11 @@ void UI::ProjectManager::setCommandConsoleEngine(QLineEdit* engine) const {
 }
 
 
+void UI::ProjectManager::closeEvent(QCloseEvent* event) {
+    emit saveAllTriggered();
+}
+
+
 void UI::ProjectManager::connectStartWindowSignals() {
     if (!startWindow_) {
         return;
