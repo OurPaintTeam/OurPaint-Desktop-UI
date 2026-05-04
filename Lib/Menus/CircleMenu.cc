@@ -16,19 +16,19 @@ UI::CircleMenu::CircleMenu(QWidget *parent)
     circleByDiameter_->setData(QVariant::fromValue(PrimitiveType::CircleByDiameter));
 
     // Two points
-    circleByTwoPoints_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "");
+    circleByTwoPoints_ = addAction(QIcon(":/Assets/icons/primitives/CircleByTwoPoints.svg"), "");
     circleByTwoPoints_->setData(QVariant::fromValue(PrimitiveType::CircleByTwoPoints));
 
     // Three points
-    circleByThreePoints_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "");
+    circleByThreePoints_ = addAction(QIcon(":/Assets/icons/primitives/CircleByThreePoints.svg"), "");
     circleByThreePoints_->setData(QVariant::fromValue(PrimitiveType::CircleByThreePoints));
 
     // Tangent two lines
-    circleTangentTwoLines_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "");
+    circleTangentTwoLines_ = addAction(QIcon(":/Assets/icons/primitives/CircleTangentTwoLines.svg"), "");
     circleTangentTwoLines_->setData(QVariant::fromValue(PrimitiveType::CircleTangentTwoLines));
 
     // Tangent three lines
-    circleTangentThreeLines_ = addAction(QIcon(":/Assets/icons/primitives/circleByDiameter.svg"), "");
+    circleTangentThreeLines_ = addAction(QIcon(":/Assets/icons/primitives/CircleTangentThreeLines.svg"), "");
     circleTangentThreeLines_->setData(QVariant::fromValue(PrimitiveType::CircleTangentThreeLines));
 
 

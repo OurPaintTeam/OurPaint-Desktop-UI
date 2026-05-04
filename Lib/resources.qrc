@@ -14,7 +14,11 @@
 
         <file>Assets/icons/primitives/circleByDiameter.svg</file>
         <file>Assets/icons/primitives/circleByRadius.svg</file>
-        <file>Assets/icons/primitives/ellipseThreePoints.svg</file>
+        <file>Assets/icons/primitives/CircleByThreePoints.svg</file>
+        <file>Assets/icons/primitives/CircleByTwoPoints.svg</file>
+        <file>Assets/icons/primitives/CircleTangentTwoLines.svg</file>
+        <file>Assets/icons/primitives/CircleTangentThreeLines.svg</file>
+
 
         <file>Assets/icons/primitives/arcByRadius.svg</file>
         <file>Assets/icons/primitives/arcDiameter.svg</file>
