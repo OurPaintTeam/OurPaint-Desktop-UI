@@ -165,6 +165,10 @@ void UI::ProjectPage::assembleLayout() const {
     rootLayout_->addWidget(leftColumn_);
     rootLayout_->addWidget(centerWidget_, 1);
     rootLayout_->addWidget(rightColumn_);
+
+    leftColumn_->hide();
+    rightColumn_->hide();
+    tabBar_->hide();
 }
 
 void UI::ProjectPage::createFileSlot() {

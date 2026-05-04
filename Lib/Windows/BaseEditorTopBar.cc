@@ -60,6 +60,7 @@ void UI::BaseEditorTopBar::setLeftPanel(QWidget* panel, const QIcon& icon, const
             }
         });
     }
+    leftButton_->setVisible(false);
 }
 
 
@@ -72,6 +73,7 @@ void UI::BaseEditorTopBar::setRightPanel(QWidget* panel, const QIcon& icon, cons
             }
         });
     }
+    rightButton_->setVisible(false);
 }
 
 

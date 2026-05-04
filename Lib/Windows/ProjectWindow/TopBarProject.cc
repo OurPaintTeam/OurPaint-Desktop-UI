@@ -34,6 +34,7 @@ void UI::TopBarProject::setTabBar(TabBar *bar) {
                                           toggleWidgetVisibility(tabBar_);
                                       }
                                   });
+    btnTabs_->setVisible(false);
 }
 
 
