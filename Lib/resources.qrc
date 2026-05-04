@@ -71,4 +71,11 @@
         <file>Styles/text.qss</file>
         <file>Styles/scroll.qss</file>
     </qresource>
+
+    <qresource prefix="/">
+        <file>Styles/font/static/Inter-Regular.ttf</file>
+        <file>Styles/font/static/Inter-Medium.ttf</file>
+        <file>Styles/font/static/Inter-SemiBold.ttf</file>
+    </qresource>
+
 </RCC>

@@ -1,6 +1,7 @@
 #include "FramelessWindow.h"
 
 #include <qdir.h>
+#include <qfontdatabase.h>
 
 #ifdef Q_OS_WIN
 #include <dwmapi.h>
@@ -54,6 +55,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     }
 
     initTranslations();
+    initFonts();
 
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint); /* отключает заголовок*/
@@ -77,6 +79,40 @@ void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
     DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
     DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPref,
                           sizeof(cornerPref));
+}
+
+
+void UI::FramelessWindow::initFonts() {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // Загружаем ВСЕ веса
+    int id1 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Regular.ttf");
+    int id2 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Medium.ttf");
+    int id3 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-SemiBold.ttf");
+
+    if (id1 == -1 || id2 == -1 || id3 == -1) {
+        qDebug() << "Failed to load one of the fonts!";
+    }
+
+    // Берём family из ЛЮБОГО валидного id (например id1)
+    QString family = QFontDatabase::applicationFontFamilies(id1).value(0);
+
+    if (family.isEmpty()) {
+        qDebug() << "Font family is empty!";
+        return;
+    }
+
+    // Создаём шрифт
+    QFont font(family);
+
+    // Сглаживание
+    font.setHintingPreference(QFont::PreferFullHinting);
+    font.setStyleStrategy(QFont::PreferAntialias);
+    font.setStyleStrategy(QFont::PreferQuality);
+
+    // Применяем
+    qApp->setFont(font);
 }
 
 

@@ -1,7 +1,6 @@
 /* Global colors */
 * {
     color: #D8D8F6;
-    font-family: "Segoe UI";
     font-size: 12px;
 }
 
