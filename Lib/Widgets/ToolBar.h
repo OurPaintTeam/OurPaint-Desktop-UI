@@ -34,6 +34,9 @@ namespace UI {
 
         void setActiveTool(ToolsType tool);
         void setActiveTool(PrimitiveType tool);
+        void takeOffHint();
+        void setActiveTool(ConstraintType vecTools);
+        void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
 
     signals:
         void primitiveTriggered(PrimitiveType type);
@@ -74,6 +77,7 @@ namespace UI {
         QPushButton *cubicBezierPrimitive_{nullptr};
 
         QPushButton *activeTool_{nullptr};
+        QVector<QPushButton*> hints_;
 
 
         // CONSTRAINTS
@@ -81,6 +85,7 @@ namespace UI {
             QString icon;
             QAction *action;
             QPushButton* button;
+            ConstraintType type;
         };
 
 

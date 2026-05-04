@@ -33,6 +33,9 @@ namespace UI {
         void setCommandConsoleEngine(QLineEdit* engine) const;
         void setActiveTool(ToolsType tool);
         void setActiveTool(PrimitiveType tool);
+        void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
+        void takeOffHint();
+        void setActiveTool(ConstraintType type);
         void setActiveName(const QString name);
 
     signals:

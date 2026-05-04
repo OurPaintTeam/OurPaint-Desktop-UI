@@ -35,7 +35,8 @@ namespace UI {
 
     enum class ConstraintType {
         Coincident,
-        HorizontalVertical,
+        Horizontal,
+        Vertical,
         Parallel,
         Perpendicular,
         Tangent,
@@ -44,7 +45,8 @@ namespace UI {
         Concentric,
         Collinear,
         Midpoint,
-        Symmetric
+        Symmetric,
+        Distance
     };
 
 

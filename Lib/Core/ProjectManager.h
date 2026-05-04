@@ -38,7 +38,13 @@ namespace UI {
         ~ProjectManager() override;
 
         void setActiveToolProjectWindow(ToolsType tool) const;
-        void setActiveToolProjectWindow(PrimitiveType tool);
+        void setActiveToolProjectWindow(PrimitiveType tool) const;
+        void setActiveToolProjectWindow(ConstraintType tool);
+        void setHintConstraintToolsProjectWindow(const QVector<ConstraintType>& vecTools);
+        void takeOffHintConstraintToolsProjectWindow();
+        void setActiveToolTabWindow(const QString& tabName, ConstraintType tool);
+        void takeOffHintConstraintToolsTabWindow(const QString& tabName);
+        void setHintConstraintToolsTabWindow(const QString& tabName, const QVector<ConstraintType>& vecTools);
         void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
         void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
 

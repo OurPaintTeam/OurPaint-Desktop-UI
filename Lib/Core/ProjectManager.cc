@@ -16,8 +16,8 @@ UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data)
 }
 
 
-UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data, QWindow* windowRender,
-                                   QLineEdit* consoleEngine)
+UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data, QWindow *windowRender,
+                                   QLineEdit *consoleEngine)
     : projectData_(std::move(data)) {
     // No StartWindow. Create ProjectWindow and apply engines.
     openProjectWindow();
@@ -44,28 +44,83 @@ UI::ProjectManager::~ProjectManager() {
     }
 }
 
+
 void UI::ProjectManager::setActiveToolProjectWindow(ToolsType tool) const {
-  projectWindow_->setActiveTool(tool);
+    projectWindow_->setActiveTool(tool);
 }
-void UI::ProjectManager::setActiveToolProjectWindow(PrimitiveType tool) {
-  projectWindow_->setActiveTool(tool);
+
+
+void UI::ProjectManager::setActiveToolProjectWindow(PrimitiveType tool) const {
+    projectWindow_->setActiveTool(tool);
 }
+
+
+void UI::ProjectManager::setActiveToolProjectWindow(ConstraintType tool) {
+    projectWindow_->setActiveTool(tool);
+}
+
+
+void UI::ProjectManager::setHintConstraintToolsProjectWindow(const QVector<ConstraintType>& vecTools) {
+    projectWindow_->setHintConstraintTools(vecTools);
+}
+
+
+void UI::ProjectManager::takeOffHintConstraintToolsProjectWindow() {
+    projectWindow_->takeOffHint();
+}
+
+
+void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, ConstraintType tool) {
+    for (TabWindow *tab: tabWindows_) {
+        if (tab && tab->tabName() == tabName) {
+            tab->setActiveTool(tool);
+            return;
+        }
+    }
+}
+
+
+
+void UI::ProjectManager::takeOffHintConstraintToolsTabWindow(const QString& tabName) {
+    for (TabWindow *tab: tabWindows_) {
+        if (tab && tab->tabName() == tabName) {
+            tab->takeOffHint();
+            return;
+        }
+    }
+}
+
+
+void UI::ProjectManager::setHintConstraintToolsTabWindow(const QString& tabName,
+                                                         const QVector<ConstraintType>& vecTools) {
+    for (TabWindow *tab: tabWindows_) {
+        if (tab && tab->tabName() == tabName) {
+            tab->setHintConstraintTools(vecTools);
+            return;
+        }
+    }
+}
+
+
 void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, ToolsType tool) {
-  for (TabWindow* tab : tabWindows_) {
-    if (tab && tab->tabName() == tabName) {
-      tab->setActiveTool(tool);
-      return;
+    for (TabWindow *tab: tabWindows_) {
+        if (tab && tab->tabName() == tabName) {
+            tab->setActiveTool(tool);
+            return;
+        }
     }
-  }
 }
+
+
 void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, PrimitiveType tool) {
-  for (TabWindow* tab : tabWindows_) {
-    if (tab && tab->tabName() == tabName) {
-      tab->setActiveTool(tool);
-      return;
+    for (TabWindow *tab: tabWindows_) {
+        if (tab && tab->tabName() == tabName) {
+            tab->setActiveTool(tool);
+            return;
+        }
     }
-  }
 }
+
 
 QString UI::ProjectManager::projectPath() const {
     return projectData_.path;
@@ -85,6 +140,7 @@ void UI::ProjectManager::setProjectPath(const QString& projectPath) {
 void UI::ProjectManager::setProjectData(const ProjectData& data) {
     projectData_ = data;
 }
+
 
 void UI::ProjectManager::setActiveTabNameProject(const QString& name) {
     projectWindow_->setActiveName(name);
@@ -110,21 +166,21 @@ void UI::ProjectManager::setProjectsList(const QVector<QPair<QString, QString> >
 }
 
 
-void UI::ProjectManager::addNotification(const QString& tabName,const QString& text) const {
-    for (auto* t: tabWindows_) {
+void UI::ProjectManager::addNotification(const QString& tabName, const QString& text) const {
+    for (auto *t: tabWindows_) {
         if (t->tabName() == tabName) {
             t->addNotification(text);
             return;
         }
     }
-    if (const auto* window = activeWindow()) {
+    if (const auto *window = activeWindow()) {
         window->addNotification(text);
     }
 }
 
 
 void UI::ProjectManager::addNotification(const QString& text) const {
-    if (const auto* window = activeWindow()) {
+    if (const auto *window = activeWindow()) {
         window->addNotification(text);
     }
 }
@@ -167,7 +223,7 @@ void UI::ProjectManager::openProjectWindow() {
 }
 
 
-void UI::ProjectManager::openProjectWindow(const ProjectData& data, QWindow* windowRender, QLineEdit* consoleEngine) {
+void UI::ProjectManager::openProjectWindow(const ProjectData& data, QWindow *windowRender, QLineEdit *consoleEngine) {
     openProjectWindow();
     if (windowRender) {
         setQWindowRender(windowRender);
@@ -195,7 +251,7 @@ void UI::ProjectManager::deleteTabSlot(const QString& name) {
 
     projectWindow_->deleteTabSlot(name);
 
-    if (auto* tabWindow = findTabWindow(name)) {
+    if (auto *tabWindow = findTabWindow(name)) {
         tabWindows_.removeOne(tabWindow);
         tabWindow->close();
         tabWindow->deleteLater();
@@ -208,7 +264,7 @@ void UI::ProjectManager::renameTabSlot(const QString& oldName, const QString& ne
         return;
     }
 
-    for (auto* tabWindow : tabWindows_) {
+    for (auto *tabWindow: tabWindows_) {
         if (tabWindow->tabName() == oldName) {
             tabWindow->setTabName(newName);
             return;
@@ -217,34 +273,34 @@ void UI::ProjectManager::renameTabSlot(const QString& oldName, const QString& ne
 
     projectWindow_->renameTabSlot(oldName, newName);
 
-    if (auto* tabWindow = findTabWindow(oldName)) {
+    if (auto *tabWindow = findTabWindow(oldName)) {
         tabWindow->setTabName(newName);
     }
 }
 
 
-void UI::ProjectManager::setQOpenGLPainter(QOpenGLWindow* engine) const {
-    if (const auto* window = activeEditorWindow()) {
+void UI::ProjectManager::setQOpenGLPainter(QOpenGLWindow *engine) const {
+    if (const auto *window = activeEditorWindow()) {
         window->setQOpenGLPainter(engine);
     }
 }
 
 
-void UI::ProjectManager::setQWindowRender(QWindow* engine) const {
-    if (const auto* window = activeEditorWindow()) {
+void UI::ProjectManager::setQWindowRender(QWindow *engine) const {
+    if (const auto *window = activeEditorWindow()) {
         window->setQWindowRender(engine);
     }
 }
 
 
-void UI::ProjectManager::setCommandConsoleEngine(QLineEdit* engine) const {
-    if (const auto* window = activeEditorWindow()) {
+void UI::ProjectManager::setCommandConsoleEngine(QLineEdit *engine) const {
+    if (const auto *window = activeEditorWindow()) {
         window->setCommandConsoleEngine(engine);
     }
 }
 
 
-void UI::ProjectManager::closeEvent(QCloseEvent* event) {
+void UI::ProjectManager::closeEvent(QCloseEvent *event) {
     emit saveFullProjectTriggered();
 }
 
@@ -319,20 +375,20 @@ void UI::ProjectManager::connectProjectWindowSignals() {
             this, &ProjectManager::checkOpenedTabWindow);
 
     connect(projectWindow_, &ProjectWindow::setActiveTabTriggered,
-        this, &ProjectManager::setActiveTabTriggered);
+            this, &ProjectManager::setActiveTabTriggered);
 
     connect(projectWindow_, &ProjectWindow::onOpenScriptTriggered,
-    this, &ProjectManager::scriptTriggered);
+            this, &ProjectManager::scriptTriggered);
 
     connect(projectWindow_, &ProjectWindow::closeApplicationTriggered,
             this, [this] {
-                if (auto* window = activeWindow()) {
+                if (auto *window = activeWindow()) {
                     window->close();
                 }
             });
 
-  connect(projectWindow_, &ProjectWindow::applySettings,
-        this, &ProjectManager::applySettings);
+    connect(projectWindow_, &ProjectWindow::applySettings,
+            this, &ProjectManager::applySettings);
 }
 
 
@@ -388,7 +444,7 @@ void UI::ProjectManager::closeTabWindows() {
     const auto windows = tabWindows_;
     tabWindows_.clear();
 
-    for (auto* tabWindow: windows) {
+    for (auto *tabWindow: windows) {
         if (!tabWindow) {
             continue;
         }
@@ -419,7 +475,7 @@ void UI::ProjectManager::checkOpenedTabWindow(const QString& tabName) {
         return;
     }
 
-    if (auto* existingWindow = findTabWindow(tabName)) {
+    if (auto *existingWindow = findTabWindow(tabName)) {
         existingWindow->show();
         existingWindow->raise();
         existingWindow->activateWindow();
@@ -428,10 +484,11 @@ void UI::ProjectManager::checkOpenedTabWindow(const QString& tabName) {
     emit openNewWindowTabTriggered(tabName);
 }
 
+
 void UI::ProjectManager::openTabWindow(const QString& tabName,
-                                       QWindow* windowRender,
-                                       QLineEdit* consoleEngine) {
-    auto* tabWindow = new TabWindow(tabName);
+                                       QWindow *windowRender,
+                                       QLineEdit *consoleEngine) {
+    auto *tabWindow = new TabWindow(tabName);
     tabWindow->setAttribute(Qt::WA_DeleteOnClose, true);
     tabWindows_.append(tabWindow);
 
@@ -459,10 +516,10 @@ void UI::ProjectManager::openTabWindow(const QString& tabName,
 
     connect(tabWindow, &QObject::destroyed,
             this, [this, tabWindow]() {
-                for (const auto* t: tabWindows_) {
+                for (const auto *t: tabWindows_) {
                     if (tabWindow == t) {
                         tabWindows_.removeOne(tabWindow);
-                   emit closeTabWindowTriggered(tabWindow->windowTitle());
+                        emit closeTabWindowTriggered(tabWindow->windowTitle());
                     }
                 }
             });
@@ -474,7 +531,7 @@ void UI::ProjectManager::openTabWindow(const QString& tabName,
 
 
 UI::TabWindow* UI::ProjectManager::findTabWindow(const QString& tabName) const {
-    for (auto* tabWindow: tabWindows_) {
+    for (auto *tabWindow: tabWindows_) {
         if (tabWindow && tabWindow->tabName() == tabName) {
             return tabWindow;
         }
@@ -494,7 +551,7 @@ UI::BaseWindow* UI::ProjectManager::activeWindow() const {
 
 
 UI::BaseEditorWindow* UI::ProjectManager::activeEditorWindow() const {
-    for (auto* tabWindow: tabWindows_) {
+    for (auto *tabWindow: tabWindows_) {
         if (tabWindow && tabWindow->isVisible() && tabWindow->isActiveWindow()) {
             return tabWindow;
         }

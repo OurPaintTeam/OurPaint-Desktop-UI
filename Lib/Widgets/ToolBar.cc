@@ -154,17 +154,19 @@ void UI::ToolBar::initSignals() {
 
     // CONSTRAINTS
     constraints_ = {
-        {":/Assets/icons/constraints/Coincident.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/HorizontalVertical.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Parallel.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Perpendicular.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Tangent.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Equal.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/FixUnfix.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Concentric.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Collinear.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Midpoint.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/Symmetric.svg", new QAction("", this), nullptr}
+        {":/Assets/icons/constraints/Coincident.svg", new QAction("", this), nullptr, ConstraintType::Coincident},
+        {":/Assets/icons/constraints/Horizontal.svg", new QAction("", this), nullptr, ConstraintType::Horizontal},
+        {":/Assets/icons/constraints/Parallel.svg", new QAction("", this), nullptr, ConstraintType::Parallel},
+        {":/Assets/icons/constraints/Perpendicular.svg", new QAction("", this), nullptr, ConstraintType::Perpendicular},
+        {":/Assets/icons/constraints/Tangent.svg", new QAction("", this), nullptr, ConstraintType::Tangent},
+        {":/Assets/icons/constraints/Equal.svg", new QAction("", this), nullptr, ConstraintType::Equal},
+        {":/Assets/icons/constraints/FixUnfix.svg", new QAction("", this), nullptr, ConstraintType::FixUnfix},
+        {":/Assets/icons/constraints/Concentric.svg", new QAction("", this), nullptr, ConstraintType::Concentric},
+        {":/Assets/icons/constraints/Collinear.svg", new QAction("", this), nullptr, ConstraintType::Collinear},
+        {":/Assets/icons/constraints/Midpoint.svg", new QAction("", this), nullptr, ConstraintType::Midpoint},
+        {":/Assets/icons/constraints/Symmetric.svg", new QAction("", this), nullptr, ConstraintType::Symmetric},
+        {":/Assets/icons/constraints/Vertical.svg", new QAction("", this), nullptr, ConstraintType::Vertical},
+        {":/Assets/icons/constraints/Distance.svg", new QAction("", this), nullptr, ConstraintType::Distance},
     };
 
     for (auto& item: constraints_) {
@@ -175,8 +177,9 @@ void UI::ToolBar::initSignals() {
 
         item.button = btn;
 
-        connect(btn, &QPushButton::clicked, this, [this, act = item.action]() {
+        connect(btn, &QPushButton::clicked, this, [this, act = item.action, btn]() {
             act->trigger();
+            setActiveTool(btn);
         });
     }
 
@@ -230,7 +233,66 @@ void UI::ToolBar::initSignals() {
 }
 
 
-// LOGIC
+void UI::ToolBar::setActiveTool(const ConstraintType type) {
+    switch (type) {
+        case ConstraintType::Coincident:
+            setActiveTool(constraints_[0].button);
+            break;
+
+        case ConstraintType::Horizontal:
+            setActiveTool(constraints_[1].button);
+            break;
+
+        case ConstraintType::Parallel:
+            setActiveTool(constraints_[2].button);
+            break;
+
+        case ConstraintType::Perpendicular:
+            setActiveTool(constraints_[3].button);
+            break;
+
+        case ConstraintType::Tangent:
+            setActiveTool(constraints_[4].button);
+            break;
+
+        case ConstraintType::Equal:
+            setActiveTool(constraints_[5].button);
+            break;
+
+        case ConstraintType::FixUnfix:
+            setActiveTool(constraints_[6].button);
+            break;
+
+        case ConstraintType::Concentric:
+            setActiveTool(constraints_[7].button);
+            break;
+
+        case ConstraintType::Collinear:
+            setActiveTool(constraints_[8].button);
+            break;
+
+        case ConstraintType::Midpoint:
+            setActiveTool(constraints_[9].button);
+            break;
+
+        case ConstraintType::Symmetric:
+            setActiveTool(constraints_[10].button);
+            break;
+
+        case ConstraintType::Vertical:
+            setActiveTool(constraints_[11].button);
+            break;
+
+        case ConstraintType::Distance:
+            setActiveTool(constraints_[12].button);
+            break;
+
+        default:
+            break;
+    }
+}
+
+
 void UI::ToolBar::handlePrimitiveActionSlot(const QAction *action) {
     if (!action) { return; }
 
@@ -269,10 +331,55 @@ void UI::ToolBar::setActiveTool(const PrimitiveType tool) {
 }
 
 
+void UI::ToolBar::takeOffHint()
+{
+    for (auto *btn : hints_) {
+        if (!btn) {
+            continue;
+        }
+
+        if (btn->objectName() != "ActiveTool") {
+            btn->setObjectName("NoActiveTool");
+        }
+
+        btn->style()->unpolish(btn);
+        btn->style()->polish(btn);
+    }
+
+    hints_.clear();
+}
+
+
+void UI::ToolBar::setHintConstraintTools(const QVector<ConstraintType>& vecTools)
+{
+    takeOffHint();
+
+    for (const auto& type : vecTools) {
+
+        auto it = std::find_if(constraints_.begin(), constraints_.end(),
+                               [&](const ConstraintConfig& c) {
+                                   return c.type == type;
+                               });
+
+        if (it != constraints_.end() && it->button) {
+            it->button->setObjectName("HintConstraint");
+
+            hints_.push_back(it->button);
+
+            it->button->style()->unpolish(it->button);
+            it->button->style()->polish(it->button);
+        }
+    }
+}
+
+
 void UI::ToolBar::setActiveTool(QPushButton *tool) {
     if (activeTool_ == tool) {
         return;
     }
+
+
+    takeOffHint();
 
     if (activeTool_) {
         activeTool_->setObjectName("NoActiveTool");
@@ -307,9 +414,9 @@ void UI::ToolBar::translate() const {
     }
 
     // CONSTRAINTS
-    if (constraints_.size() >= 11) {
+    if (constraints_.size() >= 13) {
         constraints_[0].button->setToolTip(UI::ToolBar::tr("Coincident"));
-        constraints_[1].button->setToolTip(UI::ToolBar::tr("HorizontalVertical"));
+        constraints_[1].button->setToolTip(UI::ToolBar::tr("Horizontal"));
         constraints_[2].button->setToolTip(UI::ToolBar::tr("Parallel"));
         constraints_[3].button->setToolTip(UI::ToolBar::tr("Perpendicular"));
         constraints_[4].button->setToolTip(UI::ToolBar::tr("Tangent"));
@@ -319,5 +426,7 @@ void UI::ToolBar::translate() const {
         constraints_[8].button->setToolTip(UI::ToolBar::tr("Collinear"));
         constraints_[9].button->setToolTip(UI::ToolBar::tr("Midpoint"));
         constraints_[10].button->setToolTip(UI::ToolBar::tr("Symmetric"));
+        constraints_[11].button->setToolTip(UI::ToolBar::tr("Vertical"));
+        constraints_[12].button->setToolTip(UI::ToolBar::tr("Distance"));
     }
 }

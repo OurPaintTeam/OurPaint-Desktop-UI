@@ -20,27 +20,31 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit BaseEditorWindow(QWidget* parent = nullptr);
+        explicit BaseEditorWindow(QWidget *parent = nullptr);
         ~BaseEditorWindow() override = default;
 
-      void setActiveTool(ToolsType tool);
-      void setActiveTool(PrimitiveType tool);
+        void setActiveTool(ToolsType tool);
+        void setActiveTool(PrimitiveType tool);
+        void setActiveTool(ConstraintType tool);
+        void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
+        void takeOffHint();
+
         void setActiveName(const QString& name);
 
-        void setQOpenGLPainter(QOpenGLWindow* engine) const;
-        void setQWindowRender(QWindow* engine) const;
-        void setCommandConsoleEngine(QLineEdit* engine) const;
+        void setQOpenGLPainter(QOpenGLWindow *engine) const;
+        void setQWindowRender(QWindow *engine) const;
+        void setCommandConsoleEngine(QLineEdit *engine) const;
 
     signals:
         void sentCommandTriggered(const QString tabName, const QString command);
-        void primitiveTriggered(const QString tabName,PrimitiveType type);
-        void constraintTriggered(const QString tabName,ConstraintType type);
+        void primitiveTriggered(const QString tabName, PrimitiveType type);
+        void constraintTriggered(const QString tabName, ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
 
     protected:
-        void initEditor(BaseEditorPage* editorPage);
+        void initEditor(BaseEditorPage *editorPage);
 
-        BaseEditorPage* editorPage_{nullptr};
+        BaseEditorPage *editorPage_{nullptr};
     };
 } // namespace UI
 

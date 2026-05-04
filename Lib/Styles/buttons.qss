@@ -16,6 +16,20 @@ QPushButton:hover {
 QPushButton#CloseApplication:hover {
     background: #c42b1c;
 }
+
+#HintConstraint
+{
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    border-radius: 6px;
+    color: #D8D8F6;
+     image-position: center;
+
+    padding: 0px;
+    margin: 0px;
+    spacing: 0px;
+}
+
 #ActiveTool {
     background: rgba(255, 255, 255, 0.3);
     border: none;

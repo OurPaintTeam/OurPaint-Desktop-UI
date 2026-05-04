@@ -56,6 +56,20 @@ void UI::BaseEditorPage::setActiveTool(PrimitiveType tool) {
     toolBar_->setActiveTool(tool);
 }
 
+void UI::BaseEditorPage::setHintConstraintTools(const QVector<ConstraintType>& vecTools) {
+    toolBar_->setHintConstraintTools(vecTools);
+}
+
+
+void UI::BaseEditorPage::takeOffHint() {
+    toolBar_->takeOffHint();
+}
+
+
+void UI::BaseEditorPage::setActiveTool(const ConstraintType type) {
+    toolBar_->setActiveTool(type);
+}
+
 
 void UI::BaseEditorPage::setActiveName(const QString name) {
     activeName_ = name;
