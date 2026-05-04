@@ -177,9 +177,11 @@ void UI::ToolBar::initSignals() {
 
         item.button = btn;
 
-        connect(btn, &QPushButton::clicked, this, [this, act = item.action, btn]() {
-            act->trigger();
+        const auto type = item.type;
+
+        connect(btn, &QPushButton::clicked, this, [this, btn, type]() {
             setActiveTool(btn);
+            emit constraintTriggered(type);
         });
     }
 
