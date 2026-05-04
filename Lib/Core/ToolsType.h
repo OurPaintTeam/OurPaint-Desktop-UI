@@ -34,14 +34,17 @@ namespace UI {
 
 
     enum class ConstraintType {
-        ObjectObjectDistance,
-        PointOnLine,
-        CoincidentPoints,
-        LineOnCircle,
-        LineInCircle,
-        ParallelLines,
-        PerpendicularLines,
-        AngleBetweenLines
+        Coincident,
+        HorizontalVertical,
+        Parallel,
+        Perpendicular,
+        Tangent,
+        Equal,
+        FixUnfix,
+        Concentric,
+        Collinear,
+        Midpoint,
+        Symmetric
     };
 
 

@@ -29,14 +29,18 @@
         <file>Assets/icons/tools/sizeTool.svg</file>
         <file>Assets/icons/tools/settings.svg</file>
 
-        <file>Assets/icons/constraints/ObjObjDist.svg</file>
-        <file>Assets/icons/constraints/lineInCircle.svg</file>
-        <file>Assets/icons/constraints/lineLineAngle.svg</file>
-        <file>Assets/icons/constraints/lineLineParallel.svg</file>
-        <file>Assets/icons/constraints/lineLinePerpendicular.svg</file>
-        <file>Assets/icons/constraints/lineOnCircle.svg</file>
-        <file>Assets/icons/constraints/pointOnLine.svg</file>
-        <file>Assets/icons/constraints/pointOnPoint.svg</file>
+        <file>Assets/icons/constraints/Coincident.svg</file>
+        <file>Assets/icons/constraints/HorizontalVertical.svg</file>
+        <file>Assets/icons/constraints/Parallel.svg</file>
+        <file>Assets/icons/constraints/Perpendicular.svg</file>
+        <file>Assets/icons/constraints/Tangent.svg</file>
+        <file>Assets/icons/constraints/Equal.svg</file>
+        <file>Assets/icons/constraints/FixUnfix.svg</file>
+        <file>Assets/icons/constraints/Concentric.svg</file>
+        <file>Assets/icons/constraints/Collinear.svg</file>
+        <file>Assets/icons/constraints/Midpoint.svg</file>
+        <file>Assets/icons/constraints/Symmetric.svg</file>
+
 
         <file>Assets/icons/showHidePanels/right.svg</file>
         <file>Assets/icons/showHidePanels/console.svg</file>

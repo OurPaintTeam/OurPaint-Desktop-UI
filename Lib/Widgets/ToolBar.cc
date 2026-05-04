@@ -154,17 +154,20 @@ void UI::ToolBar::initSignals() {
 
     // CONSTRAINTS
     constraints_ = {
-        {":/Assets/icons/constraints/ObjObjDist.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/pointOnLine.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/pointOnPoint.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/lineOnCircle.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/lineInCircle.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/lineLineParallel.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/lineLinePerpendicular.svg", new QAction("", this), nullptr},
-        {":/Assets/icons/constraints/lineLineAngle.svg", new QAction("", this), nullptr}
+        {":/Assets/icons/constraints/Coincident.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/HorizontalVertical.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Parallel.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Perpendicular.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Tangent.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Equal.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/FixUnfix.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Concentric.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Collinear.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Midpoint.svg", new QAction("", this), nullptr},
+        {":/Assets/icons/constraints/Symmetric.svg", new QAction("", this), nullptr}
     };
 
-    for (auto& item : constraints_) {
+    for (auto& item: constraints_) {
         auto *btn = reqsContainer_->addButton(QIcon(item.icon));
         btn->setFixedSize(buttonSize);
         btn->setCursor(Qt::PointingHandCursor);
@@ -304,14 +307,17 @@ void UI::ToolBar::translate() const {
     }
 
     // CONSTRAINTS
-    if (constraints_.size() >= 8) {
-        constraints_[0].button->setToolTip(UI::ToolBar::tr("Object – Object Distance"));
-        constraints_[1].button->setToolTip(UI::ToolBar::tr("Point on Line"));
-        constraints_[2].button->setToolTip(UI::ToolBar::tr("Coincident Points"));
-        constraints_[3].button->setToolTip(UI::ToolBar::tr("Line on Circle"));
-        constraints_[4].button->setToolTip(UI::ToolBar::tr("Line Inside Circle"));
-        constraints_[5].button->setToolTip(UI::ToolBar::tr("Parallel Lines"));
-        constraints_[6].button->setToolTip(UI::ToolBar::tr("Perpendicular Lines"));
-        constraints_[7].button->setToolTip(UI::ToolBar::tr("Angle Between Lines"));
+    if (constraints_.size() >= 11) {
+        constraints_[0].button->setToolTip(UI::ToolBar::tr("Coincident"));
+        constraints_[1].button->setToolTip(UI::ToolBar::tr("HorizontalVertical"));
+        constraints_[2].button->setToolTip(UI::ToolBar::tr("Parallel"));
+        constraints_[3].button->setToolTip(UI::ToolBar::tr("Perpendicular"));
+        constraints_[4].button->setToolTip(UI::ToolBar::tr("Tangent"));
+        constraints_[5].button->setToolTip(UI::ToolBar::tr("Equal"));
+        constraints_[6].button->setToolTip(UI::ToolBar::tr("FixUnfix"));
+        constraints_[7].button->setToolTip(UI::ToolBar::tr("Concentric"));
+        constraints_[8].button->setToolTip(UI::ToolBar::tr("Collinear"));
+        constraints_[9].button->setToolTip(UI::ToolBar::tr("Midpoint"));
+        constraints_[10].button->setToolTip(UI::ToolBar::tr("Symmetric"));
     }
 }
