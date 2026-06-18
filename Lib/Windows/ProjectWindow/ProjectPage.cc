@@ -168,7 +168,7 @@ void UI::ProjectPage::assembleLayout() const {
 
     leftColumn_->hide();
     rightColumn_->hide();
-    tabBar_->hide();
+    //tabBar_->hide();
 }
 
 void UI::ProjectPage::createFileSlot() {

@@ -287,6 +287,9 @@ void UI::ProjectManager::setQOpenGLPainter(QOpenGLWindow *engine) const {
 
 
 void UI::ProjectManager::setQWindowRender(QWindow *engine) const {
+    if (engine == nullptr) {
+        return;
+    }
     if (const auto *window = activeEditorWindow()) {
         window->setQWindowRender(engine);
     }

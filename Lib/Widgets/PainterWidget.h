@@ -2,9 +2,11 @@
 #define OURPAINT_DESKTOP_UI_PAINTERWIDGET_H
 
 #include <QWidget>
+#include <QStackedWidget>
 
 class QOpenGLWindow;
 class QVBoxLayout;
+
 
 namespace UI {
     class PainterWidget final : public QWidget {
@@ -14,9 +16,11 @@ namespace UI {
         explicit PainterWidget(QWidget* parent = nullptr);
         void setQOpenGL(QOpenGLWindow* renderWindow);
         void setQWindowRender(QWindow* renderWindow);
+        void removeQWindowRender(QWindow* renderWindow);
 
     private:
-        QVBoxLayout* layout_{nullptr};
+        QStackedWidget* stackedWidget_;
+        std::map<QWindow*, QWidget*> containerMap_;
     };
 } // namespace UI
 
