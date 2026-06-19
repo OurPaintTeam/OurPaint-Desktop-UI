@@ -5,44 +5,38 @@
 #include <QVBoxLayout>
 
 
-UI::PainterWidget::PainterWidget(QWidget* parent) : QWidget(parent) {
+UI::PainterWidget::PainterWidget(QWidget* parent) : QWidget(parent), layout_(new QVBoxLayout(this)) {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setObjectName(QStringLiteral("PainterWidget"));
-
-
-    auto* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-
-    stackedWidget_ = new QStackedWidget(this);
-    mainLayout->addWidget(stackedWidget_);
+    layout_->setContentsMargins(0, 0, 0, 0);
+    layout_->setSpacing(0);
+    setLayout(layout_);
 }
 
 
-void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {}
+void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
+    // OpenGL setup
+    QSurfaceFormat format;
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+    format.setVersion(3, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    constexpr auto depth = 24;
+    constexpr auto stencil = 8;
+    format.setDepthBufferSize(depth);
+    format.setStencilBufferSize(stencil);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+
+    renderWindow->setFormat(format);
+
+    auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
+    renderWidget->setFocusPolicy(Qt::StrongFocus);
+    layout_->addWidget(renderWidget);
+}
 
 
 void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
-    if (!renderWindow) return;
-
-    auto it = containerMap_.find(renderWindow);
-    if (it != containerMap_.end()) {
-        stackedWidget_->setCurrentWidget(it->second);
-        return;
-    }
-
-    auto* container = QWidget::createWindowContainer(renderWindow, this);
-    container->setFocusPolicy(Qt::StrongFocus);
-    stackedWidget_->addWidget(container);
-    containerMap_[renderWindow] = container;
-    stackedWidget_->setCurrentWidget(container);
-}
-
-void UI::PainterWidget::removeQWindowRender(QWindow* renderWindow) {
-    auto it = containerMap_.find(renderWindow);
-    if (it != containerMap_.end()) {
-        stackedWidget_->removeWidget(it->second);
-        it->second->deleteLater();
-        containerMap_.erase(it);
-    }
+    auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
+    renderWidget->setFocusPolicy(Qt::StrongFocus);
+    layout_->addWidget(renderWidget);
 }
