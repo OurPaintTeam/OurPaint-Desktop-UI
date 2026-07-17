@@ -289,3 +289,10 @@ void UI::FramelessWindow::showEvent(QShowEvent *event) {
     }
     QMainWindow::showEvent(event);
 }
+void UI::FramelessWindow::initTranslations() {
+    // TODO: Implement translations
+}
+
+void UI::FramelessWindow::initFonts() {
+    // TODO: Implement fonts
+}
