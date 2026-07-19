@@ -4,25 +4,25 @@
 #include <qfontdatabase.h>
 
 #ifdef Q_OS_WIN
-#include <dwmapi.h>
+
 #include <windows.h>
 #include <windowsx.h>
+#include <dwmapi.h>
 
-#ifndef DWMWA_WINDOW_CORNER_PREFERENCE
-#define DWMWA_WINDOW_CORNER_PREFERENCE 33
-#endif
+namespace {
 
-#ifndef DWMWA_CAPTION_COLOR
-#define DWMWA_BORDER_COLOR 34
-#define DWMWA_CAPTION_COLOR 35
-#endif
+constexpr DWORD kDwmWindowCornerPreference  = 33;
+constexpr DWORD kDwmBorderColor             = 34;
+constexpr DWORD kDwmCaptionColor            = 35;
 
-enum DWM_WINDOW_CORNER_PREFERENCE {
-    DWMWCP_DEFAULT = 0,
-    DWMWCP_DONOTROUND = 1,
-    DWMWCP_ROUND = 2,
-    DWMWCP_ROUNDSMALL = 3
+enum class WindowCornerPreference : DWORD {
+    Default    = 0,
+    DoNotRound = 1,
+    Round      = 2,
+    RoundSmall = 3
 };
+
+} // namespace
 
 #endif
 
@@ -71,14 +71,24 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
 
 #ifdef Q_OS_WIN
 void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
-    HWND hwnd = (HWND) winId();
-    LONG style = GetWindowLong(hwnd, GWL_STYLE);
-    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
-    SetWindowLong(hwnd, GWL_STYLE, style);
+    HWND hwnd = reinterpret_cast<HWND>(winId());
 
-    DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_ROUND;
-    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPref,
-                          sizeof(cornerPref));
+    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
+    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
+    const auto cornerPreference = WindowCornerPreference::Round;
+
+    const HRESULT result = DwmSetWindowAttribute(
+        hwnd,
+        kDwmWindowCornerPreference,
+        &cornerPreference,
+        sizeof(cornerPreference)
+    );
+
+    if (FAILED(result)) {
+        qWarning() << "Failed to set window corner preference:" << Qt::hex << result;
+    }
 }
 
 
@@ -133,37 +143,57 @@ void UI::FramelessWindow::initTranslations() {
 
 
 void UI::FramelessWindow::initWindowForWindowsFrame() const {
-    // либо  setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
-    // либо
-    HWND hwnd = (HWND) winId();
-    /*
-      LONG style = GetWindowLong(hwnd, GWL_STYLE);
-      style &= ~(WS_CAPTION | WS_SYSMENU);
-      SetWindowLong(hwnd, GWL_STYLE, style);*/
+    HWND hwnd = reinterpret_cast<HWND>(winId());
 
-    COLORREF color = RGB(31, 52, 56);
-    // COLORREF color = RGB(73, 72, 80); /* как у титле бар */
-    DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, &color, sizeof(color));
+    const COLORREF captionColor = RGB(31, 52, 56);
 
-    COLORREF borderColor = RGB(73, 72, 80);
-    DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, &borderColor,
-                          sizeof(borderColor));
+    HRESULT result = DwmSetWindowAttribute(
+        hwnd,
+        kDwmCaptionColor,
+        &captionColor,
+        sizeof(captionColor)
+    );
+
+    if (FAILED(result)) {
+        qWarning() << "Failed to set caption color:"
+                   << Qt::hex << result;
+    }
+
+    const COLORREF borderColor = RGB(73, 72, 80);
+
+    result = DwmSetWindowAttribute(
+        hwnd,
+        kDwmBorderColor,
+        &borderColor,
+        sizeof(borderColor)
+    );
+
+    if (FAILED(result)) {
+        qWarning() << "Failed to set border color:"
+                   << Qt::hex << result;
+    }
 }
 
 
 void UI::FramelessWindow::updateWindowCorners() const {
-    HWND hwnd = (HWND) winId();
+    HWND hwnd = reinterpret_cast<HWND>(winId());
 
-    DWM_WINDOW_CORNER_PREFERENCE pref;
+    const auto preference =
+        (isMaximized() || isFullScreen())
+            ? WindowCornerPreference::DoNotRound
+            : WindowCornerPreference::Round;
 
-    if (isMaximized() || isFullScreen()) {
-        pref = DWMWCP_DONOTROUND;
-    } else {
-        pref = DWMWCP_ROUND;
+    const HRESULT result = DwmSetWindowAttribute(
+        hwnd,
+        kDwmWindowCornerPreference,
+        &preference,
+        sizeof(preference)
+    );
+
+    if (FAILED(result)) {
+        qWarning() << "Failed to update window corner preference:"
+                   << Qt::hex << result;
     }
-
-    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &pref,
-                          sizeof(pref));
 }
 #endif
 

@@ -123,11 +123,11 @@ void UI::TabBar::addTabSlot(const QString &name) {
   if (name.isEmpty()) {
     return;
   }
-  for (const auto &t : tabs_) {
-    if (t->getName() == name) {
-      return;
-    }
-  }
+  // for (const auto &t : tabs_) {
+  //   if (t->getName() == name) {
+  //     return;
+  //   }
+  // }
 
   auto *tab = new UI::TabWidget(tabBar_,name);
   tabs_.append(tab);
