@@ -152,7 +152,7 @@ UI::FileSystem::FsResult UI::FileSystem::openProjectById(const QString& projectI
 
             while (!xml.atEnd()) {
                 xml.readNext();
-                if (xml.isStartElement() && xml.name() == "id") {
+                if (xml.isStartElement() && xml.name() == QLatin1String("id")) {
                     metaId = xml.readElementText();
                 }
             }
@@ -235,7 +235,7 @@ UI::FileSystem::FsResult UI::FileSystem::openProjectByPath(const QString& fullPa
 
     while (!xml.atEnd()) {
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "id") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("id")) {
             projectId = xml.readElementText();
         }
     }
@@ -298,7 +298,7 @@ UI::FileSystem::FsResult UI::FileSystem::openProjectByPath(const QString& fullPa
 
         while (!xmlReader.atEnd()) {
             xmlReader.readNext();
-            if (xmlReader.isStartElement() && xmlReader.name() == "project") {
+            if (xmlReader.isStartElement() && xmlReader.name() == QLatin1String("project")) {
                 ProjectData p;
                 p.id = xmlReader.attributes().value("id").toString();
                 p.name = xmlReader.attributes().value("name").toString();
@@ -565,7 +565,7 @@ UI::FileSystem::FsResult UI::FileSystem::renameProjectByPath(const QString& full
 
         while (!xml.atEnd()) {
             xml.readNext();
-            if (xml.isStartElement() && xml.name() == "id") {
+            if (xml.isStartElement() && xml.name() == QLatin1String("id")) {
                 projectId = xml.readElementText();
             }
         }
@@ -643,7 +643,6 @@ UI::FileSystem::FsResult UI::FileSystem::renameProjectByPath(const QString& full
         file.close();
     }
 
-    // --- СОБИРАЕМ DATA ---
     outData.tabs.clear();
 
     const QDir dir(newSystemPath);
@@ -811,7 +810,7 @@ QVector<UI::FileSystem::ProjectData> UI::FileSystem::loadProjectsRaw() const {
     while (!xml.atEnd()) {
         xml.readNext();
 
-        if (xml.isStartElement() && xml.name() == "project") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("project")) {
             ProjectData p;
             p.id = xml.attributes().value("id").toString();
             p.name = xml.attributes().value("name").toString();
