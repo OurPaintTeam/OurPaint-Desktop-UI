@@ -10,7 +10,7 @@ UI::SideTool::SideTool(QWidget* parent)
     : QWidget(parent),
       layout_(new QVBoxLayout(this)) {
     constexpr auto sizeW = 32;
-    setFixedWidth(sizeW);
+    setMinimumWidth(sizeW);
 
     setAttribute(Qt::WA_StyledBackground, true);
 

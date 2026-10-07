@@ -12,6 +12,9 @@
 namespace {
     constexpr int K_SLOT_MARGINS_PX = 0;
     constexpr int K_SLOT_SPACING_PX = 25;
+    constexpr int K_SEPARATOR_MARGIN_DIP = 8;
+    constexpr int K_SEPARATOR_THICKNESS_DIP = 1;
+    constexpr int K_SEPARATOR_LENGTH_DIP = 32;
 } // namespace
 
 UI::SlotWidget::SlotWidget(const QSet<ContainerType>& acceptedTypes,
@@ -63,6 +66,50 @@ void UI::SlotWidget::insert(ContainerWidget* c) {
 
     containers_.append(c);
     updateStretchPosition();
+    updateSeparators();
+}
+
+void UI::SlotWidget::setSeparatorsVisible(bool visible) {
+    if (separatorsVisible_ == visible) {
+        return;
+    }
+
+    separatorsVisible_ = visible;
+    layout_->setSpacing(visible ? 0 : K_SLOT_SPACING_PX);
+    updateSeparators();
+}
+
+void UI::SlotWidget::updateSeparators() {
+    for (auto* separator : separators_) {
+        layout_->removeWidget(separator);
+        delete separator;
+    }
+    separators_.clear();
+
+    if (!separatorsVisible_) {
+        return;
+    }
+
+    for (qsizetype i = 1; i < containers_.size(); ++i) {
+        const bool horizontal = orientation_ == Qt::Horizontal;
+        constexpr int extent = 2 * K_SEPARATOR_MARGIN_DIP + K_SEPARATOR_THICKNESS_DIP;
+        auto* separator = new QWidget(this);
+        separator->setFixedSize(horizontal ? extent : K_SEPARATOR_LENGTH_DIP, horizontal ? K_SEPARATOR_LENGTH_DIP : extent);
+        separator->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
+        auto* line = new QWidget(separator);
+        line->setObjectName(QStringLiteral("ToolContainerSeparator"));
+        line->setAttribute(Qt::WA_StyledBackground, true);
+        if (horizontal) {
+            line->setGeometry(K_SEPARATOR_MARGIN_DIP, 0, K_SEPARATOR_THICKNESS_DIP, K_SEPARATOR_LENGTH_DIP);
+        } else {
+            line->setGeometry(0, K_SEPARATOR_MARGIN_DIP, K_SEPARATOR_LENGTH_DIP, K_SEPARATOR_THICKNESS_DIP);
+        }
+
+        layout_->insertWidget(layout_->indexOf(containers_[i]), separator, 0, Qt::AlignCenter);
+        separators_.append(separator);
+        separator->show();
+    }
 }
 
 
@@ -142,6 +189,7 @@ void UI::SlotWidget::removeContainer(ContainerWidget* c) {
 
     c->setParent(nullptr);
     c->setCurrentSlot(nullptr);
+    updateSeparators();
 
     if (containers_.isEmpty()) {
         removeStretch();

@@ -155,6 +155,11 @@ background: transparent;
     background: transparent;
 }
 
+#ToolContainerSeparator {
+    background-color: rgba(216, 216, 246, 0.35);
+    border: none;
+}
+
 
 #PainterWidget{
  background: #ffffff;

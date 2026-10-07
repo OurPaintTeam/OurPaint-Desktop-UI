@@ -19,6 +19,8 @@ namespace UI {
                             QWidget* parent = nullptr);
 
         void insert(ContainerWidget* c);
+        // Separators replace layout spacing and follow container insertions and removals.
+        void setSeparatorsVisible(bool visible);
 
         signals:
             void migrateContainer(UI::ContainerWidget* container);
@@ -36,6 +38,8 @@ namespace UI {
         QBoxLayout* layout_{nullptr};
 
         QList<ContainerWidget*> containers_;
+        QList<QWidget*> separators_;
+        bool separatorsVisible_{false};
         RotatedLabel* placeholder_{nullptr};
 
         bool canAccept(const ContainerWidget* c) const;
@@ -49,6 +53,7 @@ namespace UI {
         void addStretch();
         void removeStretch();
         void updateStretchPosition();
+        void updateSeparators();
         QWidget* stretchWidget_{nullptr};
         bool stretchAdded_{false};
     };

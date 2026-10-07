@@ -67,7 +67,7 @@ namespace UI {
 
         // TOOLS
         QPushButton *cursorTool_{nullptr};
-        QPushButton *sizeTool_{nullptr};
+       // QPushButton *sizeTool_{nullptr};
 
         // PRIMITIVES
         QPushButton *pointPrimitive_{nullptr};

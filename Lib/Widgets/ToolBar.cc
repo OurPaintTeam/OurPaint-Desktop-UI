@@ -1,6 +1,8 @@
 #include "ToolBar.h"
 
 #include <QHBoxLayout>
+#include <QPushButton>
+#include <QSize>
 #include <QStackedWidget>
 #include <QStyle>
 #include <QWheelEvent>
@@ -12,6 +14,19 @@
 #include "MenuButton.h"
 #include "SlotWidget.h"
 #include "ToolsType.h"
+
+namespace {
+    // Qt Widgets use device-independent pixels (DIP) and apply the screen DPR automatically.
+    // Keep these values logical; multiplying them by DPR would scale the toolbar twice.
+    constexpr int K_TOOLBAR_HEIGHT_DIP = 48;
+    constexpr int K_TOOL_BUTTON_SIZE_DIP = 40;
+    constexpr int K_TOOL_ICON_SIZE_DIP = 32;
+
+    void configureToolButton(QPushButton* button) {
+        button->setFixedSize(K_TOOL_BUTTON_SIZE_DIP, K_TOOL_BUTTON_SIZE_DIP);
+        button->setIconSize(QSize(K_TOOL_ICON_SIZE_DIP, K_TOOL_ICON_SIZE_DIP));
+    }
+} // namespace
 
 
 UI::ToolBar::ToolBar(QWidget *parent)
@@ -30,8 +45,7 @@ UI::ToolBar::ToolBar(QWidget *parent)
       figuresContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
       reqsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)) {
     setObjectName("ToolBar");
-    constexpr auto h = 32;
-    setFixedHeight(h);
+    setFixedHeight(K_TOOLBAR_HEIGHT_DIP);
     setAttribute(Qt::WA_StyledBackground, true);
 
     initLayout();
@@ -80,6 +94,7 @@ void UI::ToolBar::initLayout() const {
     mainLayout_->setContentsMargins(0, 0, 0, 0);
     mainLayout_->setSpacing(0);
     mainLayout_->addWidget(stack_);
+    figuresSlot_->setSeparatorsVisible(true);
 
     firstLaneWidget_->setAttribute(Qt::WA_StyledBackground, true);
     secondLaneWidget_->setAttribute(Qt::WA_StyledBackground, true);
@@ -96,6 +111,7 @@ void UI::ToolBar::initFiguresLane() {
 
     // === PRIMITIVES ===
     pointPrimitive_ = figuresContainer_->addButton(QIcon(":/Assets/icons/primitives/point.svg"));
+    configureToolButton(pointPrimitive_);
     pointPrimitive_->setObjectName("NoActiveTool");
 
     linePrimitive_ = figuresContainer_->addMenuButton("", lineMenu_);
@@ -103,24 +119,24 @@ void UI::ToolBar::initFiguresLane() {
     arcPrimitive_ = figuresContainer_->addMenuButton("", arcMenu_);
 
     for (auto *btn: {linePrimitive_, circlePrimitive_, arcPrimitive_}) {
+        configureToolButton(btn);
         btn->setOpenLeftClick(false);
         btn->setChange(true);
         btn->setObjectName("NoActiveTool");
     }
 
     cubicBezierPrimitive_ = figuresContainer_->addButton(QIcon(":/Assets/icons/primitives/beze.png"));
+    configureToolButton(cubicBezierPrimitive_);
     cubicBezierPrimitive_->setObjectName("NoActiveTool");
 
     // TOOLS
-    constexpr QSize size(25, 25);
-
     cursorTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/cursorTool.png"));
-    cursorTool_->setFixedSize(size);
+    configureToolButton(cursorTool_);
     cursorTool_->setCursor(Qt::PointingHandCursor);
 
-    sizeTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/sizeTool.svg"));
-    sizeTool_->setFixedSize(size);
-    sizeTool_->setCursor(Qt::PointingHandCursor);
+    /*sizeTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/sizeTool.svg"));
+    configureToolButton(sizeTool_);
+    sizeTool_->setCursor(Qt::PointingHandCursor);*/
 
     activeTool_ = cursorTool_;
     activeTool_->setObjectName("ActiveTool");
@@ -150,8 +166,6 @@ void UI::ToolBar::initConstraintsLane() {
 
 // SIGNALS
 void UI::ToolBar::initSignals() {
-    constexpr QSize buttonSize(25, 25);
-
     // CONSTRAINTS
     constraints_ = {
         {":/Assets/icons/constraints/Distance.svg", new QAction("", this), nullptr, ConstraintType::Distance},
@@ -171,7 +185,7 @@ void UI::ToolBar::initSignals() {
 
     for (auto& item: constraints_) {
         auto *btn = reqsContainer_->addButton(QIcon(item.icon));
-        btn->setFixedSize(buttonSize);
+        configureToolButton(btn);
         btn->setCursor(Qt::PointingHandCursor);
         btn->setObjectName("NoActiveTool");
 
@@ -228,10 +242,10 @@ void UI::ToolBar::initSignals() {
         setActiveTool(cursorTool_);
     });
 
-    connect(sizeTool_, &QPushButton::clicked, this, [this]() {
-        emit toolsTriggered(ToolsType::Size);
-        setActiveTool(sizeTool_);
-    });
+    // connect(sizeTool_, &QPushButton::clicked, this, [this]() {
+    //     emit toolsTriggered(ToolsType::Size);
+    //     setActiveTool(sizeTool_);
+    // });
 }
 
 
@@ -263,8 +277,8 @@ void UI::ToolBar::setActiveTool(const ToolsType tool) {
     switch (tool) {
         case ToolsType::Cursor: setActiveTool(cursorTool_);
             break;
-        case ToolsType::Size: setActiveTool(sizeTool_);
-            break;
+        // case ToolsType::Size: setActiveTool(sizeTool_);
+        //     break;
         default: break;
     }
 }
@@ -366,9 +380,9 @@ void UI::ToolBar::translate() const {
     if (cursorTool_) {
         cursorTool_->setToolTip(UI::ToolBar::tr("Cursor tool"));
     }
-    if (sizeTool_) {
-        sizeTool_->setToolTip(UI::ToolBar::tr("Show size"));
-    }
+    // if (sizeTool_) {
+    //     sizeTool_->setToolTip(UI::ToolBar::tr("Show size"));
+    // }
 
     // CONSTRAINTS
     if (constraints_.size() >= 13) {
