@@ -1,14 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <!-- Circle -->
-  <circle cx="12" cy="12" r="10" stroke="#FFFFFF" stroke-width="2"/>
-
-  <!-- Given points -->
-  <circle cx="2" cy="12" r="2" fill="#FFFFFF"/>
-  <circle cx="22" cy="12" r="2" fill="#FFFFFF"/>
-
-  <!-- Center point -->
-  <circle cx="12" cy="12" r="1.5" fill="#FFFFFF"/>
-
-  <!-- Helper line (perpendicular bisector hint) -->
-  <line x1="12" y1="4" x2="12" y2="20" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="2 2"/>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="16.0054" cy="16.0054" r="13.25" transform="rotate(-0.0220268 16.0054 16.0054)" stroke="white" stroke-width="1.5"/>
+<circle cx="16" cy="3" r="2" fill="#3F48CC"/>
+<circle cx="16" cy="29" r="2" fill="#3F48CC"/>
 </svg>

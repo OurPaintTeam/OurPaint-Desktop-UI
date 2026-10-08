@@ -125,7 +125,7 @@ void UI::ToolBar::initFiguresLane() {
         btn->setObjectName("NoActiveTool");
     }
 
-    cubicBezierPrimitive_ = figuresContainer_->addButton(QIcon(":/Assets/icons/primitives/beze.png"));
+    cubicBezierPrimitive_ = figuresContainer_->addButton(QIcon(":/Assets/icons/primitives/beze.svg"));
     configureToolButton(cubicBezierPrimitive_);
     cubicBezierPrimitive_->setObjectName("NoActiveTool");
 
