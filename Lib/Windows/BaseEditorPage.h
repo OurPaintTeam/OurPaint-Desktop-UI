@@ -37,12 +37,14 @@ namespace UI {
         void takeOffHint();
         void setActiveTool(ConstraintType type);
         void setActiveName(const QString name);
+        void setSolverBackend(const QString& tabName, const QString& name, bool canSwitch);
 
     signals:
         void sentCommandTriggered(const QString tabName, const QString command);
         void primitiveTriggered(const QString tabName,PrimitiveType type);
         void constraintTriggered(const QString tabName,ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
+        void solverBackendSwitchRequested(const QString& tabName);
 
     protected:
         void initBaseEditorPage();

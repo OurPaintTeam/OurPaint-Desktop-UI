@@ -122,6 +122,16 @@ void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, Primitiv
 }
 
 
+void UI::ProjectManager::setSolverBackend(const QString& tabName, const QString& name, bool canSwitch) {
+    if (projectWindow_) {
+        projectWindow_->setSolverBackend(tabName, name, canSwitch);
+    }
+    if (auto* tabWindow = findTabWindow(tabName)) {
+        tabWindow->setSolverBackend(tabName, name, canSwitch);
+    }
+}
+
+
 QString UI::ProjectManager::projectPath() const {
     return projectData_.path;
 }
@@ -346,6 +356,8 @@ void UI::ProjectManager::connectProjectWindowSignals() {
 
     connect(projectWindow_, &ProjectWindow::toolsTriggered,
             this, &ProjectManager::toolsTriggered);
+    connect(projectWindow_, &ProjectWindow::solverBackendSwitchRequested,
+            this, &ProjectManager::solverBackendSwitchRequested);
 
     connect(projectWindow_, &ProjectWindow::goToStartWindowTriggered,
             this, &ProjectManager::goToStartWindowTriggered);
@@ -509,6 +521,10 @@ void UI::ProjectManager::openTabWindow(const QString& tabName,
 
     connect(tabWindow, &TabWindow::toolsTriggered,
             this, &ProjectManager::toolsTriggered);
+    connect(tabWindow, &TabWindow::solverBackendSwitchRequested,
+            this, &ProjectManager::solverBackendSwitchRequested);
+
+    emit solverBackendStateRequested(tabName);
 
     connect(tabWindow, &TabWindow::returnTabTriggered,
             this, [this, tabWindow](const QString& name) {

@@ -35,6 +35,10 @@ void UI::BaseEditorWindow::setActiveName(const QString& name) {
     editorPage_->setActiveName(name);
 }
 
+void UI::BaseEditorWindow::setSolverBackend(const QString& tabName, const QString& name, bool canSwitch) {
+    editorPage_->setSolverBackend(tabName, name, canSwitch);
+}
+
 
 void UI::BaseEditorWindow::setQOpenGLPainter(QOpenGLWindow *engine) const {
     if (editorPage_) {
@@ -69,6 +73,8 @@ void UI::BaseEditorWindow::initEditor(BaseEditorPage *editorPage) {
             this, &BaseEditorWindow::constraintTriggered);
     connect(editorPage_, &BaseEditorPage::toolsTriggered,
             this, &BaseEditorWindow::toolsTriggered);
+    connect(editorPage_, &BaseEditorPage::solverBackendSwitchRequested,
+            this, &BaseEditorWindow::solverBackendSwitchRequested);
 
     initNotificationManager();
 }

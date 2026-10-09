@@ -47,6 +47,7 @@ namespace UI {
         void setHintConstraintToolsTabWindow(const QString& tabName, const QVector<ConstraintType>& vecTools);
         void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
         void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
+        void setSolverBackend(const QString& tabName, const QString& name, bool canSwitch);
 
         QString projectPath() const;
         QString projectID() const;
@@ -80,6 +81,8 @@ namespace UI {
         void primitiveTriggered(const QString tabName, PrimitiveType type);
         void constraintTriggered(const QString tabName, ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
+        void solverBackendSwitchRequested(const QString& tabName);
+        void solverBackendStateRequested(const QString& tabName);
 
         void saveFullProjectTriggered();
         void openProjectThisWindowTriggered(const QString& path);

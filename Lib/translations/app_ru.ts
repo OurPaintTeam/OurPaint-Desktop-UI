@@ -341,6 +341,18 @@
 <context>
     <name>UI::ToolBar</name>
     <message>
+        <source>Solver backend</source>
+        <translation>Бэкенд солвера</translation>
+    </message>
+    <message>
+        <source>Solver: %1. Click to switch DCM / SS (SolveSpace).</source>
+        <translation>Солвер: %1. Нажмите для переключения DCM / SS (SolveSpace).</translation>
+    </message>
+    <message>
+        <source>Solver: %1. Switching is unavailable.</source>
+        <translation>Солвер: %1. Переключение недоступно.</translation>
+    </message>
+    <message>
         <location filename="../Widgets/ToolBar.cc" line="294"/>
         <source>Point</source>
         <translation>Точка</translation>
@@ -399,6 +411,13 @@
         <location filename="../Widgets/ToolBar.cc" line="315"/>
         <source>Angle Between Lines</source>
         <translation>Угол между линиями</translation>
+    </message>
+</context>
+<context>
+    <name>UI::ProjectManager</name>
+    <message>
+        <source>Cannot switch solver: %1</source>
+        <translation>Не удалось переключить солвер: %1</translation>
     </message>
 </context>
 <context>

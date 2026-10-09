@@ -30,6 +30,7 @@ namespace UI {
         void takeOffHint();
 
         void setActiveName(const QString& name);
+        void setSolverBackend(const QString& tabName, const QString& name, bool canSwitch);
 
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
@@ -40,6 +41,7 @@ namespace UI {
         void primitiveTriggered(const QString tabName, PrimitiveType type);
         void constraintTriggered(const QString tabName, ConstraintType type);
         void toolsTriggered(const QString tabName, ToolsType type);
+        void solverBackendSwitchRequested(const QString& tabName);
 
     protected:
         void initEditor(BaseEditorPage *editorPage);

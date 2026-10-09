@@ -37,11 +37,13 @@ namespace UI {
         void takeOffHint();
         void setActiveTool(ConstraintType vecTools);
         void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
+        void setSolverBackend(const QString& name, bool canSwitch);
 
     signals:
         void primitiveTriggered(PrimitiveType type);
         void constraintTriggered(ConstraintType type);
         void toolsTriggered(ToolsType type);
+        void solverBackendSwitchRequested();
 
     protected:
         void changeEvent(QEvent *e) override;
@@ -77,6 +79,7 @@ namespace UI {
         QPushButton *cubicBezierPrimitive_{nullptr};
 
         QPushButton *activeTool_{nullptr};
+        QPushButton *solverBackendButton_{nullptr};
         QVector<QPushButton*> hints_;
 
 
@@ -107,6 +110,7 @@ namespace UI {
 
         SlotWidget *reqsSlot_{nullptr};
         ContainerWidget *reqsContainer_{nullptr};
+        ContainerWidget *solverContainer_{nullptr};
 
         bool isFirstLaneVisible_{true};
     };

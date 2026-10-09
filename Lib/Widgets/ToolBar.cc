@@ -43,7 +43,8 @@ UI::ToolBar::ToolBar(QWidget *parent)
       toolsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
       figuresSlot_(new SlotWidget({ContainerType::Tools}, Qt::Horizontal)),
       figuresContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
-      reqsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)) {
+      reqsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
+      solverContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)) {
     setObjectName("ToolBar");
     setFixedHeight(K_TOOLBAR_HEIGHT_DIP);
     setAttribute(Qt::WA_StyledBackground, true);
@@ -60,6 +61,7 @@ UI::ToolBar::ToolBar(QWidget *parent)
 
 // VISIBILITY
 void UI::ToolBar::showAllElements() {
+    solverContainer_->show();
     reqsContainer_->show();
     figuresContainer_->show();
     toolsContainer_->show();
@@ -68,6 +70,7 @@ void UI::ToolBar::showAllElements() {
 
 
 void UI::ToolBar::hideAllElements() {
+    solverContainer_->hide();
     reqsContainer_->hide();
     figuresContainer_->hide();
     toolsContainer_->hide();
@@ -159,6 +162,7 @@ void UI::ToolBar::initConstraintsLane() {
 
     reqsSlot_ = new SlotWidget({ContainerType::Tools}, Qt::Horizontal);
     figuresSlot_->insert(reqsContainer_);
+    figuresSlot_->insert(solverContainer_);
 
     stack_->addWidget(secondLaneWidget_);
 }
@@ -198,6 +202,15 @@ void UI::ToolBar::initSignals() {
             emit constraintTriggered(type);
         });
     }
+
+    // SOLVER
+    solverBackendButton_ = solverContainer_->addButton(QStringLiteral("—"));
+    configureToolButton(solverBackendButton_);
+    solverBackendButton_->setFocusPolicy(Qt::NoFocus);
+    solverBackendButton_->setCursor(Qt::PointingHandCursor);
+    solverBackendButton_->setObjectName("SolverBackendButton");
+    solverBackendButton_->setEnabled(false);
+    connect(solverBackendButton_, &QPushButton::clicked, this, &ToolBar::solverBackendSwitchRequested);
 
     // PRIMITIVES
     connect(pointPrimitive_, &QPushButton::clicked, this, [this]() {
@@ -269,6 +282,13 @@ void UI::ToolBar::handlePrimitiveActionSlot(const QAction *action) {
 
     const auto type = action->data().value<PrimitiveType>();
     emit primitiveTriggered(type);
+}
+
+
+void UI::ToolBar::setSolverBackend(const QString& name, bool canSwitch) {
+    solverBackendButton_->setText(name);
+    solverBackendButton_->setEnabled(canSwitch);
+    translate();
 }
 
 
@@ -371,6 +391,13 @@ void UI::ToolBar::setActiveTool(QPushButton *tool) {
 
 // TRANSLATE
 void UI::ToolBar::translate() const {
+    if (solverBackendButton_) {
+        solverBackendButton_->setAccessibleName(tr("Solver backend"));
+        solverBackendButton_->setToolTip(solverBackendButton_->isEnabled()
+                                            ? tr("Solver: %1. Click to switch DCM / SS (SolveSpace).")
+                                                  .arg(solverBackendButton_->text())
+                                            : tr("Solver: %1. Switching is unavailable.").arg(solverBackendButton_->text()));
+    }
     if (pointPrimitive_) {
         pointPrimitive_->setToolTip(UI::ToolBar::tr("Point"));
     }
