@@ -2,35 +2,30 @@
 
 #include <QEvent>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <QPainter>
-#include <QScrollBar>
 
 #include "NotificationWidget.h"
 
-
-UI::NotificationContainer::NotificationContainer(QWidget *parent)
-    : QWidget(parent),
-      layout_(new QVBoxLayout(this)),
-      containerWidget_(new QWidget(this)),
-      scrollArea_(new QScrollArea(this)),
-      hideTimer_(new QTimer(this)) {
+UI::NotificationContainer::NotificationContainer(QWidget* parent)
+    : QWidget(parent), layout_(new QVBoxLayout(this)), containerWidget_(new QWidget(this)), scrollArea_(new QScrollArea(this)), hideTimer_(new QTimer(this)) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
-  setFixedWidth(320);
+    setFixedWidth(320);
+    layout_->setContentsMargins(0, 0, 0, 0);
     containerLayout_ = new QVBoxLayout(containerWidget_);
+    containerLayout_->setContentsMargins(8, 8, 8, 8);
+    containerLayout_->setSpacing(6);
     containerLayout_->setAlignment(Qt::AlignTop);
-    containerWidget_->setLayout(containerLayout_);
 
     scrollArea_->setWidget(containerWidget_);
     scrollArea_->setWidgetResizable(true);
+    scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setObjectName("ScrollNotification");
     scrollArea_->viewport()->setObjectName("ScrollNotificationViewport");
     scrollArea_->verticalScrollBar()->setObjectName("VertScrollNotification");
-    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea_->verticalScrollBar()->setVisible(false);
-    scrollArea_->verticalScrollBar()->setFixedWidth(0);
+    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     layout_->addWidget(scrollArea_);
 
     containerWidget_->setAttribute(Qt::WA_StyledBackground, true);
@@ -56,7 +51,6 @@ UI::NotificationContainer::NotificationContainer(QWidget *parent)
     hide();
 }
 
-
 void UI::NotificationContainer::updatePosition() {
     if (!parentWidget()) {
         return;
@@ -64,16 +58,13 @@ void UI::NotificationContainer::updatePosition() {
 
     constexpr int margin = 10;
 
-    const auto *const p = parentWidget();
+    const auto* const p = parentWidget();
 
-    const auto globalBottomRight = p->mapToGlobal(p->rect().bottomRight());
-
-    move(globalBottomRight.x() - width() - margin,
-         globalBottomRight.y() - height() - margin);
+    const auto bottomRight = p->mapToGlobal(p->rect().bottomRight());
+    move(bottomRight.x() - width() - margin, bottomRight.y() - height() - margin);
 
     raise();
 }
-
 
 void UI::NotificationContainer::startHideTimer() const {
     if (underMouse()) {
@@ -85,25 +76,20 @@ void UI::NotificationContainer::startHideTimer() const {
     hideTimer_->start(t);
 }
 
-
 void UI::NotificationContainer::onHideTimeout() {
     if (!underMouse()) {
         hide();
     }
 }
 
-
 void UI::NotificationContainer::addNotification(const QString& text) {
-    auto *const widget = new NotificationWidget(text, containerWidget_);
-    connect(widget, &NotificationWidget::deleted,
-            this, &NotificationContainer::removeNotification);
+    auto* const widget = new NotificationWidget(text, containerWidget_);
+    connect(widget, &NotificationWidget::deleted, this, &NotificationContainer::removeNotification);
 
-    auto *const containerLayout =
-            qobject_cast<QVBoxLayout*>(containerWidget_->layout());
-
-    containerLayout->addWidget(widget);
+    containerLayout_->insertWidget(0, widget);
 
     notifications_.prepend(widget);
+    widget->show();
 
     updateContainerSize();
 
@@ -112,19 +98,17 @@ void UI::NotificationContainer::addNotification(const QString& text) {
     }
 
     QTimer::singleShot(0, this, [this]() {
-        auto *bar = scrollArea_->verticalScrollBar();
-        bar->setValue(bar->maximum());
+        auto* bar = scrollArea_->verticalScrollBar();
+        bar->setValue(bar->minimum());
     });
 
     startHideTimer();
 }
 
-
-void UI::NotificationContainer::enterEvent(QEnterEvent *event) {
+void UI::NotificationContainer::enterEvent(QEnterEvent* event) {
     QWidget::enterEvent(event);
     hideTimer_->stop();
 }
-
 
 void UI::NotificationContainer::leaveEvent(QEvent *event) {
     QWidget::leaveEvent(event);
@@ -133,20 +117,23 @@ void UI::NotificationContainer::leaveEvent(QEvent *event) {
     }
 }
 
-
-bool UI::NotificationContainer::eventFilter(QObject *obj, QEvent *event) {
-    if (obj == parentWidget() &&
-        (event->type() == QEvent::Resize || event->type() == QEvent::Move)) {
-        updatePosition();
+bool UI::NotificationContainer::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == parentWidget()) {
+        if (event->type() == QEvent::Resize) {
+            updateContainerSize();
+        } else if (event->type() == QEvent::Move) {
+            updatePosition();
+        }
     }
 
     return QWidget::eventFilter(obj, event);
 }
 
-
-void UI::NotificationContainer::removeNotification(NotificationWidget *widget) {
+void UI::NotificationContainer::removeNotification(NotificationWidget* widget) {
     if (widget && notifications_.contains(widget)) {
         notifications_.removeOne(widget);
+        containerLayout_->removeWidget(widget);
+        widget->hide();
         widget->deleteLater();
         updateContainerSize();
     }
@@ -157,25 +144,19 @@ void UI::NotificationContainer::removeNotification(NotificationWidget *widget) {
     }
 }
 
-
 void UI::NotificationContainer::updateContainerSize() {
-  int totalHeight = 0;
+    constexpr int margin = 10;
+    constexpr int maxVisibleHeight = 240;
+    const auto* const parent = parentWidget();
+    setFixedWidth(parent ? qMin(320, qMax(1, parent->width() - 2 * margin)) : 320);
+    const int availableHeight = parent ? qMin(maxVisibleHeight, qMax(1, parent->height() - 2 * margin)) : maxVisibleHeight;
 
-  for (auto *w : notifications_) {
-    totalHeight += w->sizeHint().height();
-  }
+    // Measure wrapped text at the viewport width, including layout margins and spacing.
+    containerLayout_->invalidate();
+    const int totalHeight = containerLayout_->hasHeightForWidth() ? containerLayout_->totalHeightForWidth(width()) : containerLayout_->sizeHint().height();
+    setFixedHeight(qMin(totalHeight, availableHeight));
+    layout_->activate();
+    containerLayout_->activate();
 
-  const int maxVisibleHeight = 240;
-
-  if (totalHeight <= maxVisibleHeight) {
-    containerWidget_->setFixedHeight(totalHeight);
-    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setFixedHeight(totalHeight);
-  } else {
-    containerWidget_->setFixedHeight(totalHeight);
-    scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    setFixedHeight(maxVisibleHeight);
-  }
-
-  updatePosition();
+    updatePosition();
 }
