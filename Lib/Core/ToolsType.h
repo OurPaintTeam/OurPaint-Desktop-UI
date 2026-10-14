@@ -32,7 +32,6 @@ namespace UI {
         ArcSettings
     };
 
-
     enum class ConstraintType {
         Coincident,
         Horizontal,
@@ -46,9 +45,10 @@ namespace UI {
         Collinear,
         Midpoint,
         Symmetric,
-        Distance
+        Distance,
+        HVDistance,
+        Angle
     };
-
 
     enum class ToolsType {
         Cursor,

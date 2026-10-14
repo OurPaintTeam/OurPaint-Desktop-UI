@@ -42,6 +42,8 @@
         <file>Assets/icons/constraints/Midpoint.svg</file>
         <file>Assets/icons/constraints/Symmetric.svg</file>
         <file>Assets/icons/constraints/Distance.svg</file>
+        <file>Assets/icons/constraints/HVDistance.svg</file>
+        <file>Assets/icons/constraints/Angle.svg</file>
 
 
         <file>Assets/icons/showHidePanels/right.svg</file>

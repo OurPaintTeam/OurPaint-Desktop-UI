@@ -173,6 +173,8 @@ void UI::ToolBar::initSignals() {
     // CONSTRAINTS
     constraints_ = {
         {":/Assets/icons/constraints/Distance.svg", new QAction("", this), nullptr, ConstraintType::Distance},
+        {":/Assets/icons/constraints/HVDistance.svg", new QAction("", this), nullptr, ConstraintType::HVDistance},
+        {":/Assets/icons/constraints/Angle.svg", new QAction("", this), nullptr, ConstraintType::Angle},
         {":/Assets/icons/constraints/Coincident.svg", new QAction("", this), nullptr, ConstraintType::Coincident},
         {":/Assets/icons/constraints/Horizontal.svg", new QAction("", this), nullptr, ConstraintType::Horizontal},
         {":/Assets/icons/constraints/Vertical.svg", new QAction("", this), nullptr, ConstraintType::Vertical},
@@ -412,20 +414,21 @@ void UI::ToolBar::translate() const {
     // }
 
     // CONSTRAINTS
-    if (constraints_.size() >= 13) {
+    if (constraints_.size() >= 15) {
         constraints_[0].button->setToolTip(UI::ToolBar::tr("Distance"));
-        constraints_[1].button->setToolTip(UI::ToolBar::tr("Coincident"));
-        constraints_[2].button->setToolTip(UI::ToolBar::tr("Horizontal"));
-        constraints_[3].button->setToolTip(UI::ToolBar::tr("Vertical"));
-        constraints_[4].button->setToolTip(UI::ToolBar::tr("Parallel"));
-        constraints_[5].button->setToolTip(UI::ToolBar::tr("Perpendicular"));
-        constraints_[6].button->setToolTip(UI::ToolBar::tr("Tangent"));
-        constraints_[7].button->setToolTip(UI::ToolBar::tr("Equal"));
-        constraints_[8].button->setToolTip(UI::ToolBar::tr("FixUnfix"));
-        constraints_[9].button->setToolTip(UI::ToolBar::tr("Concentric"));
-        constraints_[10].button->setToolTip(UI::ToolBar::tr("Collinear"));
-        constraints_[11].button->setToolTip(UI::ToolBar::tr("Midpoint"));
-        constraints_[12].button->setToolTip(UI::ToolBar::tr("Symmetric"));
-
+        constraints_[1].button->setToolTip(UI::ToolBar::tr("H/V Distance"));
+        constraints_[2].button->setToolTip(UI::ToolBar::tr("Angle"));
+        constraints_[3].button->setToolTip(UI::ToolBar::tr("Coincident"));
+        constraints_[4].button->setToolTip(UI::ToolBar::tr("Horizontal"));
+        constraints_[5].button->setToolTip(UI::ToolBar::tr("Vertical"));
+        constraints_[6].button->setToolTip(UI::ToolBar::tr("Parallel"));
+        constraints_[7].button->setToolTip(UI::ToolBar::tr("Perpendicular"));
+        constraints_[8].button->setToolTip(UI::ToolBar::tr("Tangent"));
+        constraints_[9].button->setToolTip(UI::ToolBar::tr("Equal"));
+        constraints_[10].button->setToolTip(UI::ToolBar::tr("FixUnfix"));
+        constraints_[11].button->setToolTip(UI::ToolBar::tr("Concentric"));
+        constraints_[12].button->setToolTip(UI::ToolBar::tr("Collinear"));
+        constraints_[13].button->setToolTip(UI::ToolBar::tr("Midpoint"));
+        constraints_[14].button->setToolTip(UI::ToolBar::tr("Symmetric"));
     }
 }
