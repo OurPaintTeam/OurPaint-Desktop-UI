@@ -75,12 +75,6 @@ void UI::BaseEditorPage::setActiveName(const QString name) {
     activeName_ = name;
 }
 
-void UI::BaseEditorPage::setSolverBackend(const QString& tabName, const QString& name, bool canSwitch) {
-    if (activeName_ == tabName) {
-        toolBar_->setSolverBackend(name, canSwitch);
-    }
-}
-
 
 void UI::BaseEditorPage::initBaseEditorPage() {
     initBasePage();
@@ -164,12 +158,6 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
                 emit toolsTriggered(activeName_, type);
             });
-
-    connect(toolBar_, &ToolBar::solverBackendSwitchRequested, this, [this]() {
-        if (!activeName_.isEmpty()) {
-            emit solverBackendSwitchRequested(activeName_);
-        }
-    });
 
     return workspacePage;
 }
