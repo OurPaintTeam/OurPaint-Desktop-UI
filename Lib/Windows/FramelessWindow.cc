@@ -92,56 +92,6 @@ void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
 }
 
 
-void UI::FramelessWindow::initFonts() {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-
-    // Загружаем ВСЕ веса
-    int id1 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Regular.ttf");
-    int id2 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Medium.ttf");
-    int id3 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-SemiBold.ttf");
-
-    if (id1 == -1 || id2 == -1 || id3 == -1) {
-        qDebug() << "Failed to load one of the fonts!";
-    }
-
-    // Берём family из ЛЮБОГО валидного id (например id1)
-    QString family = QFontDatabase::applicationFontFamilies(id1).value(0);
-
-    if (family.isEmpty()) {
-        qDebug() << "Font family is empty!";
-        return;
-    }
-
-    // Создаём шрифт
-    QFont font(family);
-
-    // Сглаживание
-    font.setHintingPreference(QFont::PreferFullHinting);
-    font.setStyleStrategy(QFont::PreferAntialias);
-    font.setStyleStrategy(QFont::PreferQuality);
-
-    // Применяем
-    qApp->setFont(font);
-}
-
-
-void UI::FramelessWindow::initTranslations() {
-    /*
-* lupdate . -ts Lib/translations/app_ru.ts
-* lrelease Lib/translations/app_ru.ts
-  */
-
-    static QTranslator translator;
-    const bool ok = translator.load(":/translations/app_eng.qm");
-    qApp->installTranslator(&translator);
-
-    if (!ok) {
-        qWarning() << "No translate files";
-    }
-}
-
-
 void UI::FramelessWindow::initWindowForWindowsFrame() const {
     HWND hwnd = reinterpret_cast<HWND>(winId());
 
@@ -319,10 +269,53 @@ void UI::FramelessWindow::showEvent(QShowEvent *event) {
     }
     QMainWindow::showEvent(event);
 }
-// void UI::FramelessWindow::initTranslations() {
-//     // TODO: Implement translations
-// }
 
-// void UI::FramelessWindow::initFonts() {
-//     // TODO: Implement fonts
-// }
+
+void UI::FramelessWindow::initFonts() {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // Загружаем ВСЕ веса
+    int id1 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Regular.ttf");
+    int id2 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Medium.ttf");
+    int id3 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-SemiBold.ttf");
+
+    if (id1 == -1 || id2 == -1 || id3 == -1) {
+        qDebug() << "Failed to load one of the fonts!";
+    }
+
+    // Берём family из ЛЮБОГО валидного id (например id1)
+    QString family = QFontDatabase::applicationFontFamilies(id1).value(0);
+
+    if (family.isEmpty()) {
+        qDebug() << "Font family is empty!";
+        return;
+    }
+
+    // Создаём шрифт
+    QFont font(family);
+
+    // Сглаживание
+    font.setHintingPreference(QFont::PreferFullHinting);
+    font.setStyleStrategy(QFont::PreferAntialias);
+    font.setStyleStrategy(QFont::PreferQuality);
+
+    // Применяем
+    qApp->setFont(font);
+}
+
+
+void UI::FramelessWindow::initTranslations() {
+    /*
+* lupdate . -ts Lib/translations/app_ru.ts
+* lrelease Lib/translations/app_ru.ts
+  */
+
+    static QTranslator translator;
+    const bool ok = translator.load(":/translations/app_eng.qm");
+    qApp->installTranslator(&translator);
+
+    if (!ok) {
+        qWarning() << "No translate files";
+    }
+}
