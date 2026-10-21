@@ -1,4 +1,5 @@
-namespace OurPaint { } // OurPaint library namespace
+namespace OurPaint {
+}
 
 #include "App.h"
 #include "Platform.h"
@@ -16,8 +17,8 @@ namespace OurPaint { } // OurPaint library namespace
 
 ButtonHitRect g_minimizeRect, g_maximizeRect, g_closeRect;
 
-static bool g_imguiReady    = false;
-static bool g_rendering     = false;
+static bool g_imguiReady = false;
+static bool g_rendering = false;
 
 bool AppIsRendering() { return g_rendering; }
 
@@ -28,15 +29,13 @@ bool Contains(const ButtonHitRect& r, float x, float y) {
 void UpdateCaptionHitRects(float w) {
     const float bw = 3.0f * CAPTION_BUTTON_WIDTH;
     const float sx = std::max(0.0f, w - bw - CAPTION_BUTTON_RIGHT_MARGIN);
-    g_minimizeRect = { sx, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT };
-    g_maximizeRect = { sx + CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT };
-    g_closeRect    = { sx + 2.0f * CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT };
+    g_minimizeRect = {sx, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT};
+    g_maximizeRect = {sx + CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT};
+    g_closeRect = {sx + 2.0f * CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_TOP, CAPTION_BUTTON_WIDTH, CAPTION_BUTTON_HEIGHT};
 }
 
-// ---------- демо-FBO (пока контроллер не подключён) ----------
 static FBO::Fbo g_demoFbo;
 
-// Анимированный градиент — временная заглушка вместо контроллера.
 static void RenderDemoIntoFbo(float time) {
     if (!g_demoFbo.valid()) return;
 
@@ -47,10 +46,10 @@ static void RenderDemoIntoFbo(float time) {
     constexpr int bands = 32;
     const int bandH = std::max(1, g_demoFbo.h / bands);
     for (int i = 0; i < bands; ++i) {
-        const int y  = i * bandH;
+        const int y = i * bandH;
         const int hh = (i == bands - 1) ? (g_demoFbo.h - y) : bandH;
         if (hh <= 0) break;
-        const float t     = (float)i / bands;
+        const float t = (float) i / bands;
         const float phase = t * 6.2831853f + time * 1.2f;
         const float r = 0.15f + 0.35f * (0.5f + 0.5f * std::sin(phase));
         const float g = 0.15f + 0.35f * (0.5f + 0.5f * std::sin(phase + 2.094f));
@@ -64,21 +63,20 @@ static void RenderDemoIntoFbo(float time) {
     FBO::unbind();
 }
 
-// ---------- caption button ----------
-static bool DrawCaptionButton(const char* id, const ButtonHitRect& r, int kind, bool maximized) {
+static bool DrawCaptionButton(const char *id, const ButtonHitRect& r, int kind, bool maximized) {
     ImGui::SetCursorPos(ImVec2(r.x, r.y));
     const bool clicked = ImGui::InvisibleButton(id, ImVec2(r.w, r.h));
 
     bool hovered = ImGui::IsItemHovered();
-    bool active  = ImGui::IsItemActive();
+    bool active = ImGui::IsItemActive();
     if (kind == 1) {
         hovered = hovered || Platform::maximizeHovered();
-        active  = active  || Platform::maximizePressed();
+        active = active || Platform::maximizePressed();
     }
 
     const ImVec2 p0 = ImGui::GetItemRectMin();
     const ImVec2 p1 = ImGui::GetItemRectMax();
-    ImDrawList* draw = ImGui::GetWindowDrawList();
+    ImDrawList *draw = ImGui::GetWindowDrawList();
 
     if (kind == 2 && hovered)
         draw->AddRectFilled(p0, p1, IM_COL32(196, 43, 28, active ? 255 : 235));
@@ -106,11 +104,10 @@ static bool DrawCaptionButton(const char* id, const ButtonHitRect& r, int kind, 
     return clicked;
 }
 
-// Forward keyboard transitions to the application, with a snapshot of all held keys.
 namespace {
     std::array<bool, GLFW_KEY_LAST + 1> g_keysDown{};
 
-    void OnKeyEvent(GLFWwindow*, int key, int, int action, int mods) {
+    void OnKeyEvent(GLFWwindow *, int key, int, int action, int mods) {
         if (key < 0 || key > GLFW_KEY_LAST) return;
         if (action == GLFW_PRESS || action == GLFW_REPEAT) g_keysDown[static_cast<size_t>(key)] = true;
         else if (action == GLFW_RELEASE) g_keysDown[static_cast<size_t>(key)] = false;
@@ -127,8 +124,7 @@ namespace {
     }
 }
 
-// ---------- кадр ----------
-void RenderFrame(GLFWwindow* window) {
+void RenderFrame(GLFWwindow *window) {
     if (!g_imguiReady || g_rendering) return;
 
     int w, h;
@@ -137,18 +133,22 @@ void RenderFrame(GLFWwindow* window) {
 
     g_rendering = true;
 
-    // ---- FBO ----
-    const float frameW = std::min(720.0f, (float)w - 80.0f);
-    const float frameH = std::min(420.0f, (float)h - TITLEBAR_HEIGHT - 46.0f - 80.0f);
+    constexpr float TOOLBAR_HEIGHT = 330.0f;
+    constexpr float TOOL_BUTTON_WIDTH = 220.0f;
+    constexpr float TOOL_BUTTON_HEIGHT = 28.0f;
+    constexpr float TOOL_BUTTON_GAP = 6.0f;
+
+    const float frameW = std::min(720.0f, (float) w - 80.0f);
+    const float frameH = std::min(420.0f, (float) h - TITLEBAR_HEIGHT - TOOLBAR_HEIGHT - 80.0f);
     const ImVec2 framePos((w - frameW) * 0.5f,
-                          TITLEBAR_HEIGHT + 46.0f + ((h - TITLEBAR_HEIGHT - 46.0f) - frameH) * 0.5f);
+                          TITLEBAR_HEIGHT + TOOLBAR_HEIGHT + ((h - TITLEBAR_HEIGHT - TOOLBAR_HEIGHT) - frameH) * 0.5f);
     const ImVec2 framePosMax(framePos.x + frameW, framePos.y + frameH);
 
     int fbW, fbH;
     glfwGetFramebufferSize(window, &fbW, &fbH);
-    const float dpi = (w > 0) ? (float)fbW / (float)w : 1.0f;
-    const int targetW = (int)std::max(1.0f, frameW * dpi);
-    const int targetH = (int)std::max(1.0f, frameH * dpi);
+    const float dpi = (w > 0) ? (float) fbW / (float) w : 1.0f;
+    const int targetW = (int) std::max(1.0f, frameW * dpi);
+    const int targetH = (int) std::max(1.0f, frameH * dpi);
 
     if (!g_demoFbo.valid() || g_demoFbo.w != targetW || g_demoFbo.h != targetH)
         FBO::resize(g_demoFbo, targetW, targetH);
@@ -164,22 +164,20 @@ void RenderFrame(GLFWwindow* window) {
             glDisable(GL_DEPTH_TEST);
             FBO::unbind();
         } else {
-            RenderDemoIntoFbo((float)glfwGetTime());
+            RenderDemoIntoFbo((float) glfwGetTime());
         }
     }
 
-    // ---- ImGui new frame ----
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     Platform::updateDrag(window);
 
     ImGui::NewFrame();
-    UpdateCaptionHitRects((float)w);
+    UpdateCaptionHitRects((float) w);
 
-    const float windowWidthF = (float)w;
+    const float windowWidthF = (float) w;
     const bool maximized = Platform::isMaximized(window);
 
-    // ---- titlebar ----
     ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowWidthF, TITLEBAR_HEIGHT), ImGuiCond_Always);
 
@@ -192,25 +190,25 @@ void RenderFrame(GLFWwindow* window) {
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.16f, 0.24f, 0.37f, 1.0f));
 
     ImGui::Begin("##CustomTitleBar", nullptr,
-        ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoNavFocus);
+                 ImGuiWindowFlags_NoDecoration |
+                 ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoSavedSettings |
+                 ImGuiWindowFlags_NoBringToFrontOnFocus |
+                 ImGuiWindowFlags_NoScrollbar |
+                 ImGuiWindowFlags_NoNavFocus);
 
-    ImDrawList* titleDraw = ImGui::GetWindowDrawList();
+    ImDrawList *titleDraw = ImGui::GetWindowDrawList();
     const ImVec2 titlePos = ImGui::GetWindowPos();
     titleDraw->AddRectFilled(titlePos,
-        ImVec2(titlePos.x + windowWidthF, titlePos.y + TITLEBAR_HEIGHT),
-        IM_COL32(205, 208, 213, 255));
+                             ImVec2(titlePos.x + windowWidthF, titlePos.y + TITLEBAR_HEIGHT),
+                             IM_COL32(205, 208, 213, 255));
 
     ImGui::SetCursorPos(ImVec2(14.0f, 16.0f));
     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(65, 68, 74, 255));
     ImGui::TextUnformatted("OurPaint");
     ImGui::PopStyleColor();
     {
-        const ImVec2 textMin  = ImGui::GetItemRectMin();
+        const ImVec2 textMin = ImGui::GetItemRectMin();
         const ImVec2 textSize = ImGui::GetItemRectSize();
         const float lineY = textMin.y + textSize.y + 3.0f;
         titleDraw->AddLine(ImVec2(textMin.x, lineY),
@@ -220,9 +218,8 @@ void RenderFrame(GLFWwindow* window) {
 
     const bool minimizeClicked = DrawCaptionButton("##CaptionMinimize", g_minimizeRect, 0, maximized);
     const bool maximizeClicked = DrawCaptionButton("##CaptionMaximize", g_maximizeRect, 1, maximized);
-    const bool closeClicked    = DrawCaptionButton("##CaptionClose",    g_closeRect,    2, maximized);
+    const bool closeClicked = DrawCaptionButton("##CaptionClose", g_closeRect, 2, maximized);
 
-    // Only the Project control lives in the titlebar.
     ImGui::SetCursorPos(ImVec2(104.0f, 9.0f));
     ImGui::Button("Project", ImVec2(88.0f, 30.0f));
 
@@ -230,8 +227,6 @@ void RenderFrame(GLFWwindow* window) {
     ImGui::PopStyleColor(4);
     ImGui::PopStyleVar(3);
 
-    // ---- tools toolbar, directly below the titlebar ----
-    constexpr float TOOLBAR_HEIGHT = 46.0f;
     ImGui::SetNextWindowPos(ImVec2(0.0f, TITLEBAR_HEIGHT), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowWidthF, TOOLBAR_HEIGHT), ImGuiCond_Always);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
@@ -239,39 +234,138 @@ void RenderFrame(GLFWwindow* window) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.91f, 0.92f, 0.93f, 1.0f));
     ImGui::Begin("##ToolsToolbar", nullptr,
-        ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoNavFocus);
+                 ImGuiWindowFlags_NoDecoration |
+                 ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoSavedSettings |
+                 ImGuiWindowFlags_NoBringToFrontOnFocus |
+                 ImGuiWindowFlags_NoNavFocus);
 
     if (ImGui::Button("Point", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
         OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Point);
     ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
     if (ImGui::Button("Line", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
         OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Line);
     ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
-    if (ImGui::Button("Circle", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
-        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Circle);
+
+    if (ImGui::Button("Cubic Bezier", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CubicBezier);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Circle by radius", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleByRadius);
     ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
-    if (ImGui::Button("Arc", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
-        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Arc);
+
+    if (ImGui::Button("Circle by diameter", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleByDiameter);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Circle by two points", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleByTwoPoints);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Circle by three points", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleByThreePoints);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Circle tangent two lines", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleTangentToTwoLines);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Circle tangent three lines", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::CircleTangentToThreeLines);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Arc by radius", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::ArcByRadius);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Arc by diameter", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::ArcByDiameter);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Arc by three points", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::ArcByThreePoints);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Distance", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Distance);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("H/V Distance", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::HVDistance);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Angle", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Angle);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Coincidence", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Coincidence);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Verticality", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Verticality);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Horizontality", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Horizontality);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Parallelism", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Parallelism);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Perpendicularity", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Perpendicularity);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Equality", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Equality);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Tangent", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Tangent);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Fix / Unfix", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::FixUnfix);
+
+    ImGui::NewLine();
+
+    if (ImGui::Button("Concentricity", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Concentricity);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Collinearity", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Collinearity);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Symmetry", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Symmetry);
+    ImGui::SameLine(0.0f, TOOL_BUTTON_GAP);
+
+    if (ImGui::Button("Midpoint", ImVec2(TOOL_BUTTON_WIDTH, TOOL_BUTTON_HEIGHT)))
+        OurPaint::Internal::notifyToolButtonClicked(OurPaint::Tool::Midpoint);
 
     ImGui::End();
     ImGui::PopStyleColor();
     ImGui::PopStyleVar(3);
 
-    // ---- embedded OpenGL frame ----
     {
-        ImDrawList* fg = ImGui::GetForegroundDrawList();
+        ImDrawList *fg = ImGui::GetForegroundDrawList();
         if (g_demoFbo.valid()) {
-            fg->AddImage((ImTextureID)(intptr_t)g_demoFbo.tex,
+            fg->AddImage((ImTextureID) (intptr_t) g_demoFbo.tex,
                          framePos, framePosMax,
                          ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
         } else {
             fg->AddRectFilled(framePos, framePosMax, IM_COL32(75, 30, 35, 255));
-            const char* msg = "OpenGL not embedded";
+            const char *msg = "OpenGL not embedded";
             const ImVec2 ts = ImGui::CalcTextSize(msg);
             fg->AddText(ImVec2(framePos.x + (frameW - ts.x) * 0.5f,
                                framePos.y + (frameH - ts.y) * 0.5f),
@@ -282,7 +376,7 @@ void RenderFrame(GLFWwindow* window) {
 
     if (minimizeClicked) Platform::minimize(window);
     if (maximizeClicked) Platform::maximizeRestore(window);
-    if (closeClicked)    Platform::close(window);
+    if (closeClicked) Platform::close(window);
 
     ImGui::Render();
 
@@ -295,12 +389,11 @@ void RenderFrame(GLFWwindow* window) {
     g_rendering = false;
 }
 
-// ---------- init/shutdown ----------
-void AppInit(GLFWwindow* window) {
+void AppInit(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;  // см. фикс «мигающего курсора»
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
     ImGui::StyleColorsLight();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.88f, 0.89f, 0.91f, 1.0f);

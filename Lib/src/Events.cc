@@ -7,7 +7,7 @@ namespace OurPaint
     namespace
     {
         EventCallback g_eventCallback;
-    }
+    } // namespace
 
     void SetEventCallback(EventCallback callback)
     {

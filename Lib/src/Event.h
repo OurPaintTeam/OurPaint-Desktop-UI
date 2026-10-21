@@ -3,26 +3,54 @@
 
 #include <vector>
 
-namespace OurPaint
-{
-    enum class EventType
-    {
+namespace OurPaint {
+    enum class EventType {
         ButtonClicked,
         KeyPressed,
-        KeyReleased
+        KeyReleased,
     };
 
-    enum class Tool
-    {
+
+    enum class Tool {
         None,
+
         Point,
+
         Line,
-        Circle,
-        Arc
+
+        CircleByRadius,
+        CircleByDiameter,
+        CircleByTwoPoints,
+        CircleByThreePoints,
+        CircleTangentToTwoLines,
+        CircleTangentToThreeLines,
+
+        ArcByRadius,
+        ArcByDiameter,
+        ArcByThreePoints,
+
+        CubicBezier,
+
+        Distance,
+        HVDistance,
+        Angle,
+
+        Coincidence,
+        Verticality,
+        Horizontality,
+        Parallelism,
+        Perpendicularity,
+        Equality,
+        Tangent,
+        FixUnfix,
+        Concentricity,
+        Collinearity,
+        Symmetry,
+        Midpoint,
     };
 
-    struct Event
-    {
+
+    struct Event {
         EventType type = EventType::ButtonClicked;
         Tool tool = Tool::None;
         // GLFW key code for KeyPressed/KeyReleased events.
@@ -35,7 +63,6 @@ namespace OurPaint
         // on press and excluding it on release.
         std::vector<int> keysDown;
     };
-
 } // namespace OurPaint
 
 #endif // OURPAINT_EVENT_H

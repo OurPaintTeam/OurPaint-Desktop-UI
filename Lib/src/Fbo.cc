@@ -4,9 +4,6 @@ namespace OurPaint { } // OurPaint library namespace
 #include <algorithm>
 #include <cstdio>
 
-// ---------------------------------------------------------------------------
-//  GL constants (отсутствуют в <GL/gl.h> от MinGW / в gl.h ниже GL 3.0)
-// ---------------------------------------------------------------------------
 #ifndef GL_FRAMEBUFFER
 #define GL_FRAMEBUFFER 0x8D40
 #endif

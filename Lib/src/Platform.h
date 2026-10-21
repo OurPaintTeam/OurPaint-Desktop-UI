@@ -14,13 +14,13 @@ namespace Platform {
     void shutdown();
 
     HitTest hitTest(GLFWwindow* window, double x, double y);
-    void updateDrag(GLFWwindow* window);          // только Linux (X11)
+    void updateDrag(GLFWwindow* window);          //  Linux (X11)
 
     void minimize(GLFWwindow* window);
     void maximizeRestore(GLFWwindow* window);
     void close(GLFWwindow* window);
     bool isMaximized(GLFWwindow* window);
-    void applyWindowStyle(GLFWwindow* window);    // DWM, Wayland fallback и т.п.
+    void applyWindowStyle(GLFWwindow* window);    // DWM, Wayland fallback
     bool maximizeHovered();
     bool maximizePressed();
 }

@@ -15,10 +15,10 @@ namespace FBO {
         bool valid() const { return id != 0; }
     };
 
-    bool init();                          // один раз — грузит GL-указатели
+    bool init();
     void shutdown();
 
-    bool resize(Fbo& fbo, int w, int h);  // (re)create при смене размера
+    bool resize(Fbo& fbo, int w, int h);
     void destroy(Fbo& fbo);
     void bind(const Fbo& fbo);
     void unbind();

@@ -42,3 +42,4 @@
 # debug information files
 *.dwo
 /.idea/OurPaint.iml
+/.idea/OurPaint-Desktop-UI.iml
