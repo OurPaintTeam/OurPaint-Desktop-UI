@@ -70,14 +70,12 @@ QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
 
 
 void UI::TopBar::mousePressEvent(QMouseEvent *event) {
-#ifdef Q_OS_WIN
     if (event->button() == Qt::LeftButton) {
         setCursor(Qt::ClosedHandCursor);
         window()->windowHandle()->startSystemMove();
         event->accept();
         return;
     }
-#endif
 
     QWidget::mousePressEvent(event);
 }

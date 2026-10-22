@@ -18,7 +18,9 @@ namespace UI {
 
         void changeEvent(QEvent* event) override;
         void showEvent(QShowEvent* event) override;
-
+#ifdef Q_OS_LINUX
+        bool eventFilter(QObject* watched, QEvent* event) override;
+#endif
     public:
         explicit FramelessWindow(QWidget *parent = nullptr);
         ~FramelessWindow() override = default;

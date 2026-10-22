@@ -31,10 +31,14 @@ enum class WindowCornerPreference : DWORD {
 #include <QMouseEvent>
 #include <QTranslator>
 #include <QEvent>
-
+#include <QScreen>
+#include <QWindow>
 
 UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
-    // setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    #ifdef Q_OS_LINUX
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    qApp->installEventFilter(this);
+    #endif
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoSystemBackground);
     setObjectName(QStringLiteral("FramelessWindow"));
@@ -68,6 +72,26 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     constexpr auto size = QSize(sizeW, sizeY);
     resize(size);
 }
+#ifdef Q_OS_LINUX
+bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event){
+    if (event->type() == QEvent::MouseButtonPress && !isMaximized() && !isFullScreen()){
+        auto* widget = qobject_cast<QWidget*>(watched);
+        auto* mouse = static_cast<QMouseEvent*>(event);
+        if (widget && widget->window() == this && mouse->button() == Qt::LeftButton){
+            constexpr int borderWidth = 8;
+            const QPoint pos = mapFromGlobal(mouse->globalPosition().toPoint());
+            Qt::Edges edges;
+            if (pos.x() < borderWidth) edges |= Qt::LeftEdge;
+            else if (pos.x() >= width() - borderWidth) edges |= Qt::RightEdge;
+            if (pos.y() < borderWidth) edges |= Qt::TopEdge;
+            else if (pos.y() >= width() - borderWidth) edges |= Qt::BottomEdge;
+            
+            if (edges && windowHandle()->startSystemResize(edges)) return true;
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
+}
+#endif
 
 #ifdef Q_OS_WIN
 void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
