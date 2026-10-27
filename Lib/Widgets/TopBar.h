@@ -15,6 +15,17 @@ namespace UI {
 
         void addLeftWidget(QWidget* widget) const;
         void addCenterWidget(QWidget* widget) const;
+
+        enum class TopBarHit { None, Client, Caption, Maximize };
+        TopBarHit hitTestTopBar(const QPoint& posInWindow) const;
+
+        void setMaximizeButtonHovered(bool hovered);
+        void updateMaximizeIcon(bool isMaximized) const;
+
+        QPushButton* minimizeButton() const { return minButton_; }
+        QPushButton* maximizeButton() const { return maxButton_; }
+        QPushButton* closeButton()    const { return closeButton_; }
+
     protected:
         void changeEvent(QEvent* e) override;
         QPushButton* createWindowButton();
@@ -42,7 +53,9 @@ namespace UI {
 
         void setupLayouts();
         void setupWindowButtons();
+
+        void applyButtonState(QPushButton* btn, const char* state, bool value);
     };
 } // namespace UI
 
-#endif // OURPAINT_DESKTOP_UI_TOPBAR_H
+#endif
