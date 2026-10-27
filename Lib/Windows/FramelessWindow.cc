@@ -63,6 +63,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
 
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint); /* отключает заголовок*/
+    applyNativeWindowStyles();
     initWindowForWindowsFrame();
     // initWindowForWindowsWithoutFrame();
 #endif
@@ -90,6 +91,21 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event){
         }
     }
     return QMainWindow::eventFilter(watched, event);
+}
+#endif
+
+#ifdef Q_OS_WIN
+void UI::FramelessWindow::applyNativeWindowStyles() {
+    HWND hwnd = reinterpret_cast<HWND>(winId());
+    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+
+    // Сохраняем/устанавливаем стили, которые обычно удаляет FramelessWindowHint
+    style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
+    // Принудительно применяем изменения
+    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 }
 #endif
 
@@ -173,71 +189,82 @@ void UI::FramelessWindow::updateWindowCorners() const {
 #endif
 
 bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
-                                      void *message, qintptr *result) {
-    /*
-     * Если initWindowForWindowsWithoutFrame()
-     */
-    /*
-  #ifdef Q_OS_WIN
-      if (eventType == "windows_generic_MSG") {
-          MSG* msg = static_cast<MSG*>(message);
+                                      void* message, qintptr* result) {
+#ifdef Q_OS_WIN
+    if (eventType == "windows_generic_MSG") {
+        MSG* msg = static_cast<MSG*>(message);
 
-          switch (msg->message) {
-              case WM_NCHITTEST: {
-                  const LONG borderWidth = 8;
+        switch (msg->message) {
+            case WM_NCCALCSIZE: {
+                if (msg->wParam == TRUE) {
+                    // Для максимизированного окна нужно скорректировать область,
+                    // чтобы она не выходила за пределы рабочего стола.
+                    if (isMaximized()) {
+                        auto* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
+                        MONITORINFO mi{ sizeof(MONITORINFO) };
+                        if (GetMonitorInfo(MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST), &mi)) {
+                            params->rgrc[0] = mi.rcWork;
+                        }
+                    }
+                    *result = 0;
+                    return true; // Сообщаем, что мы обработали сообщение
+                }
+                break;
+            }
+            case WM_NCHITTEST: {
+                const LONG borderWidth = 8; // Ширина зоны захвата
+                RECT winrect;
+                GetWindowRect(msg->hwnd, &winrect);
 
-                  RECT winrect;
-                  GetWindowRect(msg->hwnd, &winrect);
+                long x = GET_X_LPARAM(msg->lParam);
+                long y = GET_Y_LPARAM(msg->lParam);
 
-                  long x = GET_X_LPARAM(msg->lParam);
-                  long y = GET_Y_LPARAM(msg->lParam);
+                // Проверка на края (как в вашем закомментированном коде)
+                bool left = x < winrect.left + borderWidth;
+                bool right = x > winrect.right - borderWidth;
+                bool top = y < winrect.top + borderWidth;
+                bool bottom = y > winrect.bottom - borderWidth;
 
-                  bool left = x < winrect.left + borderWidth;
-                  bool right = x > winrect.right - borderWidth;
-                  bool top = y < winrect.top + borderWidth;
-                  bool bottom = y > winrect.bottom - borderWidth;
+                if (top && left) { *result = HTTOPLEFT; return true; }
+                if (top && right) { *result = HTTOPRIGHT; return true; }
+                if (bottom && left) { *result = HTBOTTOMLEFT; return true; }
+                if (bottom && right) { *result = HTBOTTOMRIGHT; return true; }
+                if (left) { *result = HTLEFT; return true; }
+                if (right) { *result = HTRIGHT; return true; }
+                if (top) { *result = HTTOP; return true; }
+                if (bottom) { *result = HTBOTTOM; return true; }
 
-                  if (left && top) {
-                      *result = HTTOPLEFT;
-                      return true;
-                  }
-                  if (right && top) {
-                      *result = HTTOPRIGHT;
-                      return true;
-                  }
-                  if (left && bottom) {
-                      *result = HTBOTTOMLEFT;
-                      return true;
-                  }
-                  if (right && bottom) {
-                      *result = HTBOTTOMRIGHT;
-                      return true;
-                  }
-                  if (left) {
-                      *result = HTLEFT;
-                      return true;
-                  }
-                  if (right) {
-                      *result = HTRIGHT;
-                      return true;
-                  }
-                  if (top) {
-                      *result = HTTOP;
-                      return true;
-                  }
-                  if (bottom) {
-                      *result = HTBOTTOM;
-                      return true;
-                  }
+                // Проверка на область заголовка (drag)
+                // Преобразуем координаты в клиентские
+                POINT clientPoint{ x, y };
+                ScreenToClient(msg->hwnd, &clientPoint);
 
-                  *result = HTCLIENT;
-                  return true;
-              }
-              default:;
-          }
-      }
-  #endif
-  */
+                // Если Y меньше высоты вашего кастомного заголовка
+                if (clientPoint.y < 30) { // titleBarHeight() - ваша функция
+                    *result = HTCAPTION;
+                    return true;
+                }
+
+                break; // Для клиентской области позволяем Qt обработать дальше
+            }
+            case WM_GETMINMAXINFO: {
+                // Код из вашего ImGui-примера
+                auto* mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
+                HMONITOR hMon = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
+                MONITORINFO mi{ sizeof(MONITORINFO) };
+                if (GetMonitorInfoW(hMon, &mi)) {
+                    mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
+                    mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
+                    mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
+                    mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
+                }
+                *result = 0;
+                return true;
+            }
+            // ... обработка других сообщений ...
+        }
+    }
+#endif
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 

@@ -32,6 +32,7 @@ namespace UI {
         void updateWindowCorners() const;
         void initWindowForWindowsFrame() const;
         void initWindowForWindowsWithoutFrame() const;
+        void applyNativeWindowStyles();
 #endif
 
         QPoint dragOffset_{};
