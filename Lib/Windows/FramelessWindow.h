@@ -18,6 +18,7 @@ namespace UI {
 
         void changeEvent(QEvent* event) override;
         void showEvent(QShowEvent* event) override;
+        void resizeEvent(QResizeEvent *event) override;
 #ifdef Q_OS_LINUX
         bool eventFilter(QObject* watched, QEvent* event) override;
 #endif
@@ -31,7 +32,6 @@ namespace UI {
 #ifdef Q_OS_WIN
         void updateWindowCorners() const;
         void initWindowForWindowsFrame() const;
-        void initWindowForWindowsWithoutFrame() const;
         void applyNativeWindowStyles();
 #endif
 
