@@ -326,19 +326,13 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 }
                 break;
             }
-            case WM_ERASEBKGND:
-                *result = 1;
-                return true;
-            case WM_ENTERSIZEMOVE: {
-                return true;
-            }
+            case WM_NCACTIVATE: {
+                const COLORREF borderColor = msg->wParam
+                    ? RGB(95, 94, 105)  // Активное: #5f5e69
+                    : 0xFFFFFFFE;       // Неактивное: DWMWA_COLOR_NONE (нет рамки)
 
-            case WM_EXITSIZEMOVE: {
-                setUpdatesEnabled(true);
-                if (auto *l = layout())
-                    l->activate();
-                update();
-                break;
+                DwmSetWindowAttribute(msg->hwnd, 34, &borderColor, sizeof(borderColor));
+                break; // Позволяем DefWindowProc завершить обработку
             }
         }
     }
