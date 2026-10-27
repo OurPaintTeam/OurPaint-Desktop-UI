@@ -201,9 +201,9 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
         switch (msg->message) {
             case WM_NCCALCSIZE: {
                 if (msg->wParam == TRUE) {
-                    if (isMaximized()) {
+                    if (IsZoomed(msg->hwnd)) {
                         auto *params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
-                        MONITORINFO mi{sizeof(MONITORINFO)};
+                        MONITORINFO mi{ sizeof(MONITORINFO) };
                         if (GetMonitorInfo(MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST), &mi)) {
                             params->rgrc[0] = mi.rcWork;
                         }
@@ -218,7 +218,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 const LONG x = GET_X_LPARAM(msg->lParam);
                 const LONG y = GET_Y_LPARAM(msg->lParam);
                 const LONG b = 8;
-                if (!isMaximized()) {
+                if (!IsZoomed(msg->hwnd)) {
                     const bool L = x < wr.left + b, R = x > wr.right - b;
                     const bool T = y < wr.top + b,  B = y > wr.bottom - b;
                     if (T && L) { *result = HTTOPLEFT;     return true; }
