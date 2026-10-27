@@ -2,6 +2,7 @@
 
 #include <qdir.h>
 #include <qfontdatabase.h>
+#include <QLayout>
 
 #include "TopBar.h"
 
@@ -44,7 +45,6 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
 #ifndef Q_OS_WIN
     setAttribute(Qt::WA_TranslucentBackground);
 #endif
-    setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent,   true);
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle(tr("OurPaint"));
@@ -108,11 +108,6 @@ void UI::FramelessWindow::applyNativeWindowStyles() {
     style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
            | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
     SetWindowLongPtr(hwnd, GWL_STYLE, style);
-
-    // ← NEW: OS-level double buffering
-    LONG_PTR ex = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    ex |= WS_EX_COMPOSITED;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, ex);
 
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
@@ -335,15 +330,15 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 *result = 1;
                 return true;
             case WM_ENTERSIZEMOVE: {
-                // Пользователь начал тащить/ресайзить
-                setUpdatesEnabled(true);
                 return true;
             }
 
             case WM_EXITSIZEMOVE: {
                 setUpdatesEnabled(true);
+                if (auto *l = layout())
+                    l->activate();
                 update();
-                return true;
+                break;
             }
         }
     }
