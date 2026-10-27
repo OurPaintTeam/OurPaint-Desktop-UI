@@ -45,6 +45,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     setAttribute(Qt::WA_TranslucentBackground);
 #endif
     setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_OpaquePaintEvent,   true);
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle(tr("OurPaint"));
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
@@ -61,6 +62,8 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     } else {
         setStyleSheet(style);
     }
+
+    setMinimumSize(900, 300);
 
     initTranslations();
     initFonts();
@@ -102,14 +105,17 @@ bool UI::FramelessWindow::eventFilter(QObject *watched, QEvent *event) {
 void UI::FramelessWindow::applyNativeWindowStyles() {
     HWND hwnd = reinterpret_cast<HWND>(winId());
     LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
-    style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+    style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
+           | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
     SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
+    // ← NEW: OS-level double buffering
+    LONG_PTR ex = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    ex |= WS_EX_COMPOSITED;
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, ex);
 
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-
-    // MARGINS margins = { -1, -1, -1, -1 };
-    // DwmExtendFrameIntoClientArea(hwnd, &margins);
 }
 #endif
 
@@ -167,6 +173,10 @@ void UI::FramelessWindow::initWindowForWindowsFrame() const {
         qWarning() << "Failed to set border color:"
                 << Qt::hex << result;
     }
+
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    exStyle |= WS_EX_COMPOSITED;
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
 }
 
 
@@ -283,13 +293,18 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
             case WM_GETMINMAXINFO: {
                 auto *mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
                 HMONITOR hMon = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
-                MONITORINFO mi{sizeof(MONITORINFO)};
+                MONITORINFO mi{ sizeof(MONITORINFO) };
                 if (GetMonitorInfoW(hMon, &mi)) {
                     mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
-                    mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
-                    mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
-                    mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
+                    mmi->ptMaxPosition.y = mi.rcWork.top  - mi.rcMonitor.top;
+                    mmi->ptMaxSize.x     = mi.rcWork.right  - mi.rcWork.left;
+                    mmi->ptMaxSize.y     = mi.rcWork.bottom - mi.rcWork.top;
                 }
+
+                const qreal dpr = windowHandle()->devicePixelRatio();
+                mmi->ptMinTrackSize.x = qRound(900 * dpr);
+                mmi->ptMinTrackSize.y = qRound(300 * dpr);
+
                 *result = 0;
                 return true;
             }
@@ -315,6 +330,20 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                         SetCursor(LoadCursor(nullptr, IDC_ARROW));    return true;
                 }
                 break;
+            }
+            case WM_ERASEBKGND:
+                *result = 1;
+                return true;
+            case WM_ENTERSIZEMOVE: {
+                // Пользователь начал тащить/ресайзить
+                setUpdatesEnabled(true);
+                return true;
+            }
+
+            case WM_EXITSIZEMOVE: {
+                setUpdatesEnabled(true);
+                update();
+                return true;
             }
         }
     }
