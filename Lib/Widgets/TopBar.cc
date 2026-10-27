@@ -2,15 +2,12 @@
 
 #include <QApplication>
 #include <QHBoxLayout>
-#include <QPushButton>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QStyle>
 #include <QWindow>
 
-
-UI::TopBar::TopBar(QWidget *parent)
-    : QWidget(parent),
-      mainLayout_(new QHBoxLayout(this)) {
+UI::TopBar::TopBar(QWidget* parent) : QWidget(parent), mainLayout_(new QHBoxLayout(this)) {
     constexpr auto size = 32;
     setFixedHeight(size);
     setAttribute(Qt::WA_StyledBackground, true);
@@ -23,21 +20,18 @@ UI::TopBar::TopBar(QWidget *parent)
     translate();
 }
 
-
-void UI::TopBar::addLeftWidget(QWidget *widget) const {
+void UI::TopBar::addLeftWidget(QWidget* widget) const {
     leftLayout_->addWidget(widget);
     widget->setCursor(Qt::PointingHandCursor);
 }
 
-
-void UI::TopBar::addCenterWidget(QWidget *widget) const {
+void UI::TopBar::addCenterWidget(QWidget* widget) const {
     centerLayout_->addWidget(widget);
     widget->setCursor(Qt::PointingHandCursor);
 }
 
-
 QPushButton* UI::TopBar::createWindowButton() {
-    auto *button = new QPushButton(this);
+    auto* button = new QPushButton(this);
     button->setCursor(Qt::PointingHandCursor);
     constexpr auto buttonSize = QSize(32, 32);
     button->setFixedSize(buttonSize);
@@ -45,9 +39,8 @@ QPushButton* UI::TopBar::createWindowButton() {
     return button;
 }
 
-
 QPushButton* UI::TopBar::createWindowButton(const QString& text) {
-    auto *button = new QPushButton(this);
+    auto* button = new QPushButton(this);
     button->setCursor(Qt::PointingHandCursor);
     button->setToolTip(text);
     button->setObjectName(text);
@@ -58,9 +51,8 @@ QPushButton* UI::TopBar::createWindowButton(const QString& text) {
     return button;
 }
 
-
 QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
-    auto *button = new QPushButton(this);
+    auto* button = new QPushButton(this);
     button->setCursor(Qt::PointingHandCursor);
     button->setIcon(icon);
     constexpr auto buttonSize = QSize(32, 32);
@@ -69,8 +61,7 @@ QPushButton* UI::TopBar::createWindowButton(const QIcon& icon) {
     return button;
 }
 
-
-void UI::TopBar::mousePressEvent(QMouseEvent *event) {
+void UI::TopBar::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         setCursor(Qt::ClosedHandCursor);
         window()->windowHandle()->startSystemMove();
@@ -81,12 +72,10 @@ void UI::TopBar::mousePressEvent(QMouseEvent *event) {
     QWidget::mousePressEvent(event);
 }
 
-
-void UI::TopBar::mouseReleaseEvent(QMouseEvent *event) {
+void UI::TopBar::mouseReleaseEvent(QMouseEvent* event) {
     setCursor(Qt::OpenHandCursor);
     QWidget::mouseReleaseEvent(event);
 }
-
 
 void UI::TopBar::setupLayouts() {
     mainLayout_->setContentsMargins(0, 0, 0, 0);
@@ -123,7 +112,6 @@ void UI::TopBar::setupLayouts() {
     mainLayout_->addWidget(combinedWidget_, 0, Qt::AlignRight);
 }
 
-
 void UI::TopBar::setupWindowButtons() {
     minButton_ = createWindowButton();
     minButton_->setToolTip("Minimize window");
@@ -144,29 +132,26 @@ void UI::TopBar::setupWindowButtons() {
     rightLayout_->addWidget(maxButton_);
     rightLayout_->addWidget(closeButton_);
 
-    connect(minButton_, &QPushButton::clicked, []() {
-        if (auto *window = QApplication::activeWindow()) {
-            window->showMinimized();
+    connect(minButton_, &QPushButton::clicked, this, [this]() {
+        if (QWidget* w = window()) {
+            w->showMinimized();
         }
     });
-    connect(maxButton_, &QPushButton::clicked, []() {
-        if (auto *window = QApplication::activeWindow()) {
-            window->isMaximized() ? window->showNormal() : window->showMaximized();
+    connect(maxButton_, &QPushButton::clicked, this, [this]() {
+        if (QWidget* w = window()) {
+            w->isMaximized() ? w->showNormal() : w->showMaximized();
         }
     });
-    connect(closeButton_, &QPushButton::clicked, []() {
-        if (auto *window = QApplication::activeWindow()) {
-            window->close();
+    connect(closeButton_, &QPushButton::clicked, this, [this]() {
+        if (QWidget* w = window()) {
+            w->close();
         }
     });
 }
 
-
-
-void UI::TopBar::changeEvent(QEvent* e)
-{
+void UI::TopBar::changeEvent(QEvent* e) {
     if (e->type() == QEvent::LanguageChange) {
-  translate();
+        translate();
     }
 
     QWidget::changeEvent(e);
@@ -184,55 +169,62 @@ void UI::TopBar::translate() const {
     }
 }
 
-
 UI::TopBar::TopBarHit UI::TopBar::hitTestTopBar(const QPoint& posInWindow) const {
     const QPoint local = mapFrom(window(), posInWindow);
-    if (!rect().contains(local)) return TopBarHit::None;
+    if (!rect().contains(local)) {
+        return TopBarHit::None;
+    }
 
     auto pointIn = [this, &local](const QWidget* w) -> bool {
-        if (!w || !w->isVisible()) return false;
+        if (!w || !w->isVisible()) {
+            return false;
+        }
         const QRect r(w->mapTo(this, QPoint(0, 0)), w->size());
         return r.contains(local);
     };
 
-    if (pointIn(maxButton_)) return TopBarHit::Maximize;
+    if (pointIn(maxButton_)) {
+        return TopBarHit::Maximize;
+    }
 
-    if (pointIn(minButton_) || pointIn(closeButton_))
+    if (pointIn(minButton_) || pointIn(closeButton_)) {
         return TopBarHit::Client;
-
+    }
 
     const auto buttons = findChildren<QPushButton*>();
     for (auto* btn : buttons) {
-        if (btn == maxButton_ || btn == minButton_ || btn == closeButton_) continue;
-        if (pointIn(btn)) return TopBarHit::Client;
+        if (btn == maxButton_ || btn == minButton_ || btn == closeButton_) {
+            continue;
+        }
+        if (pointIn(btn)) {
+            return TopBarHit::Client;
+        }
     }
 
     return TopBarHit::Caption;
 }
 
-void UI::TopBar::setMaximizeButtonHovered(bool hovered) {
-    applyButtonState(maxButton_, "nativeHovered", hovered);
-}
+void UI::TopBar::setMaximizeButtonHovered(bool hovered) { applyButtonState(maxButton_, "nativeHovered", hovered); }
 
 void UI::TopBar::updateMaximizeIcon(const bool isMaximized) const {
-    if (!maxButton_) return;
+    if (!maxButton_) {
+        return;
+    }
 
-    maxButton_->setIcon(QIcon(isMaximized
-        ? QStringLiteral(":/Assets/icons/window/restore.svg")
-        : QStringLiteral(":/Assets/icons/window/maximize.svg")));
+    maxButton_->setIcon(QIcon(isMaximized ? QStringLiteral(":/Assets/icons/window/restore.svg") : QStringLiteral(":/Assets/icons/window/maximize.svg")));
 
-    maxButton_->setToolTip(isMaximized
-        ? tr("Restore window")
-        : tr("Maximize window"));
-
-
+    maxButton_->setToolTip(isMaximized ? tr("Restore window") : tr("Maximize window"));
 }
 
 void UI::TopBar::applyButtonState(QPushButton* btn, const char* state, bool value) {
-    if (!btn) return;
+    if (!btn) {
+        return;
+    }
 
     const QVariant current = btn->property(state);
-    if (current.isValid() && current.toBool() == value) return;
+    if (current.isValid() && current.toBool() == value) {
+        return;
+    }
 
     btn->setProperty(state, value);
     btn->style()->unpolish(btn);
