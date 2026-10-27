@@ -38,5 +38,6 @@ void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
 void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
+    renderWidget->setAttribute(Qt::WA_OpaquePaintEvent);
     layout_->addWidget(renderWidget);
 }

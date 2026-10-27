@@ -43,6 +43,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     qApp->installEventFilter(this);
 #endif
 #ifndef Q_OS_WIN
+    setWindowFlags(Qt::Window | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
     setAttribute(Qt::WA_TranslucentBackground);
 #endif
     setAttribute(Qt::WA_OpaquePaintEvent,   true);
@@ -70,9 +71,7 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
 
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint); /* отключает заголовок*/
-    applyNativeWindowStyles();
     initWindowForWindowsFrame();
-    // initWindowForWindowsWithoutFrame();
 #endif
 
     constexpr int sizeW = 960;
@@ -104,6 +103,7 @@ bool UI::FramelessWindow::eventFilter(QObject *watched, QEvent *event) {
 #ifdef Q_OS_WIN
 void UI::FramelessWindow::applyNativeWindowStyles() {
     HWND hwnd = reinterpret_cast<HWND>(winId());
+
     LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
     style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
            | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
@@ -118,9 +118,7 @@ void UI::FramelessWindow::applyNativeWindowStyles() {
 void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
     HWND hwnd = reinterpret_cast<HWND>(winId());
 
-    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
-    style &= ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
-    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
 
     const auto cornerPreference = WindowCornerPreference::Round;
 
@@ -169,9 +167,6 @@ void UI::FramelessWindow::initWindowForWindowsFrame() const {
                 << Qt::hex << result;
     }
 
-    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    exStyle |= WS_EX_COMPOSITED;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
 }
 
 
@@ -204,55 +199,28 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
         MSG *msg = static_cast<MSG*>(message);
 
         switch (msg->message) {
-            case WM_NCCALCSIZE: {
-                if (msg->wParam == TRUE) {
-                    if (IsZoomed(msg->hwnd)) {
-                        auto *params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
-                        MONITORINFO mi{ sizeof(MONITORINFO) };
-                        if (GetMonitorInfo(MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST), &mi)) {
-                            params->rgrc[0] = mi.rcWork;
-                        }
-                    }
-                    *result = 0;
-                    return true;
-                }
-                break;
-            }
-            case WM_NCHITTEST: {
-                RECT wr; GetWindowRect(msg->hwnd, &wr);
-                const LONG x = GET_X_LPARAM(msg->lParam);
-                const LONG y = GET_Y_LPARAM(msg->lParam);
-                const LONG b = 8;
-                if (!IsZoomed(msg->hwnd)) {
-                    const bool L = x < wr.left + b, R = x > wr.right - b;
-                    const bool T = y < wr.top + b,  B = y > wr.bottom - b;
-                    if (T && L) { *result = HTTOPLEFT;     return true; }
-                    if (T && R) { *result = HTTOPRIGHT;    return true; }
-                    if (B && L) { *result = HTBOTTOMLEFT;  return true; }
-                    if (B && R) { *result = HTBOTTOMRIGHT; return true; }
-                    if (L)      { *result = HTLEFT;        return true; }
-                    if (R)      { *result = HTRIGHT;       return true; }
-                    if (T)      { *result = HTTOP;         return true; }
-                    if (B)      { *result = HTBOTTOM;      return true; }
-                }
+            // УДАЛЯЕМ обработку WM_NCCALCSIZE, WM_GETMINMAXINFO, WM_WINDOWPOSCHANGING.
+            // Qt и Windows теперь управляют этим сами.
 
-                POINT pt{ x, y };
+            case WM_NCHITTEST: {
+                // 4. Оставляем только логику для кастомных кнопок в TopBar (HTMAXBUTTON)
+                POINT pt{ GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam) };
                 ScreenToClient(msg->hwnd, &pt);
                 const qreal dpr = windowHandle()->devicePixelRatio();
                 const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
 
                 if (auto *tb = findChild<UI::TopBar*>()) {
-                    const auto hit = tb->hitTestTopBar(posInWindow);
-                    switch (hit) {
-                        case UI::TopBar::TopBarHit::Maximize: *result = HTMAXBUTTON; return true;
-                        case UI::TopBar::TopBarHit::Client:   *result = HTCLIENT;    return true;
-                        case UI::TopBar::TopBarHit::Caption:  *result = HTCAPTION;   return true;
-                        case UI::TopBar::TopBarHit::None:     break;
+                    if (tb->hitTestTopBar(posInWindow) == UI::TopBar::TopBarHit::Maximize) {
+                        *result = HTMAXBUTTON;
+                        return true;
                     }
                 }
+                // Для всех остальных областей (края, заголовок) позволяем Windows
+                // обработать сообщение стандартным образом (через Qt).
                 break;
             }
 
+            // 5. Оставляем обработку hover-эффекта для кнопки maximize
             case WM_NCMOUSEMOVE: {
                 const bool overMax = (msg->wParam == HTMAXBUTTON);
                 if (auto *tb = findChild<UI::TopBar*>())
@@ -265,18 +233,15 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 }
                 break;
             }
-
             case WM_NCMOUSELEAVE: {
                 if (auto *tb = findChild<UI::TopBar*>())
                     tb->setMaximizeButtonHovered(false);
                 break;
             }
-
             case WM_NCLBUTTONDOWN: {
                 if (msg->wParam == HTMAXBUTTON) return true;
                 break;
             }
-
             case WM_NCLBUTTONUP: {
                 if (msg->wParam == HTMAXBUTTON) {
                     if (isMaximized()) showNormal();
@@ -285,55 +250,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 }
                 break;
             }
-            case WM_GETMINMAXINFO: {
-                auto *mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
-                HMONITOR hMon = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
-                MONITORINFO mi{ sizeof(MONITORINFO) };
-                if (GetMonitorInfoW(hMon, &mi)) {
-                    mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
-                    mmi->ptMaxPosition.y = mi.rcWork.top  - mi.rcMonitor.top;
-                    mmi->ptMaxSize.x     = mi.rcWork.right  - mi.rcWork.left;
-                    mmi->ptMaxSize.y     = mi.rcWork.bottom - mi.rcWork.top;
-                }
-
-                const qreal dpr = windowHandle()->devicePixelRatio();
-                mmi->ptMinTrackSize.x = qRound(900 * dpr);
-                mmi->ptMinTrackSize.y = qRound(300 * dpr);
-
-                *result = 0;
-                return true;
-            }
-            case WM_SETCURSOR: {
-                if (reinterpret_cast<HWND>(msg->wParam) != msg->hwnd) break;
-
-                POINT pt;
-                GetCursorPos(&pt);
-                const LRESULT hit = SendMessage(msg->hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
-
-                switch (hit) {
-                    case HTLEFT: case HTRIGHT:
-                        SetCursor(LoadCursor(nullptr, IDC_SIZEWE));   return true;
-                    case HTTOP: case HTBOTTOM:
-                        SetCursor(LoadCursor(nullptr, IDC_SIZENS));   return true;
-                    case HTTOPLEFT: case HTBOTTOMRIGHT:
-                        SetCursor(LoadCursor(nullptr, IDC_SIZENWSE)); return true;
-                    case HTTOPRIGHT: case HTBOTTOMLEFT:
-                        SetCursor(LoadCursor(nullptr, IDC_SIZENESW)); return true;
-                    case HTCAPTION:
-                        SetCursor(LoadCursor(nullptr, IDC_SIZEALL));  return true;
-                    case HTMAXBUTTON: case HTCLIENT:
-                        SetCursor(LoadCursor(nullptr, IDC_ARROW));    return true;
-                }
-                break;
-            }
-            case WM_NCACTIVATE: {
-                const COLORREF borderColor = msg->wParam
-                    ? RGB(95, 94, 105)  // Активное: #5f5e69
-                    : 0xFFFFFFFE;       // Неактивное: DWMWA_COLOR_NONE (нет рамки)
-
-                DwmSetWindowAttribute(msg->hwnd, 34, &borderColor, sizeof(borderColor));
-                break; // Позволяем DefWindowProc завершить обработку
-            }
+            // УДАЛЯЕМ WM_SETCURSOR и WM_NCACTIVATE, так как системные курсоры и рамка
+            // теперь управляются правильно.
         }
     }
 #endif
