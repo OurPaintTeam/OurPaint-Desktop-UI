@@ -26,7 +26,7 @@ void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
     format.setDepthBufferSize(depth);
     format.setStencilBufferSize(stencil);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
-    format.setSwapInterval(1);
+
     renderWindow->setFormat(format);
 
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
@@ -38,6 +38,5 @@ void UI::PainterWidget::setQOpenGL(QOpenGLWindow* renderWindow) {
 void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
-    renderWidget->setAttribute(Qt::WA_OpaquePaintEvent);
     layout_->addWidget(renderWidget);
 }
