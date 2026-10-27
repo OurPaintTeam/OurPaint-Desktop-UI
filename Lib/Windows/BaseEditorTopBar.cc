@@ -22,6 +22,7 @@ UI::BaseEditorTopBar::BaseEditorTopBar(QWidget* parent)
 void UI::BaseEditorTopBar::setConsoleButtonEnabled(const bool enabled) const {
     if (consoleButton_) {
         consoleButton_->setEnabled(enabled);
+        consoleButton_->setVisible(false);
     }
 }
 
@@ -79,6 +80,7 @@ void UI::BaseEditorTopBar::setRightPanel(QWidget* panel, const QIcon& icon, cons
 
 void UI::BaseEditorTopBar::setCommandConsoleWidget(QWidget* consoleWidget) {
     commandConsoleWidget_ = consoleWidget;
+    commandConsoleWidget_->setVisible(false);
     if (!consoleButton_) {
         consoleButton_ = createToggleButton(QIcon(CONSOLE_ICON_PATH),"", [this]() {
             if (commandConsoleWidget_) {

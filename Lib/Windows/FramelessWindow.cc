@@ -118,8 +118,8 @@ void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
 
 void UI::FramelessWindow::initWindowForWindowsFrame() const {
     HWND hwnd = reinterpret_cast<HWND>(winId());
-
-    const COLORREF captionColor = RGB(31, 52, 56);
+    const COLORREF captionColor = RGB(73, 72, 80); // #494850
+   // const COLORREF captionColor = RGB(31, 52, 56);
 
     HRESULT result = DwmSetWindowAttribute(
         hwnd,
@@ -133,7 +133,8 @@ void UI::FramelessWindow::initWindowForWindowsFrame() const {
                    << Qt::hex << result;
     }
 
-    const COLORREF borderColor = RGB(73, 72, 80);
+    const COLORREF borderColor = RGB(95, 94, 105); // #5f5e69
+   // const COLORREF borderColor = RGB(73, 72, 80);
 
     result = DwmSetWindowAttribute(
         hwnd,
@@ -299,7 +300,6 @@ void UI::FramelessWindow::initFonts() {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
-    // Загружаем ВСЕ веса
     int id1 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Regular.ttf");
     int id2 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Medium.ttf");
     int id3 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-SemiBold.ttf");
@@ -308,7 +308,6 @@ void UI::FramelessWindow::initFonts() {
         qDebug() << "Failed to load one of the fonts!";
     }
 
-    // Берём family из ЛЮБОГО валидного id (например id1)
     QString family = QFontDatabase::applicationFontFamilies(id1).value(0);
 
     if (family.isEmpty()) {
@@ -316,10 +315,8 @@ void UI::FramelessWindow::initFonts() {
         return;
     }
 
-    // Создаём шрифт
     QFont font(family);
 
-    // Сглаживание
     font.setHintingPreference(QFont::PreferFullHinting);
     font.setStyleStrategy(QFont::PreferAntialias);
     font.setStyleStrategy(QFont::PreferQuality);

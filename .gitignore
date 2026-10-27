@@ -39,3 +39,13 @@
 
 # debug information files
 *.dwo
+/.idea/.name
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/editor.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/OurPaint.iml
+/.idea/OurPaint-Desktop-UI.iml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/QtSettings.xml

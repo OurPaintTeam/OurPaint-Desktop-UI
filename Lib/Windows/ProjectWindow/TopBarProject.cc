@@ -119,6 +119,7 @@ void UI::TopBarProject::createProjectButtons() {
     collabButton_ = new MenuButton("", collaborationMenu_, this);
     collabButton_->setDraw(true);
     addLeftWidget(collabButton_);
+    collabButton_->setVisible(false);
     connect(collaborationMenu_, &UI::CollaborationMenu::openTriggered,
             this, &TopBarProject::collaborationOpenTriggered);
 
@@ -132,6 +133,7 @@ void UI::TopBarProject::createProjectButtons() {
 
 
     addLeftWidget(verButton_);
+    verButton_->setVisible(false);
     connect(versionControlMenu_, &UI::VersionControlMenu::initTriggered,
             this, &TopBarProject::versionInitTriggered);
 
@@ -152,6 +154,7 @@ void UI::TopBarProject::createProjectButtons() {
     helpButton_->setObjectName(QStringLiteral("HelpButton"));
     helpButton_->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     addLeftWidget(helpButton_);
+    helpButton_->setVisible(false);
 
     setupSettings();
 }
@@ -163,6 +166,7 @@ void UI::TopBarProject::setupSettings() {
     constexpr auto btnSize = QSize(32, 32);
     btnSettings_->setFixedSize(btnSize);
     btnSettings_->setFocusPolicy(Qt::NoFocus);
+    btnSettings_->setVisible(false);
 
     addCenterWidget(btnSettings_);
     connect(btnSettings_, &QPushButton::clicked, this, [this]() {
