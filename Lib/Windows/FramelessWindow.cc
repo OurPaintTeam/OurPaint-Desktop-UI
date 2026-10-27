@@ -3,6 +3,8 @@
 #include <qdir.h>
 #include <qfontdatabase.h>
 
+#include "TopBar.h"
+
 #ifdef Q_OS_WIN
 
 #include <windows.h>
@@ -10,18 +12,17 @@
 #include <dwmapi.h>
 
 namespace {
+    constexpr DWORD kDwmWindowCornerPreference = 33;
+    constexpr DWORD kDwmBorderColor = 34;
+    constexpr DWORD kDwmCaptionColor = 35;
 
-constexpr DWORD kDwmWindowCornerPreference  = 33;
-constexpr DWORD kDwmBorderColor             = 34;
-constexpr DWORD kDwmCaptionColor            = 35;
 
-enum class WindowCornerPreference : DWORD {
-    Default    = 0,
-    DoNotRound = 1,
-    Round      = 2,
-    RoundSmall = 3
-};
-
+    enum class WindowCornerPreference : DWORD {
+        Default = 0,
+        DoNotRound = 1,
+        Round = 2,
+        RoundSmall = 3
+    };
 } // namespace
 
 #endif
@@ -34,12 +35,15 @@ enum class WindowCornerPreference : DWORD {
 #include <QScreen>
 #include <QWindow>
 
+
 UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
-    #ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     qApp->installEventFilter(this);
-    #endif
+#endif
+#ifndef Q_OS_WIN
     setAttribute(Qt::WA_TranslucentBackground);
+#endif
     setAttribute(Qt::WA_NoSystemBackground);
     setObjectName(QStringLiteral("FramelessWindow"));
     setWindowTitle(tr("OurPaint"));
@@ -74,11 +78,11 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     resize(size);
 }
 #ifdef Q_OS_LINUX
-bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event){
-    if (event->type() == QEvent::MouseButtonPress && !isMaximized() && !isFullScreen()){
-        auto* widget = qobject_cast<QWidget*>(watched);
-        auto* mouse = static_cast<QMouseEvent*>(event);
-        if (widget && widget->window() == this && mouse->button() == Qt::LeftButton){
+bool UI::FramelessWindow::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress && !isMaximized() && !isFullScreen()) {
+        auto *widget = qobject_cast<QWidget*>(watched);
+        auto *mouse = static_cast<QMouseEvent*>(event);
+        if (widget && widget->window() == this && mouse->button() == Qt::LeftButton) {
             constexpr int borderWidth = 8;
             const QPoint pos = mapFromGlobal(mouse->globalPosition().toPoint());
             Qt::Edges edges;
@@ -86,7 +90,7 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event){
             else if (pos.x() >= width() - borderWidth) edges |= Qt::RightEdge;
             if (pos.y() < borderWidth) edges |= Qt::TopEdge;
             else if (pos.y() >= width() - borderWidth) edges |= Qt::BottomEdge;
-            
+
             if (edges && windowHandle()->startSystemResize(edges)) return true;
         }
     }
@@ -98,14 +102,14 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event){
 void UI::FramelessWindow::applyNativeWindowStyles() {
     HWND hwnd = reinterpret_cast<HWND>(winId());
     LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
-
-    // Сохраняем/устанавливаем стили, которые обычно удаляет FramelessWindowHint
     style |= WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
     SetWindowLongPtr(hwnd, GWL_STYLE, style);
 
-    // Принудительно применяем изменения
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+
+    // MARGINS margins = { -1, -1, -1, -1 };
+    // DwmExtendFrameIntoClientArea(hwnd, &margins);
 }
 #endif
 
@@ -135,7 +139,7 @@ void UI::FramelessWindow::initWindowForWindowsWithoutFrame() const {
 void UI::FramelessWindow::initWindowForWindowsFrame() const {
     HWND hwnd = reinterpret_cast<HWND>(winId());
     const COLORREF captionColor = RGB(73, 72, 80); // #494850
-   // const COLORREF captionColor = RGB(31, 52, 56);
+    // const COLORREF captionColor = RGB(31, 52, 56);
 
     HRESULT result = DwmSetWindowAttribute(
         hwnd,
@@ -146,11 +150,11 @@ void UI::FramelessWindow::initWindowForWindowsFrame() const {
 
     if (FAILED(result)) {
         qWarning() << "Failed to set caption color:"
-                   << Qt::hex << result;
+                << Qt::hex << result;
     }
 
     const COLORREF borderColor = RGB(95, 94, 105); // #5f5e69
-   // const COLORREF borderColor = RGB(73, 72, 80);
+    // const COLORREF borderColor = RGB(73, 72, 80);
 
     result = DwmSetWindowAttribute(
         hwnd,
@@ -161,7 +165,7 @@ void UI::FramelessWindow::initWindowForWindowsFrame() const {
 
     if (FAILED(result)) {
         qWarning() << "Failed to set border color:"
-                   << Qt::hex << result;
+                << Qt::hex << result;
     }
 }
 
@@ -170,9 +174,9 @@ void UI::FramelessWindow::updateWindowCorners() const {
     HWND hwnd = reinterpret_cast<HWND>(winId());
 
     const auto preference =
-        (isMaximized() || isFullScreen())
-            ? WindowCornerPreference::DoNotRound
-            : WindowCornerPreference::Round;
+            (isMaximized() || isFullScreen())
+                ? WindowCornerPreference::DoNotRound
+                : WindowCornerPreference::Round;
 
     const HRESULT result = DwmSetWindowAttribute(
         hwnd,
@@ -183,75 +187,103 @@ void UI::FramelessWindow::updateWindowCorners() const {
 
     if (FAILED(result)) {
         qWarning() << "Failed to update window corner preference:"
-                   << Qt::hex << result;
+                << Qt::hex << result;
     }
 }
 #endif
 
 bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
-                                      void* message, qintptr* result) {
+                                      void *message, qintptr *result) {
 #ifdef Q_OS_WIN
     if (eventType == "windows_generic_MSG") {
-        MSG* msg = static_cast<MSG*>(message);
+        MSG *msg = static_cast<MSG*>(message);
 
         switch (msg->message) {
             case WM_NCCALCSIZE: {
                 if (msg->wParam == TRUE) {
-                    // Для максимизированного окна нужно скорректировать область,
-                    // чтобы она не выходила за пределы рабочего стола.
                     if (isMaximized()) {
-                        auto* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
-                        MONITORINFO mi{ sizeof(MONITORINFO) };
+                        auto *params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
+                        MONITORINFO mi{sizeof(MONITORINFO)};
                         if (GetMonitorInfo(MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST), &mi)) {
                             params->rgrc[0] = mi.rcWork;
                         }
                     }
                     *result = 0;
-                    return true; // Сообщаем, что мы обработали сообщение
+                    return true;
                 }
                 break;
             }
             case WM_NCHITTEST: {
-                const LONG borderWidth = 8; // Ширина зоны захвата
-                RECT winrect;
-                GetWindowRect(msg->hwnd, &winrect);
-
-                long x = GET_X_LPARAM(msg->lParam);
-                long y = GET_Y_LPARAM(msg->lParam);
-
-                // Проверка на края (как в вашем закомментированном коде)
-                bool left = x < winrect.left + borderWidth;
-                bool right = x > winrect.right - borderWidth;
-                bool top = y < winrect.top + borderWidth;
-                bool bottom = y > winrect.bottom - borderWidth;
-
-                if (top && left) { *result = HTTOPLEFT; return true; }
-                if (top && right) { *result = HTTOPRIGHT; return true; }
-                if (bottom && left) { *result = HTBOTTOMLEFT; return true; }
-                if (bottom && right) { *result = HTBOTTOMRIGHT; return true; }
-                if (left) { *result = HTLEFT; return true; }
-                if (right) { *result = HTRIGHT; return true; }
-                if (top) { *result = HTTOP; return true; }
-                if (bottom) { *result = HTBOTTOM; return true; }
-
-                // Проверка на область заголовка (drag)
-                // Преобразуем координаты в клиентские
-                POINT clientPoint{ x, y };
-                ScreenToClient(msg->hwnd, &clientPoint);
-
-                // Если Y меньше высоты вашего кастомного заголовка
-                if (clientPoint.y < 30) { // titleBarHeight() - ваша функция
-                    *result = HTCAPTION;
-                    return true;
+                RECT wr; GetWindowRect(msg->hwnd, &wr);
+                const LONG x = GET_X_LPARAM(msg->lParam);
+                const LONG y = GET_Y_LPARAM(msg->lParam);
+                const LONG b = 8;
+                if (!isMaximized()) {
+                    const bool L = x < wr.left + b, R = x > wr.right - b;
+                    const bool T = y < wr.top + b,  B = y > wr.bottom - b;
+                    if (T && L) { *result = HTTOPLEFT;     return true; }
+                    if (T && R) { *result = HTTOPRIGHT;    return true; }
+                    if (B && L) { *result = HTBOTTOMLEFT;  return true; }
+                    if (B && R) { *result = HTBOTTOMRIGHT; return true; }
+                    if (L)      { *result = HTLEFT;        return true; }
+                    if (R)      { *result = HTRIGHT;       return true; }
+                    if (T)      { *result = HTTOP;         return true; }
+                    if (B)      { *result = HTBOTTOM;      return true; }
                 }
 
-                break; // Для клиентской области позволяем Qt обработать дальше
+                POINT pt{ x, y };
+                ScreenToClient(msg->hwnd, &pt);
+                const qreal dpr = windowHandle()->devicePixelRatio();
+                const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
+
+                if (auto *tb = findChild<UI::TopBar*>()) {
+                    const auto hit = tb->hitTestTopBar(posInWindow);
+                    switch (hit) {
+                        case UI::TopBar::TopBarHit::Maximize: *result = HTMAXBUTTON; return true;
+                        case UI::TopBar::TopBarHit::Client:   *result = HTCLIENT;    return true;
+                        case UI::TopBar::TopBarHit::Caption:  *result = HTCAPTION;   return true;
+                        case UI::TopBar::TopBarHit::None:     break;
+                    }
+                }
+                break;
+            }
+
+            case WM_NCMOUSEMOVE: {
+                const bool overMax = (msg->wParam == HTMAXBUTTON);
+                if (auto *tb = findChild<UI::TopBar*>())
+                    tb->setMaximizeButtonHovered(overMax);
+                if (overMax) {
+                    TRACKMOUSEEVENT tme{sizeof(tme)};
+                    tme.dwFlags = TME_LEAVE | TME_NONCLIENT;
+                    tme.hwndTrack = msg->hwnd;
+                    TrackMouseEvent(&tme);
+                }
+                break;
+            }
+
+            case WM_NCMOUSELEAVE: {
+                if (auto *tb = findChild<UI::TopBar*>())
+                    tb->setMaximizeButtonHovered(false);
+                break;
+            }
+
+            case WM_NCLBUTTONDOWN: {
+                if (msg->wParam == HTMAXBUTTON) return true;
+                break;
+            }
+
+            case WM_NCLBUTTONUP: {
+                if (msg->wParam == HTMAXBUTTON) {
+                    if (isMaximized()) showNormal();
+                    else showMaximized();
+                    return true;
+                }
+                break;
             }
             case WM_GETMINMAXINFO: {
-                // Код из вашего ImGui-примера
-                auto* mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
+                auto *mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
                 HMONITOR hMon = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
-                MONITORINFO mi{ sizeof(MONITORINFO) };
+                MONITORINFO mi{sizeof(MONITORINFO)};
                 if (GetMonitorInfoW(hMon, &mi)) {
                     mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
                     mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
@@ -261,7 +293,29 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType,
                 *result = 0;
                 return true;
             }
-            // ... обработка других сообщений ...
+            case WM_SETCURSOR: {
+                if (reinterpret_cast<HWND>(msg->wParam) != msg->hwnd) break;
+
+                POINT pt;
+                GetCursorPos(&pt);
+                const LRESULT hit = SendMessage(msg->hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
+
+                switch (hit) {
+                    case HTLEFT: case HTRIGHT:
+                        SetCursor(LoadCursor(nullptr, IDC_SIZEWE));   return true;
+                    case HTTOP: case HTBOTTOM:
+                        SetCursor(LoadCursor(nullptr, IDC_SIZENS));   return true;
+                    case HTTOPLEFT: case HTBOTTOMRIGHT:
+                        SetCursor(LoadCursor(nullptr, IDC_SIZENWSE)); return true;
+                    case HTTOPRIGHT: case HTBOTTOMLEFT:
+                        SetCursor(LoadCursor(nullptr, IDC_SIZENESW)); return true;
+                    case HTCAPTION:
+                        SetCursor(LoadCursor(nullptr, IDC_SIZEALL));  return true;
+                    case HTMAXBUTTON: case HTCLIENT:
+                        SetCursor(LoadCursor(nullptr, IDC_ARROW));    return true;
+                }
+                break;
+            }
         }
     }
 #endif
@@ -277,10 +331,9 @@ void UI::FramelessWindow::changeEvent(QEvent *event) {
     }
 
     if (event->type() == QEvent::WindowStateChange) {
-        /*
-         * Если initWindowForWindowsWithoutFrame()
-         */
-        //   updateWindowCorners();
+        if (auto *tb = findChild<UI::TopBar*>())
+            tb->updateMaximizeIcon(isMaximized());
+        updateWindowCorners();
     }
 #endif
     QMainWindow::changeEvent(event);
@@ -314,11 +367,12 @@ QString UI::FramelessWindow::loadStyles(const QStringList& files) {
 
 void UI::FramelessWindow::showEvent(QShowEvent *event) {
     if (isStart) {
-        QRect screenGeometry =
-                QGuiApplication::primaryScreen()->availableGeometry();
+        QRect screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
         move(screenGeometry.center() - rect().center());
         isStart = false;
     }
+    if (auto *tb = findChild<UI::TopBar*>())
+        tb->updateMaximizeIcon(isMaximized());
     QMainWindow::showEvent(event);
 }
 

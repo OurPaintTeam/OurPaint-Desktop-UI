@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+    <defs>
+        <mask id="m">
+            <rect width="16" height="16" fill="white"/>
+            <rect x="5.5" y="3.5" width="7" height="7" rx="1" fill="black"/>
+        </mask>
+    </defs>
+    <!-- задний квадрат виден только там, где его не перекрывает передний -->
+    <rect x="3.5" y="5.5" width="7" height="7" rx="1" ry="1"
+          fill="none" stroke="#D8D8F6" stroke-width="1.2" mask="url(#m)"/>
+    <!-- передний квадрат -->
+    <rect x="5.5" y="3.5" width="7" height="7" rx="1" ry="1"
+          fill="none" stroke="#D8D8F6" stroke-width="1.2"/>
+</svg>

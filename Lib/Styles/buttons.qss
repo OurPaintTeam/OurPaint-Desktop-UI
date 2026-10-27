@@ -5,6 +5,53 @@ QPushButton {
     color: #D8D8F6;
 }
 
+QPushButton#MaxApplication {
+    background-color: transparent;
+}
+
+QPushButton#MaxApplication[nativeHovered="true"] {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-radius: 0px;
+}
+
+QPushButton#MaxApplication[nativePressed="true"] {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+
+QPushButton#minApplication,
+QPushButton#MaxApplication,
+QPushButton#CloseApplication {
+    background-color: transparent;
+    border: none;
+    border-radius: 0px;          /* ← прямые углы у всех */
+    padding: 0px;
+}
+
+/* --- hover --- */
+QPushButton#minApplication:hover,
+QPushButton#MaxApplication[nativeHovered="true"] {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-radius: 0px;
+}
+
+QPushButton#CloseApplication:hover {
+    background-color: #c42b1c;                     /* ← красный */
+    border-radius: 0px;
+}
+
+/* --- pressed --- */
+QPushButton#minApplication:pressed,
+QPushButton#MaxApplication[nativePressed="true"] {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 0px;
+}
+
+QPushButton#CloseApplication:pressed {
+    background-color: #a02015;
+    border-radius: 0px;
+}
+
 QPushButton:hover {
     background: rgba(255,255,255,0.3);
 }

@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QMouseEvent>
+#include <QStyle>
 #include <QWindow>
 
 
@@ -135,9 +136,9 @@ void UI::TopBar::setupWindowButtons() {
     closeButton_ = createWindowButton();
     closeButton_->setObjectName("CloseApplication");
 
-    minButton_->setIcon(QIcon(":/Assets/icons/window/minimize.png"));
-    maxButton_->setIcon(QIcon(":/Assets/icons/window/maximize.png"));
-    closeButton_->setIcon(QIcon(":/Assets/icons/window/close.png"));
+    minButton_->setIcon(QIcon(":/Assets/icons/window/minimize.svg"));
+    maxButton_->setIcon(QIcon(":/Assets/icons/window/maximize.svg"));
+    closeButton_->setIcon(QIcon(":/Assets/icons/window/close.svg"));
 
     rightLayout_->addWidget(minButton_);
     rightLayout_->addWidget(maxButton_);
@@ -181,4 +182,60 @@ void UI::TopBar::translate() const {
     if (closeButton_) {
         closeButton_->setToolTip(UI::TopBar::tr("Close"));
     }
+}
+
+
+UI::TopBar::TopBarHit UI::TopBar::hitTestTopBar(const QPoint& posInWindow) const {
+    const QPoint local = mapFrom(window(), posInWindow);
+    if (!rect().contains(local)) return TopBarHit::None;
+
+    auto pointIn = [this, &local](const QWidget* w) -> bool {
+        if (!w || !w->isVisible()) return false;
+        const QRect r(w->mapTo(this, QPoint(0, 0)), w->size());
+        return r.contains(local);
+    };
+
+    if (pointIn(maxButton_)) return TopBarHit::Maximize;
+
+    if (pointIn(minButton_) || pointIn(closeButton_))
+        return TopBarHit::Client;
+
+
+    const auto buttons = findChildren<QPushButton*>();
+    for (auto* btn : buttons) {
+        if (btn == maxButton_ || btn == minButton_ || btn == closeButton_) continue;
+        if (pointIn(btn)) return TopBarHit::Client;
+    }
+
+    return TopBarHit::Caption;
+}
+
+void UI::TopBar::setMaximizeButtonHovered(bool hovered) {
+    applyButtonState(maxButton_, "nativeHovered", hovered);
+}
+
+void UI::TopBar::updateMaximizeIcon(const bool isMaximized) const {
+    if (!maxButton_) return;
+
+    maxButton_->setIcon(QIcon(isMaximized
+        ? QStringLiteral(":/Assets/icons/window/restore.svg")
+        : QStringLiteral(":/Assets/icons/window/maximize.svg")));
+
+    maxButton_->setToolTip(isMaximized
+        ? tr("Restore window")
+        : tr("Maximize window"));
+
+
+}
+
+void UI::TopBar::applyButtonState(QPushButton* btn, const char* state, bool value) {
+    if (!btn) return;
+
+    const QVariant current = btn->property(state);
+    if (current.isValid() && current.toBool() == value) return;
+
+    btn->setProperty(state, value);
+    btn->style()->unpolish(btn);
+    btn->style()->polish(btn);
+    btn->update();
 }
