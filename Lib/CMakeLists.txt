@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL Svg Gui)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL Svg Gui)
 
 set(CORE
         Core/ProjectManager.cc
