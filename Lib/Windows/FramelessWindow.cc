@@ -38,7 +38,7 @@ enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round =
 
 UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
 #ifdef Q_OS_WIN
-    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint);
+    setWindowFlags(Qt::Window /*| Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint*/);
 #else
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
 

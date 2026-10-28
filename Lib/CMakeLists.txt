@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL)
+find_package(Qt6 6.9 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL Svg Gui)
 
 set(CORE
         Core/ProjectManager.cc
@@ -191,6 +191,9 @@ target_link_libraries(ourpaint_ui PUBLIC
         Qt6::Widgets
         Qt6::OpenGLWidgets
         Qt6::OpenGL
+        Qt6::QWindowsIntegrationPlugin
+        Qt6::QSvgPlugin
+        Qt6::QSvgIconPlugin
 )
 
 
