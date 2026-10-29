@@ -43,6 +43,4 @@ void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
     renderWidget->setAttribute(Qt::WA_NoSystemBackground, true);
     renderWidget->setAttribute(Qt::WA_OpaquePaintEvent, true);
     renderWidget->setObjectName("RenderWidget");
-
-    renderWindow->installEventFilter(this);
 }
