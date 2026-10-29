@@ -21,6 +21,7 @@ protected:
     void showEvent(QShowEvent* event) override;
     bool event(QEvent* event) override;
     bool eventFilter(QObject* watched, QEvent* event) override;
+    void paintEvent(QPaintEvent* e) override;
 public:
     explicit FramelessWindow(QWidget *parent = nullptr);
     ~FramelessWindow() override = default;

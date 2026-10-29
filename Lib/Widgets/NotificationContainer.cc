@@ -89,12 +89,12 @@ void UI::NotificationContainer::addNotification(const QString& text) {
     containerLayout_->insertWidget(0, widget);
 
     notifications_.prepend(widget);
-    widget->show();
+   // widget->show();
 
     updateContainerSize();
 
     if (!isVisible()) {
-        show();
+        //show();
     }
 
     QTimer::singleShot(0, this, [this]() {

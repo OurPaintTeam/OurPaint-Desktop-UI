@@ -15,7 +15,6 @@
 #include <windows.h>
 #include <windowsx.h>
 
-
 namespace {
 
 constexpr DWORD kDwmWindowCornerPreference = 33;
@@ -38,7 +37,12 @@ enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round =
 
 UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
 #ifdef Q_OS_WIN
-    setWindowFlags(Qt::Window /*| Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint*/);
+    setWindowFlags(Qt::Window);
+    // | Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint
+    // if (auto* cw = centralWidget()) {
+    //     cw->setGeometry(0, 0, width(), height());
+    //     update();
+    // }
 #else
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
 
@@ -101,10 +105,8 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
     return QMainWindow::eventFilter(watched, event);
 }
 
-
 #ifdef Q_OS_WIN
 void UI::FramelessWindow::applyNativeWindowStyles() const {
-
     HWND hwnd = reinterpret_cast<HWND>(winId());
 
     const COLORREF captionColor = RGB(73, 72, 80);
@@ -123,129 +125,173 @@ void UI::FramelessWindow::applyNativeWindowStyles() const {
         qWarning() << "Failed to set border color:" << Qt::hex << result;
     }
 
-
     LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
 
     style &= ~WS_CAPTION;
-    style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
+    style |= WS_THICKFRAME | WS_MAXIMIZEBOX | WS_CLIPCHILDREN;
 
     SetWindowLongPtr(hwnd, GWL_STYLE, style);
-    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-
+    SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 #endif
 
 bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
 #ifdef Q_OS_WIN
     MSG* msg = static_cast<MSG*>(message);
-    if (msg) {
-        switch (msg->message) {
-            case WM_NCACTIVATE:  // caption не рисуется при потере фокуса
-                *result = TRUE;
-                return true;
-            case WM_NCPAINT:  // не даём DWM перерисовывать рамку
+    if (!msg) {
+        return QMainWindow::nativeEvent(eventType, message, result);
+    }
+
+    switch (msg->message) {
+        case WM_SIZE: {
+            InvalidateRect(msg->hwnd, nullptr, FALSE);
+            break;
+        }
+        // case WM_NCCALCSIZE: {
+        //     *result = 0;
+        //     return true;
+        // }
+        case WM_GETMINMAXINFO: {
+            auto* mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
+
+            MONITORINFO mi{ sizeof(mi) };
+            if (GetMonitorInfo(MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST), &mi)) {
+                mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
+                mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
+                mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
+                mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
+            }
+            *result = 0;
+            return true;
+        }
+        case WM_NCACTIVATE: {
+            auto res = DefWindowProc(msg->hwnd, msg->message, msg->wParam, -1);
+            *result = res;
+            return true;
+        }
+
+        case WM_NCHITTEST: {
+            // RECT wr;
+            // GetWindowRect(msg->hwnd, &wr);
+            // const LONG x = GET_X_LPARAM(msg->lParam);
+            // const LONG y = GET_Y_LPARAM(msg->lParam);
+            // const LONG border = 8;
+            //
+            // if (!isMaximized()) {
+            //     const bool L = x<wr.left + border, R = x> wr.right - border;
+            //     const bool T = y<wr.top + border, B = y> wr.bottom - border;
+            //     if (T && L) {
+            //         *result = HTTOPLEFT;
+            //         return true;
+            //     }
+            //     if (T && R) {
+            //         *result = HTTOPRIGHT;
+            //         return true;
+            //     }
+            //     if (B && L) {
+            //         *result = HTBOTTOMLEFT;
+            //         return true;
+            //     }
+            //     if (B && R) {
+            //         *result = HTBOTTOMRIGHT;
+            //         return true;
+            //     }
+            //     if (L) {
+            //         *result = HTLEFT;
+            //         return true;
+            //     }
+            //     if (R) {
+            //         *result = HTRIGHT;
+            //         return true;
+            //     }
+            //     if (T) {
+            //         *result = HTTOP;
+            //         return true;
+            //     }
+            //     if (B) {
+            //         *result = HTBOTTOM;
+            //         return true;
+            //     }
+            // }
+            //
+            // POINT pt{x, y};
+            // ScreenToClient(msg->hwnd, &pt);
+            // const qreal dpr = windowHandle()->devicePixelRatio();
+            // const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
+            //
+            // if (auto* tb = findChild<UI::TopBar*>()) {
+            //     const auto hit = tb->hitTestTopBar(posInWindow);
+            //     switch (hit) {
+            //         case UI::TopBar::TopBarHit::Maximize:
+            //             *result = HTMAXBUTTON;
+            //             return true;
+            //         case UI::TopBar::TopBarHit::Client:
+            //             *result = HTCLIENT;
+            //             return true;
+            //         case UI::TopBar::TopBarHit::Caption:
+            //             *result = HTCAPTION;
+            //             return true;
+            //         case UI::TopBar::TopBarHit::None:
+            //             break;
+            //     }
+            // }
+            break;
+        }
+        case WM_NCLBUTTONUP: {
+            if (msg->wParam == HTMAXBUTTON) {
+                if (auto* tb = findChild<UI::TopBar*>()) {
+                    if (auto* maxBtn = tb->maximizeButton()) {
+                        maxBtn->click();
+                    }
+                }
                 *result = 0;
                 return true;
-            case WM_NCHITTEST: {
-                RECT wr; GetWindowRect(msg->hwnd, &wr);
-                const LONG x = GET_X_LPARAM(msg->lParam);
-                const LONG y = GET_Y_LPARAM(msg->lParam);
-                const LONG b = 8;
-                if (!isMaximized()) {
-                    const bool L = x < wr.left + b, R = x > wr.right - b;
-                    const bool T = y < wr.top + b,  B = y > wr.bottom - b;
-                    if (T && L) { *result = HTTOPLEFT;     return true; }
-                    if (T && R) { *result = HTTOPRIGHT;    return true; }
-                    if (B && L) { *result = HTBOTTOMLEFT;  return true; }
-                    if (B && R) { *result = HTBOTTOMRIGHT; return true; }
-                    if (L)      { *result = HTLEFT;        return true; }
-                    if (R)      { *result = HTRIGHT;       return true; }
-                    if (T)      { *result = HTTOP;         return true; }
-                    if (B)      { *result = HTBOTTOM;      return true; }
-                }
-
-                POINT pt{ GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam) };
-                ScreenToClient(msg->hwnd, &pt);
-                const qreal dpr = windowHandle()->devicePixelRatio();
-                const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
-
-                if (auto* tb = findChild<UI::TopBar*>()) {
-                    const auto hit = tb->hitTestTopBar(posInWindow);
-
-                    if (hit == UI::TopBar::TopBarHit::Maximize) {
-                        LRESULT dwmResult = 0;
-                        DwmDefWindowProc(msg->hwnd, msg->message, msg->wParam, msg->lParam, &dwmResult);
-                        if (dwmResult != 0) {
-                            *result = dwmResult;
-                            return true;
-                        }
-                        *result = HTMAXBUTTON;
-                        return true;
-                    }
-                    if (hit == UI::TopBar::TopBarHit::Client) {
-                        *result = HTCLIENT;
-                        return true;
-                    }
-                    if (hit == UI::TopBar::TopBarHit::Caption) {
-                        *result = HTCAPTION;
-                        return true;
-                    }
-                }
-                break;
             }
-
-            case WM_NCMOUSEMOVE: {
-                if (auto* tb = findChild<UI::TopBar*>()) {
-                    tb->setMaximizeButtonHovered(false);
-                    if (msg->wParam == HTMAXBUTTON) {
-                        tb->setMaximizeButtonHovered(true);
-                    }
-                }
-                if (msg->wParam == HTMAXBUTTON) {
-                    TRACKMOUSEEVENT tme{ sizeof(tme) };
-                    tme.dwFlags = TME_LEAVE | TME_NONCLIENT;
-                    tme.hwndTrack = msg->hwnd;
-                    TrackMouseEvent(&tme);
-                }
-                break;
-            }
-
-            case WM_NCMOUSELEAVE: {
-                if (auto* tb = findChild<UI::TopBar*>()) {
-                    tb->setMaximizeButtonHovered(false);
-                }
-                break;
-            }
-
-            case WM_NCLBUTTONDOWN: {
-                if (msg->wParam == HTMAXBUTTON) {
-                    *result = 0;
-                    return true;
-                }
-                break;
-            }
-
-            case WM_NCLBUTTONUP: {
-                if (msg->wParam == HTMAXBUTTON) {
-                    if (auto* tb = findChild<UI::TopBar*>()) {
-                        if (auto* maxBtn = tb->maximizeButton()) {
-                            maxBtn->click();
-                        }
-                    }
-                    *result = 0;
-                    return true;
-                }
-                break;
-            }
-
-            case WM_MOUSEMOVE: {
-                if (auto* tb = findChild<UI::TopBar*>()) {
-                    tb->setMaximizeButtonHovered(false);
-                }
-                break;
-            }
+            break;
         }
+
+        case WM_NCMOUSEMOVE: {
+            if (auto* tb = findChild<UI::TopBar*>()) {
+                tb->setMaximizeButtonHovered(msg->wParam == HTMAXBUTTON);
+            }
+
+            if (msg->wParam == HTMAXBUTTON) {
+                TRACKMOUSEEVENT tme{sizeof(tme)};
+                tme.dwFlags = TME_LEAVE | TME_NONCLIENT;
+                tme.hwndTrack = msg->hwnd;
+                TrackMouseEvent(&tme);
+            }
+            break;
+        }
+
+        case WM_NCMOUSELEAVE: {
+            if (auto* tb = findChild<UI::TopBar*>()) {
+                tb->setMaximizeButtonHovered(false);
+            }
+            break;
+        }
+
+        case WM_MOUSEMOVE: {
+            if (auto* tb = findChild<UI::TopBar*>()) {
+                tb->setMaximizeButtonHovered(false);
+            }
+            break;
+        }
+        case WM_NCLBUTTONDOWN: {
+            if (msg->wParam == HTMAXBUTTON) {
+                *result = 0;
+                return true;
+            }
+            break;
+        }
+
+        case WM_ERASEBKGND: {
+            *result = 1;
+            return true;
+        }
+
+        default:
+            break;
     }
 #endif
     return QMainWindow::nativeEvent(eventType, message, result);
@@ -255,10 +301,6 @@ void UI::FramelessWindow::changeEvent(QEvent* event) {
 #ifdef Q_OS_WIN
     if (event->type() == QEvent::LanguageChange) {
         setWindowTitle(tr("OurPaint"));
-        update();
-    }
-    if (auto* cw = centralWidget()) {
-        cw->setGeometry(0, 0, width(), height());
         update();
     }
     if (event->type() == QEvent::WindowStateChange) {
@@ -296,12 +338,9 @@ QString UI::FramelessWindow::loadStyles(const QStringList& files) {
 void UI::FramelessWindow::showEvent(QShowEvent* event) {
 #ifdef Q_OS_WIN
     applyNativeWindowStyles();
-    if (auto* cw = centralWidget()) {
-        cw->setGeometry(0, 0, width(), height());
-        update();
-    }
-    if (auto *tb = findChild<UI::TopBar*>())
+    if (auto* tb = findChild<UI::TopBar*>()) {
         tb->updateMaximizeIcon(isMaximized());
+    }
 #endif
     QMainWindow::showEvent(event);
 }
@@ -347,30 +386,11 @@ void UI::FramelessWindow::initTranslations() {
     }
 }
 
-void UI::FramelessWindow::resizeEvent(QResizeEvent* event) {
-    QMainWindow::resizeEvent(event);
-#ifdef Q_OS_WIN
-    if (centralWidget()) {
-        centralWidget()->setGeometry(0, 0, width(), height());
-        update();
-    }
-#endif
-}
+void UI::FramelessWindow::resizeEvent(QResizeEvent* event) { QMainWindow::resizeEvent(event); }
 
 bool UI::FramelessWindow::event(QEvent* event) {
     const bool result = QMainWindow::event(event);
-#ifdef Q_OS_WIN
-    if (event->type() == QEvent::LayoutRequest) {
-        setContentsMargins(0, 0, 0, 0);
-
-        if (auto* cw = centralWidget()) {
-            cw->setContentsMargins(0, 0, 0, 0);
-            if (auto* lay = cw->layout()) {
-                lay->setContentsMargins(0, 0, 0, 0);
-            }
-            cw->setGeometry(0, 0, width(), height());
-        }
-    }
-#endif
     return result;
 }
+
+void UI::FramelessWindow::paintEvent(QPaintEvent* e) { QMainWindow::paintEvent(e); }

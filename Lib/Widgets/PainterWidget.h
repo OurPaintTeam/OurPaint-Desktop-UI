@@ -1,6 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_PAINTERWIDGET_H
 #define OURPAINT_DESKTOP_UI_PAINTERWIDGET_H
 
+#include <dwmapi.h>
+
+#include <QEvent>
+#include <QTimer>
 #include <QWidget>
 
 class QOpenGLWindow;

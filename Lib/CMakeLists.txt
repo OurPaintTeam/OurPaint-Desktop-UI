@@ -4,15 +4,15 @@ project(OurPaint-Desktop-UI)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Widgets OpenGLWidgets OpenGL Gui)
+find_package(Qt6 6.9 REQUIRED COMPONENTS Widgets OpenGL Svg)
+qt_standard_project_setup()
 
 set(CORE
-        Core/ProjectManager.cc
-        Core/ProjectManager.cc
         Core/ProjectManager.cc
         Core/ProjectManager.h
         Core/ToolsType.h
@@ -154,7 +154,7 @@ set(FILE_SYSTEM
         FileSystem/FileSystem.h
 )
 
-add_library(ourpaint_ui STATIC
+qt_add_library(ourpaint_ui STATIC
         resources.qrc
         translations.qrc
         ${CORE}
@@ -186,14 +186,18 @@ target_include_directories(ourpaint_ui PUBLIC
 )
 
 target_link_libraries(ourpaint_ui PUBLIC
-        Qt6::Core
-        Qt6::Gui
         Qt6::Widgets
-        Qt6::OpenGLWidgets
         Qt6::OpenGL
 )
 
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_link_libraries(ourpaint_ui PUBLIC Qt6::Svg)
+endif()
 
 if (WIN32)
+    qt_import_plugins(ourpaint_ui
+            INCLUDE_BY_TYPE imageformats Qt6::QSvgPlugin
+    )
+
     target_link_libraries(ourpaint_ui PUBLIC dwmapi)
 endif()

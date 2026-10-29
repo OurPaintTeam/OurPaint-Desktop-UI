@@ -42,7 +42,7 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
     closeButton_->setObjectName("InputWidgetCloseButton");
     constexpr auto clSize = QSize(24, 24);
     closeButton_->setFixedSize(clSize);
-    closeButton_->setIcon(QIcon(":/Assets/icons/window/close.png"));
+    closeButton_->setIcon(QIcon(":/Assets/icons/window/close.svg"));
     constexpr auto clISize = QSize(16, 16);
     closeButton_->setIconSize(clISize);
 
