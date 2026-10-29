@@ -39,8 +39,5 @@ void UI::PainterWidget::setQWindowRender(QWindow* renderWindow) {
     auto* renderWidget = QWidget::createWindowContainer(renderWindow, this);
     renderWidget->setFocusPolicy(Qt::StrongFocus);
     layout_->addWidget(renderWidget);
-
-    renderWidget->setAttribute(Qt::WA_NoSystemBackground, true);
-    renderWidget->setAttribute(Qt::WA_OpaquePaintEvent, true);
     renderWidget->setObjectName("RenderWidget");
 }
