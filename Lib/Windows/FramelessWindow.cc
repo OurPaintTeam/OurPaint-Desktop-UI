@@ -144,7 +144,9 @@ void UI::FramelessWindow::applyNativeWindowStyles() const {
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
-void UI::FramelessWindow::onViewportFrameReady() { DwmFlush(); }
+void UI::FramelessWindow::onViewportFrameReady() {
+    DwmFlush();
+}
 
 #endif
 

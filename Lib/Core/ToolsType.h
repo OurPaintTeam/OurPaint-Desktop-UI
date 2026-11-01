@@ -46,7 +46,8 @@ namespace UI {
         Midpoint,
         Symmetric,
         Distance,
-        HVDistance,
+        VDistance,
+        HDistance,
         Angle
     };
 
