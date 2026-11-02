@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS Widgets OpenGL Svg)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets OpenGL Svg)
 qt_standard_project_setup()
 
 set(CORE
