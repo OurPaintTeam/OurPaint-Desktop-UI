@@ -1,5 +1,7 @@
 #include "ToolBar.h"
 
+#include <utility>
+
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QSize>
@@ -289,18 +291,29 @@ void UI::ToolBar::setActiveTool(const ToolsType tool) {
 
 void UI::ToolBar::setActiveTool(const PrimitiveType tool) {
     switch (tool) {
-        case PrimitiveType::Point: setActiveTool(pointPrimitive_);
-            break;
-        case PrimitiveType::CubicBezier: setActiveTool(cubicBezierPrimitive_);
-            break;
-
-        case PrimitiveType::Line:
-            linePrimitive_->applyAction(lineMenu_->line());
-            setActiveTool(linePrimitive_);
-            break;
-
+        case PrimitiveType::Point:
+            setActiveTool(pointPrimitive_);
+            return;
+        case PrimitiveType::CubicBezier:
+            setActiveTool(cubicBezierPrimitive_);
+            return;
         default:
             break;
+    }
+
+    const std::pair<const CustomMenu*, MenuButton*> menus[] = {
+        {lineMenu_, linePrimitive_},
+        {circleMenu_, circlePrimitive_},
+        {arcMenu_, arcPrimitive_},
+    };
+    for (const auto& [menu, button] : menus) {
+        for (const auto* action : menu->actions()) {
+            if (!action->isSeparator() && action->data().value<PrimitiveType>() == tool) {
+                button->applyAction(action);
+                setActiveTool(button);
+                return;
+            }
+        }
     }
 }
 
