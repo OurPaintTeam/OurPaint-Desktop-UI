@@ -48,7 +48,8 @@ namespace UI {
         Distance,
         VDistance,
         HDistance,
-        Angle
+        Angle,
+        Curvature
     };
 
     enum class ToolsType {

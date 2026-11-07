@@ -186,6 +186,7 @@ void UI::ToolBar::initSignals() {
         {":/Assets/icons/constraints/Collinear.svg", new QAction("", this), nullptr, ConstraintType::Collinear},
         {":/Assets/icons/constraints/Midpoint.svg", new QAction("", this), nullptr, ConstraintType::Midpoint},
         {":/Assets/icons/constraints/Symmetric.svg", new QAction("", this), nullptr, ConstraintType::Symmetric},
+        {":/Assets/icons/constraints/Curvature.svg", new QAction("", this), nullptr, ConstraintType::Curvature},
     };
 
     for (auto& item: constraints_) {
