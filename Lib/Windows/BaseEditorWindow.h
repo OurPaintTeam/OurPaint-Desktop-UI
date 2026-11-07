@@ -29,17 +29,17 @@ namespace UI {
         void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
         void takeOffHint();
 
-        void setActiveName(const QString& name);
+        void setActiveID(const qint64& id);
 
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
         void setCommandConsoleEngine(QLineEdit *engine) const;
 
     signals:
-        void sentCommandTriggered(const QString tabName, const QString command);
-        void primitiveTriggered(const QString tabName, PrimitiveType type);
-        void constraintTriggered(const QString tabName, ConstraintType type);
-        void toolsTriggered(const QString tabName, ToolsType type);
+        void sentCommandTriggered(const qint64 id, const QString command);
+        void primitiveTriggered(const qint64 id, PrimitiveType type);
+        void constraintTriggered(const qint64 id, ConstraintType type);
+        void toolsTriggered(const qint64 id, ToolsType type);
 
     protected:
         void initEditor(BaseEditorPage *editorPage);

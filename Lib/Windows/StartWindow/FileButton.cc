@@ -1,4 +1,4 @@
-#include "ProjectButton.h"
+#include "FileButton.h"
 
 #include <QEvent>
 #include <QInputDialog>
@@ -6,13 +6,14 @@
 
 #include "ConfirmDialog.h"
 #include "RenameTabLineEdit.h"
+#include "Utils.h"
 
-UI::ProjectButton::ProjectButton(const QString& name,
-                                 const QString& path,
-                                 QWidget* parent)
+
+UI::FileButton::FileButton( const FileData& file,
+                            QWidget* parent)
     : QPushButton(parent),
-      nameLabel_(new QLabel(name, this)),
-      pathLabel_(new QLabel(path, this)),
+      nameLabel_(new QLabel(file.name, this)),
+      pathLabel_(new QLabel(file.path, this)),
       layout_(new QVBoxLayout(this)) {
     setObjectName("ProjectButton");
 
@@ -76,8 +77,8 @@ UI::ProjectButton::ProjectButton(const QString& name,
     layout_->addWidget(pathLabel_);
 
     nameLabel_->installEventFilter(this);
-    nameLabel_->setToolTip(name);
-    pathLabel_->setToolTip(path);
+    nameLabel_->setToolTip(file.name);
+    pathLabel_->setToolTip(file.path);
 
     edit_->setContentsMargins(0, 0, 0, 0);
     nameLabel_->setContentsMargins(0, 0, 0, 0);
@@ -87,14 +88,16 @@ UI::ProjectButton::ProjectButton(const QString& name,
 
     nameStack_->setCurrentWidget(nameLabel_);
 
-    connect(edit_, &RenameTabLineEdit::focusLost, this, &ProjectButton::cancelRenameInline);
-    connect(edit_, &QLineEdit::returnPressed, this, &ProjectButton::finishRenameInline);
-    connect(renameBtn_, &QPushButton::clicked, this, &ProjectButton::startRenameInline);
+    fileId_ = file.id;
+
+    connect(edit_, &RenameTabLineEdit::focusLost, this, &FileButton::cancelRenameInline);
+    connect(edit_, &QLineEdit::returnPressed, this, &FileButton::finishRenameInline);
+    connect(renameBtn_, &QPushButton::clicked, this, &FileButton::startRenameInline);
 
     connect(deleteBtn_, &QPushButton::clicked, this, [this]() {
-        auto* confirmDialog = new UI::ConfirmDialog("Delete project " + getName() + "?", "Yes", "No", this);
+        auto* confirmDialog = new UI::ConfirmDialog("Delete file " + getName() + "?", "Yes", "No", this);
         connect(confirmDialog, &UI::ConfirmDialog::yesClicked, this, [this]() {
-            emit deleteProjectTriggered(getPath());
+            emit deleteFileTriggered(fileId_);
         });
 
         QPoint cursorPos = QCursor::pos();
@@ -104,13 +107,13 @@ UI::ProjectButton::ProjectButton(const QString& name,
     });
 
     connect(this, &QPushButton::clicked, this, [this]() {
-        emit pressProjectTriggered(getPath());
+        emit pressFileTriggered(fileId_);
     });
 
     translate();
 }
 
-bool UI::ProjectButton::eventFilter(QObject* obj, QEvent* event)
+bool UI::FileButton::eventFilter(QObject* obj, QEvent* event)
 {
     if (obj == nameLabel_) {
         if (event->type() == QEvent::MouseButtonDblClick) {
@@ -122,7 +125,7 @@ bool UI::ProjectButton::eventFilter(QObject* obj, QEvent* event)
     return QPushButton::eventFilter(obj, event);
 }
 
-void UI::ProjectButton::startRenameInline()
+void UI::FileButton::startRenameInline()
 {
     editing_ = true;
     edit_->setText(getName());
@@ -131,7 +134,7 @@ void UI::ProjectButton::startRenameInline()
     edit_->selectAll();
 }
 
-void UI::ProjectButton::finishRenameInline()
+void UI::FileButton::finishRenameInline()
 {
     if (!editing_) {
         return;
@@ -142,39 +145,39 @@ void UI::ProjectButton::finishRenameInline()
     const QString newName = edit_->text().trimmed();
 
     if (!newName.isEmpty() && newName != getName()) {
-        emit renameProjectTriggered(newName, getPath());
+        emit renameFileTriggered(fileId_, getPath());
         nameLabel_->setText(newName);
     }
 
     nameStack_->setCurrentWidget(nameLabel_);
 }
 
-void UI::ProjectButton::cancelRenameInline()
+void UI::FileButton::cancelRenameInline()
 {
     editing_ = false;
     nameStack_->setCurrentWidget(nameLabel_);
 }
 
-QString UI::ProjectButton::getName() const {
+QString UI::FileButton::getName() const {
     return nameLabel_->text();
 }
 
-QString UI::ProjectButton::getPath() const {
+QString UI::FileButton::getPath() const {
     return pathLabel_->text();
 }
 
-void UI::ProjectButton::changeEvent(QEvent* e) {
+void UI::FileButton::changeEvent(QEvent* e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
     QWidget::changeEvent(e);
 }
 
-void UI::ProjectButton::translate() const {
+void UI::FileButton::translate() const {
     if (renameBtn_) {
-        renameBtn_->setToolTip(UI::ProjectButton::tr("Rename project"));
+        renameBtn_->setToolTip(UI::FileButton::tr("Rename file"));
     }
     if (deleteBtn_) {
-        deleteBtn_->setToolTip(UI::ProjectButton::tr("Delete project"));
+        deleteBtn_->setToolTip(UI::FileButton::tr("Delete file"));
     }
 }

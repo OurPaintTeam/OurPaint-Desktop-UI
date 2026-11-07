@@ -2,25 +2,25 @@
 
 #include "BaseEditorWindow.h"
 #include "BaseWindow.h"
-#include "ParameterInputWidget.h"
-#include "ProjectWindow.h"
+#include "EditorWindow.h"
+#include "LightEditorWindow.h"
 #include "StartWindow.h"
-#include "TabWindow.h"
 
+#include <QCloseEvent>
+#include <QLineEdit>
+#include <QOpenGLWindow>
+#include <QWindow>
 
-UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data)
-    : projectData_(std::move(data)) {
+UI::ProjectManager::ProjectManager() {
     // For this constructor we always start with StartWindow.
     ensureStartWindow();
     openStartWindow();
 }
 
+UI::ProjectManager::ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine) {
+    // No StartWindow. Create EditorWindow and apply engines.
+    openNewWindow();
 
-UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data, QWindow *windowRender,
-                                   QLineEdit *consoleEngine)
-    : projectData_(std::move(data)) {
-    // No StartWindow. Create ProjectWindow and apply engines.
-    openProjectWindow();
     if (windowRender) {
         setQWindowRender(windowRender);
     }
@@ -29,502 +29,181 @@ UI::ProjectManager::ProjectManager(ProjectManager::ProjectData data, QWindow *wi
     }
 }
 
-
 UI::ProjectManager::~ProjectManager() {
-    closeTabWindows();
+    closeLightEditorWindows();
 
-    if (projectWindow_) {
-        projectWindow_->close();
-        projectWindow_->deleteLater();
+    if (editorWindow_) {
+        editorWindow_->close();
+        editorWindow_->deleteLater();
     }
-
     if (startWindow_) {
         startWindow_->close();
         startWindow_->deleteLater();
     }
 }
 
-
-void UI::ProjectManager::setActiveToolProjectWindow(ToolsType tool) const {
-    projectWindow_->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolEditorWindow(ToolsType tool) const {
+    if (editorWindow_) editorWindow_->setActiveTool(tool);
 }
 
-
-void UI::ProjectManager::setActiveToolProjectWindow(PrimitiveType tool) const {
-    projectWindow_->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolEditorWindow(PrimitiveType tool) const {
+    if (editorWindow_) editorWindow_->setActiveTool(tool);
 }
 
-
-void UI::ProjectManager::setActiveToolProjectWindow(ConstraintType tool) {
-    projectWindow_->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolEditorWindow(ConstraintType tool) {
+    if (editorWindow_) editorWindow_->setActiveTool(tool);
 }
 
-
-void UI::ProjectManager::setHintConstraintToolsProjectWindow(const QVector<ConstraintType>& vecTools) {
-    projectWindow_->setHintConstraintTools(vecTools);
+void UI::ProjectManager::setHintConstraintToolsEditorWindow(
+    const QVector<ConstraintType>& vecTools) {
+    if (editorWindow_) editorWindow_->setHintConstraintTools(vecTools);
 }
 
-
-void UI::ProjectManager::takeOffHintConstraintToolsProjectWindow() {
-    projectWindow_->takeOffHint();
+void UI::ProjectManager::takeOffHintConstraintToolsEditorWindow() {
+    if (editorWindow_) editorWindow_->takeOffHint();
 }
 
-
-void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, ConstraintType tool) {
-    for (TabWindow *tab: tabWindows_) {
-        if (tab && tab->tabName() == tabName) {
-            tab->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolLightEditorWindow(
+    const qint64 id, ConstraintType tool) {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->setActiveTool(tool);
             return;
         }
     }
 }
 
-
-
-void UI::ProjectManager::takeOffHintConstraintToolsTabWindow(const QString& tabName) {
-    for (TabWindow *tab: tabWindows_) {
-        if (tab && tab->tabName() == tabName) {
-            tab->takeOffHint();
+void UI::ProjectManager::takeOffHintConstraintToolsLightEditorWindow(
+    const qint64 id) {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->takeOffHint();
             return;
         }
     }
 }
 
-
-void UI::ProjectManager::setHintConstraintToolsTabWindow(const QString& tabName,
-                                                         const QVector<ConstraintType>& vecTools) {
-    for (TabWindow *tab: tabWindows_) {
-        if (tab && tab->tabName() == tabName) {
-            tab->setHintConstraintTools(vecTools);
+void UI::ProjectManager::setHintConstraintToolsLightEditorWindow(
+    const qint64 id, const QVector<ConstraintType>& vecTools) {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->setHintConstraintTools(vecTools);
             return;
         }
     }
 }
 
-
-void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, ToolsType tool) {
-    for (TabWindow *tab: tabWindows_) {
-        if (tab && tab->tabName() == tabName) {
-            tab->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolLightEditorWindow(
+   const qint64 id, ToolsType tool) {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->setActiveTool(tool);
             return;
         }
     }
 }
 
-
-void UI::ProjectManager::setActiveToolTabWindow(const QString& tabName, PrimitiveType tool) {
-    for (TabWindow *tab: tabWindows_) {
-        if (tab && tab->tabName() == tabName) {
-            tab->setActiveTool(tool);
+void UI::ProjectManager::setActiveToolLightEditorWindow(
+    const qint64 id, PrimitiveType tool) {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->setActiveTool(tool);
             return;
         }
     }
 }
 
-
-QString UI::ProjectManager::projectPath() const {
-    return projectData_.path;
+void UI::ProjectManager::setActiveTab(const qint64 id) {
+    if (editorWindow_) editorWindow_->setActiveID(id);
 }
 
-
-QString UI::ProjectManager::projectID() const {
-    return projectData_.id;
+void UI::ProjectManager::setFilesList(
+    const QVector<FileData>& files) {
+    filesList_ = files;
+    if (startWindow_) startWindow_->setFilesList(filesList_);
 }
 
-
-void UI::ProjectManager::setProjectPath(const QString& projectPath) {
-    projectData_.path = projectPath;
-}
-
-
-void UI::ProjectManager::setProjectData(const ProjectData& data) {
-    projectData_ = data;
-}
-
-
-void UI::ProjectManager::setActiveTabNameProject(const QString& name) {
-    projectWindow_->setActiveName(name);
-}
-
-
-void UI::ProjectManager::setDefaultProjectsPath(const QString& projectPath) {
-    defaultProjectPath_ = projectPath;
-    if (startWindow_) {
-        startWindow_->setDefaultProjectsPath(projectPath);
-    }
-    if (projectWindow_) {
-        projectWindow_->setDefaultProjectsPath(projectPath);
-    }
-}
-
-
-void UI::ProjectManager::setProjectsList(const QVector<QPair<QString, QString> >& projectsList) {
-    projectsList_ = projectsList;
-    if (startWindow_) {
-        startWindow_->setProjectsList(projectsList_);
-    }
-}
-
-
-void UI::ProjectManager::addNotification(const QString& tabName, const QString& text) const {
-    for (auto *t: tabWindows_) {
-        if (t->tabName() == tabName) {
-            t->addNotification(text);
+void UI::ProjectManager::addNotification(
+    const qint64 id, const QString& text) const {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) {
+            window->addNotification(text);
             return;
         }
     }
-    if (const auto *window = activeWindow()) {
-        window->addNotification(text);
-    }
+    if (const auto *window = activeWindow()) window->addNotification(text);
 }
-
 
 void UI::ProjectManager::addNotification(const QString& text) const {
-    if (const auto *window = activeWindow()) {
-        window->addNotification(text);
-    }
+    if (const auto *window = activeWindow()) window->addNotification(text);
 }
 
-
 void UI::ProjectManager::openStartWindow() {
-    projectData_ = {};
-    closeTabWindows();
-
-    removeProjectWindow();
+    closeLightEditorWindows();
+    removeEditorWindow();
     ensureStartWindow();
 
-    if (!projectsList_.isEmpty()) {
-        startWindow_->setProjectsList(projectsList_);
-    }
-    if (!defaultProjectPath_.isEmpty()) {
-        startWindow_->setDefaultProjectsPath(defaultProjectPath_);
-    }
+     startWindow_->setFilesList(filesList_);
 
     startWindow_->show();
     startWindow_->raise();
     startWindow_->activateWindow();
 }
 
-
-void UI::ProjectManager::openProjectWindow() {
+void UI::ProjectManager::openNewWindow() {
     removeStartWindow();
-    closeTabWindows();
+    closeLightEditorWindows();
+    removeEditorWindow();
+    ensureEditorWindow();
 
-    removeProjectWindow();
-    ensureProjectWindow();
-
-    if (!defaultProjectPath_.isEmpty()) {
-        projectWindow_->setDefaultProjectsPath(defaultProjectPath_);
-    }
-
-    projectWindow_->show();
-    projectWindow_->raise();
-    projectWindow_->activateWindow();
+    editorWindow_->show();
+    editorWindow_->raise();
+    editorWindow_->activateWindow();
 }
 
-
-void UI::ProjectManager::openProjectWindow(const ProjectData& data, QWindow *windowRender, QLineEdit *consoleEngine) {
-    openProjectWindow();
-    if (windowRender) {
-        setQWindowRender(windowRender);
-    }
-    if (consoleEngine) {
-        setCommandConsoleEngine(consoleEngine);
-    }
-    projectData_ = data;
+void UI::ProjectManager::openNewWindow(
+    QWindow *windowRender, QLineEdit *consoleEngine) {
+    openNewWindow();
+    if (windowRender) setQWindowRender(windowRender);
+    if (consoleEngine) setCommandConsoleEngine(consoleEngine);
 }
 
+void UI::ProjectManager::openLightEditorWindow(
+   const QString& fileName,const qint64 id, QWindow *windowRender, QLineEdit *consoleEngine) {
 
-void UI::ProjectManager::addTabSlot(const QString& name) {
-    if (name.isEmpty()) {
-        return;
-    }
-
-    projectWindow_->addTabSlot(name);
-}
-
-
-void UI::ProjectManager::deleteTabSlot(const QString& name) {
-    if (name.isEmpty()) {
-        return;
-    }
-
-    projectWindow_->deleteTabSlot(name);
-
-    if (auto *tabWindow = findTabWindow(name)) {
-        tabWindows_.removeOne(tabWindow);
-        tabWindow->close();
-        tabWindow->deleteLater();
-    }
-}
-
-
-void UI::ProjectManager::renameTabSlot(const QString& oldName, const QString& newName) {
-    if (oldName.isEmpty() || newName.isEmpty()) {
-        return;
-    }
-
-    for (auto *tabWindow: tabWindows_) {
-        if (tabWindow->tabName() == oldName) {
-            tabWindow->setTabName(newName);
-            return;
-        }
-    }
-
-    projectWindow_->renameTabSlot(oldName, newName);
-
-    if (auto *tabWindow = findTabWindow(oldName)) {
-        tabWindow->setTabName(newName);
-    }
-}
-
-
-void UI::ProjectManager::setQOpenGLPainter(QOpenGLWindow *engine) const {
-    if (const auto *window = activeEditorWindow()) {
-        window->setQOpenGLPainter(engine);
-    }
-}
-
-
-void UI::ProjectManager::setQWindowRender(QWindow *engine) const {
-    if (engine == nullptr) {
-        return;
-    }
-    if (const auto *window = activeEditorWindow()) {
-        window->setQWindowRender(engine);
-    }
-}
-
-
-void UI::ProjectManager::setCommandConsoleEngine(QLineEdit *engine) const {
-    if (const auto *window = activeEditorWindow()) {
-        window->setCommandConsoleEngine(engine);
-    }
-}
-
-
-void UI::ProjectManager::closeEvent(QCloseEvent *event) {
-    emit saveFullProjectTriggered();
-}
-
-
-void UI::ProjectManager::connectStartWindowSignals() {
-    if (!startWindow_) {
-        return;
-    }
-
-    connect(startWindow_, &StartWindow::openProjectThisWindowTriggered,
-            this, &ProjectManager::openProjectThisWindowTriggered);
-
-    connect(startWindow_, &StartWindow::createProjectThisWindowTriggered,
-            this, &ProjectManager::createProjectThisWindowTriggered);
-
-    connect(startWindow_, &StartWindow::renameProjectTriggered,
-            this, &ProjectManager::renameProjectTriggered);
-
-    connect(startWindow_, &StartWindow::deleteProjectTriggered,
-            this, &ProjectManager::deleteProjectTriggered);
-}
-
-
-void UI::ProjectManager::connectProjectWindowSignals() {
-    if (!projectWindow_) {
-        return;
-    }
-
-    connect(projectWindow_, &ProjectWindow::windowClosedTriggered,
-            this, &ProjectManager::handleProjectWindowClosed);
-
-    connect(projectWindow_, &ProjectWindow::sentCommandTriggered,
-            this, &ProjectManager::sentCommandTriggered);
-
-    connect(projectWindow_, &ProjectWindow::primitiveTriggered,
-            this, &ProjectManager::primitiveTriggered);
-
-    connect(projectWindow_, &ProjectWindow::constraintTriggered,
-            this, &ProjectManager::constraintTriggered);
-
-    connect(projectWindow_, &ProjectWindow::toolsTriggered,
-            this, &ProjectManager::toolsTriggered);
-
-    connect(projectWindow_, &ProjectWindow::goToStartWindowTriggered,
-            this, &ProjectManager::goToStartWindowTriggered);
-
-    connect(projectWindow_, &ProjectWindow::openProjectThisWindowTriggered,
-            this, &ProjectManager::openProjectThisWindowTriggered);
-
-    connect(projectWindow_, &ProjectWindow::createProjectThisWindowTriggered,
-            this, &ProjectManager::createProjectThisWindowTriggered);
-
-    connect(projectWindow_, &ProjectWindow::openNewWindowOpenProjectTriggered,
-            this, &ProjectManager::openNewWindowOpenProjectTriggered);
-
-    connect(projectWindow_, &ProjectWindow::openNewWindowCreateProjectTriggered,
-            this, &ProjectManager::openNewWindowCreateProjectTriggered);
-
-    connect(projectWindow_, &ProjectWindow::openFileTriggered,
-            this, &ProjectManager::openFileTriggered);
-
-    connect(projectWindow_, &ProjectWindow::createFileTriggered,
-            this, &ProjectManager::createFileTriggered);
-
-    connect(projectWindow_, &ProjectWindow::renameTabTriggered,
-            this, &ProjectManager::renameTabTriggered);
-
-    connect(projectWindow_, &ProjectWindow::removeTabTriggered,
-            this, &ProjectManager::removeTabTriggered);
-
-    connect(projectWindow_, &ProjectWindow::openTabWindowTriggered,
-            this, &ProjectManager::checkOpenedTabWindow);
-
-    connect(projectWindow_, &ProjectWindow::setActiveTabTriggered,
-            this, &ProjectManager::setActiveTabTriggered);
-
-    connect(projectWindow_, &ProjectWindow::onOpenScriptTriggered,
-            this, &ProjectManager::scriptTriggered);
-
-    connect(projectWindow_, &ProjectWindow::closeApplicationTriggered,
-            this, [this] {
-                if (auto *window = activeWindow()) {
-                    window->close();
-                }
-            });
-
-    connect(projectWindow_, &ProjectWindow::applySettings,
-            this, &ProjectManager::applySettings);
-}
-
-
-void UI::ProjectManager::ensureStartWindow() {
-    if (startWindow_) {
-        return;
-    }
-
-    startWindow_ = new StartWindow();
-    startWindow_->hide();
-    startWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
-    connectStartWindowSignals();
-}
-
-
-void UI::ProjectManager::ensureProjectWindow() {
-    if (projectWindow_) {
-        return;
-    }
-
-    projectWindow_ = new ProjectWindow();
-    projectWindow_->hide();
-    projectWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
-    connectProjectWindowSignals();
-}
-
-
-void UI::ProjectManager::removeProjectWindow() {
-    if (!projectWindow_) {
-        return;
-    }
-
-    removingProjectWindow_ = true;
-    projectWindow_->close();
-    projectWindow_->deleteLater();
-    projectWindow_ = nullptr;
-    removingProjectWindow_ = false;
-}
-
-
-void UI::ProjectManager::removeStartWindow() {
-    if (!startWindow_) {
-        return;
-    }
-
-    startWindow_->close();
-    startWindow_->deleteLater();
-    startWindow_ = nullptr;
-}
-
-
-void UI::ProjectManager::closeTabWindows() {
-    const auto windows = tabWindows_;
-    tabWindows_.clear();
-
-    for (auto *tabWindow: windows) {
-        if (!tabWindow) {
-            continue;
-        }
-
-        tabWindow->close();
-        tabWindow->deleteLater();
-    }
-}
-
-
-void UI::ProjectManager::handleProjectWindowClosed() {
-    if (removingProjectWindow_) {
-        return;
-    }
-
-    closeTabWindows();
-    projectData_ = {};
-
-    if (projectWindow_) {
-        projectWindow_->deleteLater();
-        projectWindow_ = nullptr;
-    }
-}
-
-
-void UI::ProjectManager::checkOpenedTabWindow(const QString& tabName) {
-    if (tabName.isEmpty()) {
-        return;
-    }
-
-    if (auto *existingWindow = findTabWindow(tabName)) {
+    if (auto *existingWindow = findTabWindow(id)) {
         existingWindow->show();
         existingWindow->raise();
         existingWindow->activateWindow();
         return;
     }
-    emit openNewWindowTabTriggered(tabName);
-}
 
-
-void UI::ProjectManager::openTabWindow(const QString& tabName,
-                                       QWindow *windowRender,
-                                       QLineEdit *consoleEngine) {
-    auto *tabWindow = new TabWindow(tabName);
+    auto *tabWindow = new LightEditorWindow(id,fileName);
     tabWindow->setAttribute(Qt::WA_DeleteOnClose, true);
-    tabWindows_.append(tabWindow);
+    lightEditorWindows_.append(tabWindow);
 
-    tabWindow->setQWindowRender(windowRender);
-    tabWindow->setCommandConsoleEngine(consoleEngine);
+    if (windowRender) tabWindow->setQWindowRender(windowRender);
+    if (consoleEngine) tabWindow->setCommandConsoleEngine(consoleEngine);
 
-    connect(tabWindow, &TabWindow::sentCommandTriggered,
+    connect(tabWindow, &LightEditorWindow::sentCommandTriggered,
             this, &ProjectManager::sentCommandTriggered);
-
-    connect(tabWindow, &TabWindow::primitiveTriggered,
+    connect(tabWindow, &LightEditorWindow::primitiveTriggered,
             this, &ProjectManager::primitiveTriggered);
-
-    connect(tabWindow, &TabWindow::constraintTriggered,
+    connect(tabWindow, &LightEditorWindow::constraintTriggered,
             this, &ProjectManager::constraintTriggered);
-
-    connect(tabWindow, &TabWindow::toolsTriggered,
+    connect(tabWindow, &LightEditorWindow::toolsTriggered,
             this, &ProjectManager::toolsTriggered);
 
-    connect(tabWindow, &TabWindow::returnTabTriggered,
-            this, [this, tabWindow](const QString& name) {
-                emit returnTabWindowTriggered(name);
-                tabWindows_.removeOne(tabWindow);
+    connect(tabWindow, &LightEditorWindow::returnTabTriggered,
+            this, [this, tabWindow](const qint64 id) {
+                emit returnLightEditorWindowTriggered(id);
+                lightEditorWindows_.removeOne(tabWindow);
                 tabWindow->close();
             });
 
     connect(tabWindow, &QObject::destroyed,
             this, [this, tabWindow]() {
-                for (const auto *t: tabWindows_) {
-                    if (tabWindow == t) {
-                        tabWindows_.removeOne(tabWindow);
-                        emit closeTabWindowTriggered(tabWindow->windowTitle());
-                    }
-                }
+                lightEditorWindows_.removeOne(tabWindow);
             });
 
     tabWindow->show();
@@ -532,36 +211,198 @@ void UI::ProjectManager::openTabWindow(const QString& tabName,
     tabWindow->activateWindow();
 }
 
+void UI::ProjectManager::checkOpenedNewWindow(const qint64 id) {
 
-UI::TabWindow* UI::ProjectManager::findTabWindow(const QString& tabName) const {
-    for (auto *tabWindow: tabWindows_) {
-        if (tabWindow && tabWindow->tabName() == tabName) {
-            return tabWindow;
-        }
+    if (auto *existingWindow = findTabWindow(id)) {
+        existingWindow->show();
+        existingWindow->raise();
+        existingWindow->activateWindow();
+        return;
     }
+    emit openLightEditorTriggered(id);
+}
 
+void UI::ProjectManager::addTabSlot(const QString& name,const qint64 id) {
+    if (!name.isEmpty() && editorWindow_) editorWindow_->addTabSlot(name,id);
+}
+
+void UI::ProjectManager::deleteTabSlot(const qint64 id) {
+
+
+    if (editorWindow_) editorWindow_->deleteTabSlot(id);
+
+    if (auto *tabWindow = findTabWindow(id)) {
+        lightEditorWindows_.removeOne(tabWindow);
+        tabWindow->close();
+        tabWindow->deleteLater();
+    }
+}
+
+void UI::ProjectManager::renameTabSlot(
+    const qint64 id, const QString& newName) {
+    if (newName.isEmpty()) return;
+
+    if (editorWindow_) editorWindow_->renameTabSlot(id, newName);
+
+    if (auto *tabWindow = findTabWindow(id)) {
+        tabWindow->setName(newName);
+    }
+}
+
+void UI::ProjectManager::setQOpenGLPainter(QOpenGLWindow *engine) const {
+    if (const auto *window = activeEditorWindow()) window->setQOpenGLPainter(engine);
+}
+
+void UI::ProjectManager::setQWindowRender(QWindow *engine) const {
+    if (!engine) return;
+    if (const auto *window = activeEditorWindow()) window->setQWindowRender(engine);
+}
+
+void UI::ProjectManager::setCommandConsoleEngine(QLineEdit *engine) const {
+    if (const auto *window = activeEditorWindow()) window->setCommandConsoleEngine(engine);
+}
+
+void UI::ProjectManager::closeEvent(QCloseEvent *event) {
+    emit saveFullProjectTriggered();
+    if (event) event->accept();
+}
+
+void UI::ProjectManager::connectStartWindowSignals() {
+    if (!startWindow_) return;
+
+    connect(startWindow_, &StartWindow::openFileThisWindowTriggered,
+            this, &ProjectManager::openFileThisWindowTriggered);
+    connect(startWindow_, &StartWindow::createFileThisWindowTriggered,
+            this, &ProjectManager::createFileThisWindowTriggered);
+    connect(startWindow_, &StartWindow::renameFileTriggered,
+            this, &ProjectManager::renameFileTriggered);
+    connect(startWindow_, &StartWindow::deleteFileTriggered,
+            this, &ProjectManager::deleteFileTriggered);
+}
+
+void UI::ProjectManager::connectEditorWindowSignals() {
+    if (!editorWindow_) return;
+
+    connect(editorWindow_, &EditorWindow::windowClosedTriggered,
+            this, &ProjectManager::handleEditorWindowClosed);
+    connect(editorWindow_, &EditorWindow::sentCommandTriggered,
+            this, &ProjectManager::sentCommandTriggered);
+    connect(editorWindow_, &EditorWindow::primitiveTriggered,
+            this, &ProjectManager::primitiveTriggered);
+    connect(editorWindow_, &EditorWindow::constraintTriggered,
+            this, &ProjectManager::constraintTriggered);
+    connect(editorWindow_, &EditorWindow::toolsTriggered,
+            this, &ProjectManager::toolsTriggered);
+    connect(editorWindow_, &EditorWindow::goToStartWindowTriggered,
+            this, &ProjectManager::goToStartWindowTriggered);
+    connect(editorWindow_, &EditorWindow::openFileThisWindowTriggered,
+            this, &ProjectManager::openFileThisWindowTriggered);
+    connect(editorWindow_, &EditorWindow::createFileThisWindowTriggered,
+            this, &ProjectManager::createFileThisWindowTriggered);
+    connect(editorWindow_, &EditorWindow::openNewWindowOpenFileTriggered,
+            this, &ProjectManager::openNewWindowOpenFileTriggered);
+    connect(editorWindow_, &EditorWindow::openNewWindowCreateFileTriggered,
+            this, &ProjectManager::openNewWindowCreateFileTriggered);
+    connect(editorWindow_, &EditorWindow::openFileTriggered,
+            this, &ProjectManager::openFileTriggered);
+    connect(editorWindow_, &EditorWindow::createFileTriggered,
+            this, &ProjectManager::createFileTriggered);
+    connect(editorWindow_, &EditorWindow::renameTabTriggered,
+            this, &ProjectManager::renameTabTriggered);
+    connect(editorWindow_, &EditorWindow::removeTabTriggered,
+            this, &ProjectManager::removeTabTriggered);
+    connect(editorWindow_, &EditorWindow::openLightEditorWindowTriggered,
+            this, &ProjectManager::checkOpenedNewWindow);
+    connect(editorWindow_, &EditorWindow::setActiveTabTriggered,
+            this, &ProjectManager::setActiveTabTriggered);
+    connect(editorWindow_, &EditorWindow::onOpenScriptTriggered,
+            this, &ProjectManager::scriptTriggered);
+
+    connect(editorWindow_, &EditorWindow::closeApplicationTriggered,
+            this, [this]() {
+                if (auto *window = activeWindow()) window->close();
+            });
+
+    connect(editorWindow_, &EditorWindow::applySettings,
+            this, &ProjectManager::applySettings);
+}
+
+void UI::ProjectManager::ensureStartWindow() {
+    if (startWindow_) return;
+
+    startWindow_ = new StartWindow();
+    startWindow_->hide();
+    startWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
+    connectStartWindowSignals();
+}
+
+void UI::ProjectManager::ensureEditorWindow() {
+    if (editorWindow_) return;
+
+    editorWindow_ = new EditorWindow();
+    editorWindow_->hide();
+    editorWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
+    connectEditorWindowSignals();
+}
+
+void UI::ProjectManager::removeEditorWindow() {
+    if (!editorWindow_) return;
+
+    removingEditorWindow_ = true;
+    editorWindow_->close();
+    editorWindow_->deleteLater();
+    editorWindow_ = nullptr;
+    removingEditorWindow_ = false;
+}
+
+void UI::ProjectManager::removeStartWindow() {
+    if (!startWindow_) return;
+
+    startWindow_->close();
+    startWindow_->deleteLater();
+    startWindow_ = nullptr;
+}
+
+void UI::ProjectManager::closeLightEditorWindows() {
+    const auto windows = lightEditorWindows_;
+    lightEditorWindows_.clear();
+
+    for (auto *window : windows) {
+        if (!window) continue;
+        window->close();
+        window->deleteLater();
+    }
+}
+
+void UI::ProjectManager::handleEditorWindowClosed() {
+    if (removingEditorWindow_) return;
+
+    closeLightEditorWindows();
+
+    if (editorWindow_) {
+        editorWindow_->deleteLater();
+        editorWindow_ = nullptr;
+    }
+}
+
+UI::LightEditorWindow* UI::ProjectManager::findTabWindow(
+    const qint64 id) const {
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->id() == id) return window;
+    }
     return nullptr;
 }
 
-
 UI::BaseWindow* UI::ProjectManager::activeWindow() const {
-    if (projectWindow_ && projectWindow_->isVisible()) {
-        return projectWindow_;
-    }
-
+    if (editorWindow_ && editorWindow_->isVisible()) return editorWindow_;
     return startWindow_;
 }
 
-
 UI::BaseEditorWindow* UI::ProjectManager::activeEditorWindow() const {
-    for (auto *tabWindow: tabWindows_) {
-        if (tabWindow && tabWindow->isVisible() && tabWindow->isActiveWindow()) {
-            return tabWindow;
-        }
-    }
-    if (projectWindow_ && projectWindow_->isVisible()) {
-        return projectWindow_;
+    for (auto *window : lightEditorWindows_) {
+        if (window && window->isVisible() && window->isActiveWindow()) return window;
     }
 
+    if (editorWindow_ && editorWindow_->isVisible()) return editorWindow_;
     return nullptr;
 }

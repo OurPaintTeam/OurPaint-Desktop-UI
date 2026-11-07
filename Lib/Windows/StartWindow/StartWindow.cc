@@ -4,6 +4,10 @@
 
 #include <QVBoxLayout>
 
+namespace UI {
+    struct FileData;
+}
+
 namespace {
     constexpr int MARGIN = 0;
     constexpr int SPACING = 0;
@@ -27,28 +31,28 @@ void UI::StartWindow::initUI() {
     startPage_ = new StartPage(contentWidget_);
     rootLayout_->addWidget(startPage_);
 
-    connect(startPage_, &StartPage::openProjectInThisWindowTriggered,
-            this, &StartWindow::openProjectThisWindowTriggered);
-    connect(startPage_, &StartPage::createProjectInThisWindowTriggered,
-            this, &StartWindow::createProjectThisWindowTriggered);
-    connect(startPage_, &StartPage::renameProjectTriggered,
-            this, &StartWindow::renameProjectTriggered);
-    connect(startPage_, &StartPage::deleteProjectTriggered,
-            this, &StartWindow::deleteProjectTriggered);
+    connect(startPage_, &StartPage::openFileInThisWindowTriggered,
+            this, &StartWindow::openFileThisWindowTriggered);
+    connect(startPage_, &StartPage::createFileInThisWindowTriggered,
+            this, &StartWindow::createFileThisWindowTriggered);
+    connect(startPage_, &StartPage::renameFileTriggered,
+            this, &StartWindow::renameFileTriggered);
+    connect(startPage_, &StartPage::deleteFileTriggered,
+            this, &StartWindow::deleteFileTriggered);
 
     initNotificationManager();
 }
 
 
-void UI::StartWindow::setProjectsList(const QVector<QPair<QString, QString>>& projectsList) const {
+void UI::StartWindow::setFilesList(const QVector<FileData>& files) const {
     if (startPage_) {
-        startPage_->setProjectsList(projectsList);
+        startPage_->setFilesList(files);
     }
 }
 
 
-void UI::StartWindow::setDefaultProjectsPath(const QString& projectPath) const {
+void UI::StartWindow::setDefaultFilesPath(const QString& path) const {
     if (startPage_) {
-        startPage_->setDefaultProjectsPath(projectPath);
+        startPage_->setDefaultFilesPath(path);
     }
 }

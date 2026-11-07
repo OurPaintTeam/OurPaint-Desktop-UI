@@ -31,8 +31,8 @@ void UI::BaseEditorWindow::takeOffHint() {
     editorPage_->takeOffHint();
 }
 
-void UI::BaseEditorWindow::setActiveName(const QString& name) {
-    editorPage_->setActiveName(name);
+void UI::BaseEditorWindow::setActiveID(const qint64& id) {
+    editorPage_->setActiveID(id);
 }
 
 

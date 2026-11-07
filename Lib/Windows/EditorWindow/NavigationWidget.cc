@@ -23,24 +23,20 @@ UI::NavigationWidget::NavigationWidget(QWidget* parent)
 
     startButton_ = new QPushButton("Go to Start Window");
     createFileButton_ = new QPushButton("Create File");
-    createProjectButton_ = new QPushButton("Create Project");
     closeButton_ = new QPushButton("Close Application");
 
     startButton_->setToolTip("Go to Start Window");
     createFileButton_->setToolTip("Create File");
-    createProjectButton_->setToolTip("Create Project");
     closeButton_->setToolTip("Close Application");
 
     buttonPlane_->setObjectName("buttonPlaneNavigationPage");
     setObjectName("NavigationPage");
     startButton_->setObjectName("startButton_");
     createFileButton_->setObjectName("createFileButton_");
-    createProjectButton_->setObjectName("createProjectButton_");
     closeButton_->setObjectName("closeButton_");
 
     layout_->addWidget(startButton_);
     layout_->addWidget(createFileButton_);
-    layout_->addWidget(createProjectButton_);
     layout_->addWidget(closeButton_);
 
     mainLayout_->addWidget(buttonPlane_);
@@ -50,9 +46,6 @@ UI::NavigationWidget::NavigationWidget(QWidget* parent)
 
     connect(createFileButton_, &QPushButton::clicked,
             this, &NavigationWidget::createFileTriggered);
-
-    connect(createProjectButton_, &QPushButton::clicked,
-            this, &NavigationWidget::createProjectTriggered);
 
     connect(closeButton_, &QPushButton::clicked,
             this, &NavigationWidget::closeApplicationTriggered);

@@ -18,36 +18,34 @@ class QWindow;
         QVector<UI::ProjectManager*> projectManagers_;
         UI::FileSystem fs_;
 
-        bool checkedOpened(const QString& projectPath) const;
-        void sentCommandFromConsole(UI::ProjectManager* manager, const QString& command,const QString& name) const;
-        void openNewWindowOpenProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
-        void openNewWindowCreateProjectSlot(UI::ProjectManager* manager, const QString& projectPath);
-        void openProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const;
-        void createProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const;
-        void openTabWindowSlot(UI::ProjectManager* manager, const QString& nameTab) const;
-        void openFileSlot(UI::ProjectManager* manager, const QString& filePath) const;
-        void renameTabSlot(UI::ProjectManager* manager, const QString& oldName, const QString& newName) const;
-        void removeTabSlot(UI::ProjectManager* manager, const QString& tabName) const;
-        void createFileSlot(UI::ProjectManager* manager, const QString& fileName) const;
-        void goToStartWindowSlot(UI::ProjectManager* manager) const;
-        void renameProjectSlot(UI::ProjectManager* manager, const QString& newName, const QString& path) const;
-        void deleteProjectSlot(UI::ProjectManager* manager, const QString& path) const;
+        qint64 defaultLocationId() const;
+
+        UI::ProjectManager* createProjectManager();
+        UI::ProjectManager* createEditorProjectManager(QWindow* windowRender,
+                                                       QLineEdit* consoleEngine);
         void deleteSlot(UI::ProjectManager* manager);
-        void setActiveTabSlot(UI::ProjectManager* manager, const QString& name);
-        void returnTabWindowSlot(UI::ProjectManager* manager, const QString& name);
-        void closeTabWindowSlot(UI::ProjectManager* manager, const QString& name);
-        void scriptSlot(UI::ProjectManager* manager, const QString& path);
-
-        void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name);
-        void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type,const QString& name);
-        void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type, const QString& name);
-        void settingsSlot(UI::ProjectManager* manager,double f,double s,double t);
-
-        UI::ProjectManager* createProjectManager(const UI::ProjectManager::ProjectData& projectData = {});
-        UI::ProjectManager* createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
-                                                        QWindow* windowRender,
-                                                        QLineEdit* consoleEngine);
         void initSignals(UI::ProjectManager& manager);
+        void refreshFiles(UI::ProjectManager* manager) const;
+
+        void openFileInCurrentWindow(UI::ProjectManager* manager, qint64 fileId) const;
+        void openFileByPathInCurrentWindow(UI::ProjectManager* manager, const QString& path) const;
+        void openFileByPathInNewWindow(const QString& path);
+        void createFileInCurrentWindow(UI::ProjectManager* manager, const QString& fileName) const;
+        void createFileInNewWindow(const QString& fileName);
+        void renameFile(qint64 fileId, const QString& newName) const;
+        void deleteFile(UI::ProjectManager* manager, qint64 fileId) const;
+        void openLightEditor(UI::ProjectManager* manager, const QString& fileName, qint64 fileId);
+        void returnTabFromLight(UI::ProjectManager* manager, qint64 fileId) const;
+        void setActiveTab(UI::ProjectManager* manager, qint64 fileId) const;
+        void goToStartWindow(UI::ProjectManager* manager) const;
+
+        void sentCommandFromConsole(UI::ProjectManager* manager, qint64 fileId,
+                                    const QString& command) const;
+        void primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type, qint64 fileId);
+        void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type, qint64 fileId);
+        void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type, qint64 fileId);
+        void scriptSlot(UI::ProjectManager* manager, const QString& path);
+        void settingsSlot(UI::ProjectManager* manager, double f, double s, double t);
     };
 
 #endif //OURPAINT_DESKTOP_UI_UIMANAGER_H

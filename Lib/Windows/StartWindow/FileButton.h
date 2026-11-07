@@ -8,17 +8,19 @@
 #include <QStackedLayout>
 
 namespace UI {
+    struct FileData;
 
     class RenameTabLineEdit;
 
-    class ProjectButton final : public QPushButton
+    class FileButton final : public QPushButton
     {
         Q_OBJECT
 
     public:
-        explicit ProjectButton(const QString& name,
-                               const QString& path,
-                               QWidget* parent = nullptr);
+        explicit FileButton(
+        const FileData& file,
+        QWidget* parent = nullptr
+    );
 
         bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -29,12 +31,10 @@ namespace UI {
         QString getName() const;
         QString getPath() const;
 
-
-
     signals:
-            void renameProjectTriggered(const QString& newName, const QString& path);
-        void deleteProjectTriggered(const QString& path);
-        void pressProjectTriggered(const QString& path);
+        void renameFileTriggered(qint64 fileId, const QString& newName);
+        void deleteFileTriggered(qint64 fileId);
+        void pressFileTriggered(qint64 fileId);
     protected:
         void changeEvent(QEvent *e) override;
 
@@ -55,6 +55,8 @@ namespace UI {
         QStackedLayout* nameStack_{nullptr};
 
         bool editing_ = false;
+
+        qint64 fileId_{-1};
     };
 
 } // namespace UI

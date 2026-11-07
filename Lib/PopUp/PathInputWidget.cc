@@ -26,7 +26,7 @@ UI::PathInputWidget::PathInputWidget(const QString& promptText,
     constexpr auto size = QSize(26, 26);
     browseButton_->setFixedSize(size);
 
-    browseButton_->setIcon(QIcon(":/Assets/icons/folder/openProjectLight.svg"));
+    browseButton_->setIcon(QIcon(":/Assets/icons/folder/openFileLight.svg"));
     constexpr auto size1 = QSize(16, 16);
     browseButton_->setIconSize(size1);
 

@@ -6,6 +6,7 @@
 class QVBoxLayout;
 
 namespace UI {
+    struct FileData;
     class StartPage;
 
 
@@ -17,14 +18,14 @@ namespace UI {
         ~StartWindow() override = default;
 
         void initUI() override;
-        void setProjectsList(const QVector<QPair<QString, QString>>& projectsList) const;
-        void setDefaultProjectsPath(const QString& projectPath) const;
+        void setFilesList(const QVector<FileData>& files) const;
+        void setDefaultFilesPath(const QString& path) const;
 
     signals:
-        void openProjectThisWindowTriggered(const QString& projectPath);
-        void createProjectThisWindowTriggered(const QString& projectPath);
-        void renameProjectTriggered(const QString& newName, const QString& path);
-        void deleteProjectTriggered(const QString& path);
+        void openFileThisWindowTriggered(const QString& path);
+        void createFileThisWindowTriggered(const QString& path);
+        void renameFileTriggered(const qint64 id, const QString& path);
+        void deleteFileTriggered(const qint64 id);
 
     private:
         QWidget* contentWidget_{nullptr};

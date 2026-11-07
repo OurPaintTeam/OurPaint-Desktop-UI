@@ -46,7 +46,7 @@ void UI::TabMenu::translate() const {
         deleteTab_->setText(UI::TabMenu::tr("Delete file"));
     }
     if (closeTab_) {
-        closeTab_->setText(UI::TabMenu::tr("Close tab"));
+        closeTab_->setText(UI::TabMenu::tr("Close file"));
     }
     if (closeAllLeftTabs_) {
         closeAllLeftTabs_->setText(UI::TabMenu::tr("Close all left tabs"));

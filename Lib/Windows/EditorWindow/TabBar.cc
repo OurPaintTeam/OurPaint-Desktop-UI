@@ -29,7 +29,7 @@ UI::TabBar::TabBar(QWidget *parent)
     connect(tabMenu_, &TabMenu::deleteTabTriggered, this, [this]() {
      if (contextTab_) {
        if (removeTab(contextTab_)) {
-         removeTabTriggered(contextTab_->getName());
+         removeTabTriggered(contextTab_->getFileId());
        }
      }
    });
@@ -119,7 +119,7 @@ UI::TabBar::TabBar(QWidget *parent)
     translate();
 }
 
-void UI::TabBar::addTabSlot(const QString &name) {
+void UI::TabBar::addTabSlot(const QString &name, const qint64 id) {
   if (name.isEmpty()) {
     return;
   }
@@ -129,7 +129,7 @@ void UI::TabBar::addTabSlot(const QString &name) {
   //   }
   // }
 
-  auto *tab = new UI::TabWidget(tabBar_,name);
+  auto *tab = new UI::TabWidget(tabBar_,id, name);
   tabs_.append(tab);
 
   const auto plusIndex = tabLayout_->indexOf(plusButton_);
@@ -143,7 +143,7 @@ void UI::TabBar::addTabSlot(const QString &name) {
           &TabBar::removeTab);
   connect(tab, &UI::TabWidget::draggedOutTriggered, this,
           [this](TabWidget *draggedTab) {
-            emit openTabWindowTriggered(draggedTab->getName());
+            emit openLightEditorWindowTriggered(draggedTab->getFileId());
             removeTab(draggedTab);
           });
   connect(tab, &UI::TabWidget::rightClickedTriggered, this,
@@ -154,18 +154,18 @@ void UI::TabBar::addTabSlot(const QString &name) {
 
 bool UI::TabBar::isEmptyTab() const { return tabs_.isEmpty(); }
 
-void UI::TabBar::renameTab(const QString &oldName, const QString &newName) {
+void UI::TabBar::renameTab(const qint64 id, const QString &newName) {
   for (auto *tab : tabs_) {
-    if (tab->getName() == oldName) {
+    if (tab->getFileId() == id) {
       tab->setName(newName);
       return;
     }
   }
 }
 
-void UI::TabBar::deleteTabSlot(const QString &name) {
+void UI::TabBar::deleteTabSlot( const qint64 id) {
   for (auto *tab : tabs_) {
-    if (tab->getName() == name) {
+    if (tab->getFileId() == id) {
       removeTab(tab);
       return;
     }
@@ -219,9 +219,9 @@ bool UI::TabBar::removeTab(TabWidget *tab) {
   return true;
 }
 
-UI::TabWidget *UI::TabBar::closeTabOnNameSlot(const QString &name) {
+UI::TabWidget *UI::TabBar::closeTabSlot(const qint64 id) {
   for (auto *tab : tabs_) {
-    if (tab->getName() == name) {
+    if (tab->getFileId() == id) {
       removeTab(tab);
       return tab;
     }
@@ -242,7 +242,7 @@ void UI::TabBar::setActiveTabSlot(TabWidget *tab) {
   activeTab_ = tab;
   activeTab_->setActive(true);
 
-  emit setActiveTabTriggered(tab->getName());
+  emit setActiveTabTriggered(tab->getFileId());
 }
 
 void UI::TabBar::openTabMenuSlot(TabWidget *tab, const QPoint &localPos)
@@ -348,7 +348,7 @@ void UI::TabBar::createTabSlot() {
 
     tab->startRename();
     connect(tab, &TabWidget::renameTriggered, this,
-            [this, tab](const QString& name,const QString& nameNew) {
+            [this, tab](const qint64 id, const QString& nameNew) {
 
         emit createTabTriggered(nameNew);
          tabLayout_->removeWidget(tab);

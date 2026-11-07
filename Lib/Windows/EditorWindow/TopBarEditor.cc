@@ -1,4 +1,4 @@
-#include "TopBarProject.h"
+#include "TopBarEditor.h"
 
 #include <QEvent>
 
@@ -11,10 +11,10 @@
 
 #include <QToolButton>
 
-#include "ProjectMenu.h"
+#include "FileMenu.h"
 
 
-UI::TopBarProject::TopBarProject(QWidget *parent)
+UI::TopBarEditor::TopBarEditor(QWidget *parent)
     : BaseEditorTopBar(parent) {
     setObjectName(QStringLiteral("TopBarProject"));
     createProjectButtons();
@@ -22,7 +22,7 @@ UI::TopBarProject::TopBarProject(QWidget *parent)
 }
 
 
-void UI::TopBarProject::setTabBar(TabBar *bar) {
+void UI::TopBarEditor::setTabBar(TabBar *bar) {
     if (!bar) {
         return;
     }
@@ -38,7 +38,7 @@ void UI::TopBarProject::setTabBar(TabBar *bar) {
 }
 
 
-void UI::TopBarProject::setLeftMenu(SideMenu *menu) {
+void UI::TopBarEditor::setLeftMenu(SideMenu *menu) {
     if (!menu) {
         return;
     }
@@ -46,7 +46,7 @@ void UI::TopBarProject::setLeftMenu(SideMenu *menu) {
 }
 
 
-void UI::TopBarProject::setRightMenu(SideMenu *menu) {
+void UI::TopBarEditor::setRightMenu(SideMenu *menu) {
     if (!menu) {
         return;
     }
@@ -54,7 +54,7 @@ void UI::TopBarProject::setRightMenu(SideMenu *menu) {
 }
 
 
-void UI::TopBarProject::setConsole(QWidget *console) {
+void UI::TopBarEditor::setConsole(QWidget *console) {
     if (!console) {
         return;
     }
@@ -62,28 +62,28 @@ void UI::TopBarProject::setConsole(QWidget *console) {
 }
 
 
-void UI::TopBarProject::setTabsButtonEnabled(const bool enabled) const {
+void UI::TopBarEditor::setTabsButtonEnabled(const bool enabled) const {
     if (btnTabs_) {
         btnTabs_->setEnabled(enabled);
     }
 }
 
 
-void UI::TopBarProject::setLeftButtonEnabled(const bool enabled) const {
+void UI::TopBarEditor::setLeftButtonEnabled(const bool enabled) const {
     if (leftButton_) {
         leftButton_->setEnabled(enabled);
     }
 }
 
 
-void UI::TopBarProject::setRightButtonEnabled(const bool enabled) const {
+void UI::TopBarEditor::setRightButtonEnabled(const bool enabled) const {
     if (rightButton_) {
         rightButton_->setEnabled(enabled);
     }
 }
 
 
-void UI::TopBarProject::setPanelsButtonsEnabled(const bool enabled) const {
+void UI::TopBarEditor::setPanelsButtonsEnabled(const bool enabled) const {
     setTabsButtonEnabled(enabled);
     setLeftButtonEnabled(enabled);
     setRightButtonEnabled(enabled);
@@ -91,28 +91,23 @@ void UI::TopBarProject::setPanelsButtonsEnabled(const bool enabled) const {
 }
 
 
-void UI::TopBarProject::createProjectButtons() {
-    projectMenu_ = new ProjectMenu(this);
+void UI::TopBarEditor::createProjectButtons() {
+    projectMenu_ = new FileMenu(this);
     projectButton_ = new MenuButton("", projectMenu_, this);
     projectButton_->setDraw(true);
     addLeftWidget(projectButton_);
-    connect(projectMenu_, &ProjectMenu::createProjectTriggered,
-            this, &TopBarProject::createProjectTriggered);
 
-    connect(projectMenu_, &ProjectMenu::openProjectTriggered,
-            this, &TopBarProject::openProjectTriggered);
+    connect(projectMenu_, &FileMenu::createFileTriggered,
+            this, &TopBarEditor::createFileTriggered);
 
-    connect(projectMenu_, &ProjectMenu::createFileTriggered,
-            this, &TopBarProject::createFileTriggered);
+    connect(projectMenu_, &FileMenu::openFileTriggered,
+            this, &TopBarEditor::openFileTriggered);
 
-    connect(projectMenu_, &ProjectMenu::openFileTriggered,
-            this, &TopBarProject::openFileTriggered);
+    connect(projectMenu_, &FileMenu::exportFileTriggered,
+            this, &TopBarEditor::exportFileTriggered);
 
-    connect(projectMenu_, &ProjectMenu::exportFileTriggered,
-            this, &TopBarProject::exportFileTriggered);
-
-    connect(projectMenu_, &ProjectMenu::scriptTriggered,
-            this, &TopBarProject::scriptTriggered);
+    connect(projectMenu_, &FileMenu::scriptTriggered,
+            this, &TopBarEditor::scriptTriggered);
 
 
     collaborationMenu_ = new CollaborationMenu(this);
@@ -121,10 +116,10 @@ void UI::TopBarProject::createProjectButtons() {
     addLeftWidget(collabButton_);
     collabButton_->setVisible(false);
     connect(collaborationMenu_, &UI::CollaborationMenu::openTriggered,
-            this, &TopBarProject::collaborationOpenTriggered);
+            this, &TopBarEditor::collaborationOpenTriggered);
 
     connect(collaborationMenu_, &UI::CollaborationMenu::closeTriggered,
-            this, &TopBarProject::collaborationCloseTriggered);
+            this, &TopBarEditor::collaborationCloseTriggered);
 
 
     versionControlMenu_ = new VersionControlMenu(this);
@@ -135,19 +130,19 @@ void UI::TopBarProject::createProjectButtons() {
     addLeftWidget(verButton_);
     verButton_->setVisible(false);
     connect(versionControlMenu_, &UI::VersionControlMenu::initTriggered,
-            this, &TopBarProject::versionInitTriggered);
+            this, &TopBarEditor::versionInitTriggered);
 
     connect(versionControlMenu_, &UI::VersionControlMenu::createTriggered,
-            this, &TopBarProject::versionCreateTriggered);
+            this, &TopBarEditor::versionCreateTriggered);
 
     connect(versionControlMenu_, &UI::VersionControlMenu::pushTriggered,
-            this, &TopBarProject::versionPushTriggered);
+            this, &TopBarEditor::versionPushTriggered);
 
     connect(versionControlMenu_, &UI::VersionControlMenu::pullTriggered,
-            this, &TopBarProject::versionPullTriggered);
+            this, &TopBarEditor::versionPullTriggered);
 
     connect(versionControlMenu_, &UI::VersionControlMenu::commitTriggered,
-            this, &TopBarProject::versionCommitTriggered);
+            this, &TopBarEditor::versionCommitTriggered);
 
 
     helpButton_ = new QPushButton(this);
@@ -160,7 +155,7 @@ void UI::TopBarProject::createProjectButtons() {
 }
 
 
-void UI::TopBarProject::setupSettings() {
+void UI::TopBarEditor::setupSettings() {
     btnSettings_ = new QPushButton(QStringLiteral("⚙"), this);
     btnSettings_->setObjectName(QStringLiteral("btnSettings"));
     constexpr auto btnSize = QSize(32, 32);
@@ -174,40 +169,40 @@ void UI::TopBarProject::setupSettings() {
         settings->setAttribute(Qt::WA_DeleteOnClose);
         settings->show();
 
-        connect(settings, &SettingsWidget::settingsApplied, this, &TopBarProject::applySettings);
+        connect(settings, &SettingsWidget::settingsApplied, this, &TopBarEditor::applySettings);
     });
 }
 
 
-void UI::TopBarProject::changeEvent(QEvent *e) {
+void UI::TopBarEditor::changeEvent(QEvent *e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
-    QWidget::changeEvent(e);
+    UI::BaseEditorTopBar::changeEvent(e);
 }
 
 
-void UI::TopBarProject::translate() const {
+void UI::TopBarEditor::translate() const {
     if (projectButton_) {
-        projectButton_->setToolTip(UI::TopBarProject::tr("Project menu"));
-        projectButton_->setText(UI::TopBarProject::tr("Project"));
+        projectButton_->setToolTip(UI::TopBarEditor::tr("File menu"));
+        projectButton_->setText(UI::TopBarEditor::tr("File"));
     }
     if (verButton_) {
-        verButton_->setToolTip(UI::TopBarProject::tr("Version menu"));
-        verButton_->setText(UI::TopBarProject::tr("Version control"));
+        verButton_->setToolTip(UI::TopBarEditor::tr("Version menu"));
+        verButton_->setText(UI::TopBarEditor::tr("Version control"));
     }
     if (projectMenu_) {
-        collabButton_->setToolTip(UI::TopBarProject::tr("Collaboration menu"));
-        collabButton_->setText(UI::TopBarProject::tr("Collaboration"));
+        collabButton_->setToolTip(UI::TopBarEditor::tr("Collaboration menu"));
+        collabButton_->setText(UI::TopBarEditor::tr("Collaboration"));
     }
     if (btnSettings_) {
-        btnSettings_->setToolTip(UI::TopBarProject::tr("Settings"));
+        btnSettings_->setToolTip(UI::TopBarEditor::tr("Settings"));
     }
     if (helpButton_) {
-        helpButton_->setToolTip(UI::TopBarProject::tr("Help"));
-        helpButton_->setText(UI::TopBarProject::tr("Help"));
+        helpButton_->setToolTip(UI::TopBarEditor::tr("Help"));
+        helpButton_->setText(UI::TopBarEditor::tr("Help"));
     }
     if (btnTabs_) {
-        btnTabs_->setToolTip(UI::TopBarProject::tr("Show/Hide tab panel"));
+        btnTabs_->setToolTip(UI::TopBarEditor::tr("Show/Hide tab panel"));
     }
 }

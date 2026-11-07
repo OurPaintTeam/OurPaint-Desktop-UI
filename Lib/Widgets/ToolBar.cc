@@ -419,5 +419,6 @@ void UI::ToolBar::translate() const {
         constraints_[13].button->setToolTip(UI::ToolBar::tr("Collinear"));
         constraints_[14].button->setToolTip(UI::ToolBar::tr("Midpoint"));
         constraints_[15].button->setToolTip(UI::ToolBar::tr("Symmetric"));
+        constraints_[16].button->setToolTip(UI::ToolBar::tr("Curvature"));
     }
 }

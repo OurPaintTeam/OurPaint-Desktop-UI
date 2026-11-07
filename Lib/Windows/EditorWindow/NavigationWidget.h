@@ -16,13 +16,11 @@ namespace UI {
     signals:
         void goToStartWindowTriggered();
         void createFileTriggered();
-        void createProjectTriggered();
         void closeApplicationTriggered();
 
     private:
         QPushButton* startButton_{nullptr};
         QPushButton* createFileButton_{nullptr};
-        QPushButton* createProjectButton_{nullptr};
         QPushButton* closeButton_{nullptr};
 
         QVBoxLayout* mainLayout_{nullptr};

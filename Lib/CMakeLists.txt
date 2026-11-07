@@ -9,13 +9,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets OpenGL Svg)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets OpenGL Svg Sql)
 qt_standard_project_setup()
 
 set(CORE
         Core/ProjectManager.cc
         Core/ProjectManager.h
         Core/ToolsType.h
+        Core/Utils.h
 )
 
 set(WIDGETS
@@ -55,8 +56,8 @@ set(MENUS
         Menus/MenuButton.h
         Menus/CustomMenu.cc
         Menus/CustomMenu.h
-        Menus/ProjectMenu.cc
-        Menus/ProjectMenu.h
+        Menus/FileMenu.cc
+        Menus/FileMenu.h
         Menus/CollaborationMenu.cc
         Menus/CollaborationMenu.h
         Menus/VersionControlMenu.cc
@@ -105,35 +106,35 @@ set(UI_START
         Windows/StartWindow/TopBarStart.h
         Windows/StartWindow/AnimationArea.cc
         Windows/StartWindow/AnimationArea.h
-        Windows/StartWindow/ProjectsListWidget.cc
-        Windows/StartWindow/ProjectsListWidget.h
+        Windows/StartWindow/FilesListWidget.cc
+        Windows/StartWindow/FilesListWidget.h
         Windows/StartWindow/AnimationWidget.cc
         Windows/StartWindow/AnimationWidget.h
-        Windows/StartWindow/ProjectButton.cc
-        Windows/StartWindow/ProjectButton.h
+        Windows/StartWindow/FileButton.cc
+        Windows/StartWindow/FileButton.h
 )
 
-set(UI_PROJECT
-        Windows/ProjectWindow/ProjectWindow.cc
-        Windows/ProjectWindow/ProjectWindow.h
-        Windows/ProjectWindow/ProjectPage.cc
-        Windows/ProjectWindow/ProjectPage.h
-        Windows/ProjectWindow/TopBarProject.cc
-        Windows/ProjectWindow/TopBarProject.h
-        Windows/ProjectWindow/TabWidget.cc
-        Windows/ProjectWindow/TabWidget.h
-        Windows/ProjectWindow/TabBar.cc
-        Windows/ProjectWindow/TabBar.h
-        Windows/ProjectWindow/NavigationWidget.cc
+set(UI_EDITOR
+        Windows/EditorWindow/EditorWindow.cc
+        Windows/EditorWindow/EditorWindow.h
+        Windows/EditorWindow/EditorPage.cc
+        Windows/EditorWindow/EditorPage.h
+        Windows/EditorWindow/TopBarEditor.cc
+        Windows/EditorWindow/TopBarEditor.h
+        Windows/EditorWindow/TabWidget.cc
+        Windows/EditorWindow/TabWidget.h
+        Windows/EditorWindow/TabBar.cc
+        Windows/EditorWindow/TabBar.h
+        Windows/EditorWindow/NavigationWidget.cc
 )
 
-set(UI_TAB
-        Windows/TabWindow/TabWindow.cc
-        Windows/TabWindow/TabWindow.h
-        Windows/TabWindow/TabPage.cc
-        Windows/TabWindow/TabPage.h
-        Windows/TabWindow/TopBarTab.cc
-        Windows/TabWindow/TopBarTab.h
+set(UI_LIGHT_EDITOR
+        Windows/LightEditorWindow/LightEditorWindow.cc
+        Windows/LightEditorWindow/LightEditorWindow.h
+        Windows/LightEditorWindow/LightEditorPage.cc
+        Windows/LightEditorWindow/LightEditorPage.h
+        Windows/LightEditorWindow/TopBarLightEditor.cc
+        Windows/LightEditorWindow/TopBarLightEditor.h
 )
 
 set(POP_UP
@@ -152,6 +153,7 @@ set(POP_UP
 set(FILE_SYSTEM
         FileSystem/FileSystem.cc
         FileSystem/FileSystem.h
+        Core/Utils.h
 )
 
 qt_add_library(ourpaint_ui STATIC
@@ -164,8 +166,8 @@ qt_add_library(ourpaint_ui STATIC
         ${DRAG}
         ${WINDOWS}
         ${UI_START}
-        ${UI_PROJECT}
-        ${UI_TAB}
+        ${UI_EDITOR}
+        ${UI_LIGHT_EDITOR}
         ${POP_UP}
         ${FILE_SYSTEM}
 )
@@ -181,13 +183,14 @@ target_include_directories(ourpaint_ui PUBLIC
         FileSystem
         Windows
         Windows/StartWindow
-        Windows/ProjectWindow
-        Windows/TabWindow
+        Windows/EditorWindow
+        Windows/LightEditorWindow
 )
 
 target_link_libraries(ourpaint_ui PUBLIC
         Qt6::Widgets
         Qt6::OpenGL
+        Qt6::Sql
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

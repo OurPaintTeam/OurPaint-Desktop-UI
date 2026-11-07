@@ -13,41 +13,37 @@ namespace UI {
     class NavigationWidget;
     class SideMenu;
     class TabBar;
-    class TopBarProject;
+    class TopBarEditor;
 
 
-    class ProjectPage final : public BaseEditorPage {
+    class EditorPage final : public BaseEditorPage {
         Q_OBJECT
 
     public:
-        explicit ProjectPage(QWidget* parent = nullptr,const QString& name = "");
-        ~ProjectPage() override = default;
+        explicit EditorPage(QWidget* parent = nullptr, const qint64 id = -1);
+        ~EditorPage() override = default;
 
-        void setDefaultProjectsPath(const QString& projectPath);
+        void setDefaultPath(const QString& path);
 
     signals:
-        void openNewWindowCreateProjectTriggered(const QString& projectPath);
-        void createProjectThisWindowTriggered(const QString& projectPath);
-        void openNewWindowOpenProjectTriggered(const QString& projectPath);
-        void openProjectThisWindowTriggered(const QString& projectPath);
+        void openFileThisWindowTriggered(const QString& projectPath);
+        void createFileThisWindowTriggered(const QString& projectPath);
+        void openNewWindowOpenFileTriggered(const QString& projectPath);
+        void openNewWindowCreateFileTriggered(const QString& projectPath);
         void openFileTriggered(const QString& filePath);
 
         void crateFileTriggered(const QString& fileName);
-        void setActiveTabTriggered(const QString& name);
-        void removeTabTriggered(const QString& name);
-        void renameTabTriggered(const QString& oldName, const QString& newName);
-        void openTabWindowTriggered(const QString& fileName);
-        void tabMovedToAnotherWindowTriggered(const QString& tabName);
-
+        void setActiveTabTriggered(const qint64 id);
+        void removeTabTriggered(const qint64 id);
+        void renameTabTriggered(const qint64 id, const QString& newName);
+        void openLightEditorWindowTriggered(const qint64 id);
+        void tabMovedToAnotherWindowTriggered(const qint64 id);
 
         void goToStartWindowTriggered();
         void createFileTriggered(const QString& fileName);
-        void createProjectTriggered();
         void closeApplicationTriggered();
-
-        void openProjectTriggered();
         void exportFileTriggered();
-        void scriptTriggered(const QString& text);
+        void scriptTriggered(const QString& path);
 
         void collaborationOpenTriggered();
         void collaborationCloseTriggered();
@@ -80,15 +76,13 @@ namespace UI {
         void updatePageSlot() const;
         void openInformationPanel() const;
         void openMessengerPanel() const;
-        void onCreateProjectSlot();
-        void onOpenProjectSlot();
         void openFileSlot();
         void onOpenScriptSlot();
 
     public slots:
-        void onAddTabSlot(const QString& name) const;
-        void onDeleteTabSlot(const QString& name) const;
-        void onRenameTabSlot(const QString& oldName, const QString& newName) const;
+        void onAddTabSlot(const QString& name,const qint64 id) const;
+        void onDeleteTabSlot(const qint64 id) const;
+        void onRenameTabSlot(const qint64 id, const QString& newName) const;
 
     private:
         void translate() const;
@@ -97,7 +91,7 @@ namespace UI {
         QWidget* workspacePage_{nullptr};
         NavigationWidget* navigationPage_{nullptr};
 
-        TopBarProject* topBar_{nullptr};
+        TopBarEditor* topBar_{nullptr};
         TabBar* tabBar_{nullptr};
         SideMenu* leftColumn_{nullptr};
         SideMenu* rightColumn_{nullptr};
@@ -107,7 +101,7 @@ namespace UI {
         QPushButton* messengerButton_{nullptr};
         QPushButton* infoButton_{nullptr};
 
-        QString projectDefaultPath_;
+        QString defaultPath_;
     };
 } // namespace UI
 

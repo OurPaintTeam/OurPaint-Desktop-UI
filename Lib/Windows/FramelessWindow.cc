@@ -20,6 +20,10 @@ namespace {
 constexpr DWORD kDwmWindowCornerPreference = 33;
 constexpr DWORD kDwmBorderColor = 34;
 constexpr DWORD kDwmCaptionColor = 35;
+constexpr qint16 START_WIDTH = 960;
+constexpr qint16 START_HEIGHT = 540;
+constexpr qint16 MIN_WIDTH = 950;
+constexpr qint16 MIN_HEIGHT = 500;
 
 enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round = 2, RoundSmall = 3 };
 
@@ -34,44 +38,6 @@ enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round =
 #include <QScreen>
 #include <QTranslator>
 #include <QWindow>
-
-UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
-#ifdef Q_OS_WIN
-    setWindowFlags(Qt::Window);
-    // | Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint
-    // if (auto* cw = centralWidget()) {
-    //     cw->setGeometry(0, 0, width(), height());
-    //     update();
-    // }
-#else
-    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
-
-    setAttribute(Qt::WA_TranslucentBackground);
-#endif
-
-    setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_NoSystemBackground);
-    qApp->installEventFilter(this);
-
-    setObjectName(QStringLiteral("FramelessWindow"));
-    setWindowTitle(tr("OurPaint"));
-    setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
-
-    const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
-                                   ":/Styles/text.qss", ":/Styles/scroll.qss"});
-
-    if (style.isEmpty()) {
-        qWarning() << "No styles loaded!";
-    } else {
-        setStyleSheet(style);
-    }
-
-    initTranslations();
-    initFonts();
-
-    setMinimumSize(900, 300);
-    resize(960, 540);
-}
 
 bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
 #ifdef Q_OS_LINUX
@@ -113,6 +79,44 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
 #endif
 
     return QMainWindow::eventFilter(watched, event);
+}
+
+UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
+#ifdef Q_OS_WIN
+    setWindowFlags(Qt::Window);
+    // | Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint
+    // if (auto* cw = centralWidget()) {
+    //     cw->setGeometry(0, 0, width(), height());
+    //     update();
+    // }
+#else
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+
+    setAttribute(Qt::WA_TranslucentBackground);
+#endif
+
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
+    qApp->installEventFilter(this);
+
+    setObjectName(QStringLiteral("FramelessWindow"));
+    setWindowTitle(tr("OurPaint"));
+    setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
+
+    const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
+        ":/Styles/text.qss", ":/Styles/scroll.qss"});
+
+    if (style.isEmpty()) {
+        qWarning() << "No styles loaded!";
+    } else {
+        setStyleSheet(style);
+    }
+
+    initTranslations();
+    initFonts();
+
+    setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+    resize(START_WIDTH, START_HEIGHT);
 }
 
 #ifdef Q_OS_WIN
@@ -169,8 +173,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
         case WM_GETMINMAXINFO: {
             auto* mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
             const qreal dpr = windowHandle() ? windowHandle()->devicePixelRatio() : 1.0;
-            mmi->ptMinTrackSize.x = qRound(900 * dpr);
-            mmi->ptMinTrackSize.y = qRound(300 * dpr);
+            mmi->ptMinTrackSize.x = qRound(MIN_WIDTH * dpr);
+            mmi->ptMinTrackSize.y = qRound(MIN_HEIGHT * dpr);
 
             DPR = dpr;
 

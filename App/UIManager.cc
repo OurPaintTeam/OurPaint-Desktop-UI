@@ -1,201 +1,61 @@
 #include "UIManager.h"
 
+#include <clocale>
+#include <QDebug>
 #include <QFileInfo>
-#include <algorithm>
 
 #include "CustomConsole.h"
 #include "RenderEngine.h"
 #include "ToolsType.h"
+#include "Utils.h"
 
 UIManager::UIManager() {
     setlocale(LC_ALL, "");
     auto* manager = createProjectManager();
-    manager->setProjectsList(fs_.projects());
+    refreshFiles(manager);
 }
 
 
-bool UIManager::checkedOpened(const QString& projectPath) const {
-    return std::any_of(projectManagers_.begin(), projectManagers_.end(),
-                       [&](const UI::ProjectManager* manager) {
-                           return manager && manager->projectPath() == projectPath;
-                       });
+qint64 UIManager::defaultLocationId() const {
+    const auto locations = fs_.locations();
+    for (const auto& loc : locations) {
+        if (loc.isDefault) return loc.id;
+    }
+    return locations.isEmpty() ? -1 : locations.first().id;
 }
 
 
-void UIManager::sentCommandFromConsole(UI::ProjectManager* manager, const QString& command,const QString& name) const{
-    Q_UNUSED(command);
-    manager->addNotification(name,"Console command received "+ name  +" : " + command);
+void UIManager::refreshFiles(UI::ProjectManager* manager) const {
+    if (!manager) return;
+
+    QVector<UI::FileData> files;
+    for (const auto& f : fs_.files()) {
+        UI::FileData fd;
+        fd.id = f.id;
+        fd.name = f.name;
+        fd.path = f.path;
+        files.append(fd);
+    }
+    manager->setFilesList(files);
 }
 
 
-void UIManager::openNewWindowOpenProjectSlot(UI::ProjectManager* manager, const QString& projectPath) {
-    if (checkedOpened(projectPath)) {
-        manager->addNotification("Проект уже открыт");
-        return;
-    }
-
-    if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
-        auto* newManager = createOpenedProjectManager({data.path, data.id}, new RenderEngine(), new CustomConsole());
-      newManager->setActiveToolProjectWindow(UI::ToolsType::Size);
-        for (const auto& tabName: data.tabs) {
-            newManager->addTabSlot(tabName);
-        }
-        newManager->addNotification("✅ Project opened in new window: " + data.name);
-    }
+UI::ProjectManager* UIManager::createProjectManager() {
+    auto* manager = new UI::ProjectManager();
+    projectManagers_.push_back(manager);
+    refreshFiles(manager);
+    initSignals(*manager);
+    return manager;
 }
 
 
-void UIManager::openNewWindowCreateProjectSlot(UI::ProjectManager* manager, const QString& projectPath) {
-    if (checkedOpened(projectPath)) {
-        manager->addNotification("Проект уже открыт");
-        return;
-    }
-
-    const auto projectName = QFileInfo(projectPath).fileName();
-    if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
-        auto* newManager =
-                createOpenedProjectManager({projectPath, projectId}, new RenderEngine(), new CustomConsole());
-      newManager->setActiveToolProjectWindow(UI::ToolsType::Size);
-        newManager->addNotification("✨ Project created in new window: " + projectName);
-    } else {
-        manager->addNotification("❌ Failed to create project: " + projectName);
-    }
-}
-
-
-void UIManager::openTabWindowSlot(UI::ProjectManager* manager, const QString& nameTab) const {
-    manager->openTabWindow(nameTab, new RenderEngine(), new CustomConsole());
-    manager->addNotification(nameTab,"✨ Tab created in new window: " + nameTab);
-  manager->setActiveToolTabWindow(nameTab,UI::ToolsType::Size);
-}
-
-
-void UIManager::openProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const {
-    if (checkedOpened(projectPath)) {
-        manager->addNotification("Проект уже открыт: " + projectPath);
-        return;
-    }
-
-    if (UI::FileSystem::ProjectData data; fs_.openProjectByPath(projectPath, data) == UI::FileSystem::FsResult::Ok) {
-        manager->openProjectWindow({data.path, data.id},new RenderEngine(),new CustomConsole());
-        for (const auto& tabName: data.tabs) {
-            manager->addTabSlot(tabName);
-        }
-        manager->addNotification("✅ Project opened: " + data.name);
-      manager->setActiveToolProjectWindow(UI::ToolsType::Size);
-    }
-}
-
-
-void UIManager::createProjectThisWindowSlot(UI::ProjectManager* manager, const QString& projectPath) const {
-    const auto projectName = QFileInfo(projectPath).fileName();
-    if (QString projectId; fs_.createProject(projectPath, projectId) == UI::FileSystem::FsResult::Ok) {
-        manager->openProjectWindow({projectPath, projectId}, new RenderEngine(), new CustomConsole());
-        manager->addNotification("✨ Project created: " + projectName);
-      manager->setActiveToolProjectWindow(UI::ToolsType::Size);
-    } else {
-        manager->addNotification("❌ Failed to create project: " + projectName);
-    }
-}
-
-
-void UIManager::openFileSlot(UI::ProjectManager* manager, const QString& filePath) const {
-    if (UI::FileSystem::FileData data; fs_.openFile(filePath, data) == UI::FileSystem::FsResult::Ok) {
-        manager->addTabSlot(data.tabName);
-        manager->addNotification("📄 File opened: " + data.tabName);
-    } else {
-        manager->addNotification("❌ Failed to open file: " + QFileInfo(filePath).fileName());
-    }
-}
-
-
-void UIManager::renameTabSlot(UI::ProjectManager* manager, const QString& oldName, const QString& newName) const {
-    const auto projectId = manager->projectID();
-    if (projectId.isEmpty()) {
-        manager->addNotification("❌ Cannot rename tab: no active project");
-        return;
-    }
-
-    const auto oldname = oldName;
-    if (fs_.renameTab(projectId, oldName, newName) == UI::FileSystem::FsResult::Ok) {
-        manager->renameTabSlot(oldName, newName);
-        manager->addNotification("✏️ Tab renamed: " + oldname + " → " + newName);
-    } else {
-        manager->addNotification("❌ Failed to rename tab: " + oldname);
-    }
-}
-
-
-void UIManager::removeTabSlot(UI::ProjectManager* manager, const QString& tabName) const {
-    const auto projectId = manager->projectID();
-    if (projectId.isEmpty()) {
-        manager->addNotification("❌ Cannot remove tab: no active project");
-        return;
-    }
-
-    if (fs_.removeTab(projectId, tabName) == UI::FileSystem::FsResult::Ok) {
-        manager->addNotification("🗑️ Tab removed: " + tabName);
-    } else {
-        manager->addNotification("❌ Failed to remove tab: " + tabName);
-    }
-}
-
-
-void UIManager::createFileSlot(UI::ProjectManager* manager, const QString& fileName) const {
-    const auto projectId = manager->projectID();
-    if (projectId.isEmpty()) {
-        manager->addNotification("❌ Cannot create file: no active project");
-        return;
-    }
-
-    if (fs_.createTab(projectId, fileName) == UI::FileSystem::FsResult::Ok) {
-        manager->addTabSlot(fileName);
-        manager->addNotification("📄 File created: " + fileName);
-    } else {
-        manager->addNotification("❌ Failed to create file: " + fileName);
-    }
-}
-
-
-void UIManager::goToStartWindowSlot(UI::ProjectManager* manager) const {
-    manager->setProjectsList(fs_.projects());
-    manager->openStartWindow();
-    manager->addNotification("🏠 Returned to start page");
-}
-
-
-void UIManager::renameProjectSlot(UI::ProjectManager* manager, const QString& newName, const QString& path) const {
-    const auto oldName = QFileInfo(path).fileName();
-    if (UI::FileSystem::ProjectData data; fs_.renameProjectByPath(path, newName, data) == UI::FileSystem::FsResult::Ok) {
-        manager->setProjectsList(fs_.projects());
-        manager->setProjectPath(data.path);
-        manager->addNotification("✏️ Project renamed: " + oldName + " → " + newName);
-    } else {
-        manager->addNotification("❌ Failed to rename project: " + oldName);
-    }
-}
-
-
-void UIManager::deleteProjectSlot(UI::ProjectManager* manager, const QString& path) const {
-    QString projectId;
-    if (fs_.getProjectIdByPath(path, projectId) != UI::FileSystem::FsResult::Ok) {
-        manager->addNotification("❌ Project not found: " + QFileInfo(path).fileName());
-        return;
-    }
-
-    const auto projectName = QFileInfo(path).fileName();
-    const bool isCurrentProject = (manager->projectPath() == path || manager->projectID() == projectId);
-
-    if (fs_.removeProjectById(projectId) == UI::FileSystem::FsResult::Ok) {
-        manager->setProjectsList(fs_.projects());
-        manager->addNotification("🗑️ Project deleted: " + projectName);
-
-        if (isCurrentProject) {
-            manager->openStartWindow();
-        }
-    } else {
-        manager->addNotification("❌ Failed to delete project: " + projectName);
-    }
+UI::ProjectManager* UIManager::createEditorProjectManager(QWindow* windowRender,
+                                                          QLineEdit* consoleEngine) {
+    auto* manager = new UI::ProjectManager(windowRender, consoleEngine);
+    projectManagers_.push_back(manager);
+    refreshFiles(manager);
+    initSignals(*manager);
+    return manager;
 }
 
 
@@ -203,175 +63,284 @@ void UIManager::deleteSlot(UI::ProjectManager* manager) {
     projectManagers_.removeOne(manager);
 }
 
-void UIManager::setActiveTabSlot(UI::ProjectManager* manager, const QString& name) {
 
+void UIManager::openFileInCurrentWindow(UI::ProjectManager* manager, qint64 fileId) const {
+    UI::FileSystem::FileData data;
+    if (fs_.openFile(fileId, data) != UI::FileSystem::FsResult::Ok) {
+        manager->addNotification("❌ File not found: id " + QString::number(fileId));
+        return;
+    }
+    manager->addTabSlot(data.name, fileId);
+    manager->addNotification("📄 File opened: " + data.name);
 }
 
-void UIManager::returnTabWindowSlot(UI::ProjectManager* manager, const QString& name) {
-    manager->addTabSlot(name);
-    manager->addNotification("Return tab slot "+name);
+
+void UIManager::openFileByPathInCurrentWindow(UI::ProjectManager* manager, const QString& path) const {
+    if (path.trimmed().isEmpty()) return;
+
+    qint64 fileId = -1;
+    if (fs_.getFileIdByPath(path, fileId) != UI::FileSystem::FsResult::Ok) {
+        if (fs_.registerFile(path, fileId) != UI::FileSystem::FsResult::Ok) {
+            manager->addNotification("❌ Failed to open file: " + QFileInfo(path).fileName());
+            return;
+        }
+    }
+    openFileInCurrentWindow(manager, fileId);
 }
 
 
-void UIManager::closeTabWindowSlot(UI::ProjectManager* manager, const QString& name) {
-    manager->addNotification("Close tab slot "+name);
+void UIManager::openFileByPathInNewWindow(const QString& path) {
+    if (path.trimmed().isEmpty()) return;
+
+    qint64 fileId = -1;
+    if (fs_.getFileIdByPath(path, fileId) != UI::FileSystem::FsResult::Ok) {
+        if (fs_.registerFile(path, fileId) != UI::FileSystem::FsResult::Ok) {
+            return;
+        }
+    }
+
+    UI::FileSystem::FileData data;
+    if (fs_.openFile(fileId, data) != UI::FileSystem::FsResult::Ok) return;
+
+    auto* manager = createEditorProjectManager(new RenderEngine(), new CustomConsole());
+    manager->setActiveToolEditorWindow(UI::ToolsType::Size);
+    manager->addTabSlot(data.name, fileId);
+    manager->addNotification("📄 File opened in new window: " + data.name);
+}
+
+
+void UIManager::createFileInCurrentWindow(UI::ProjectManager* manager, const QString& fileName) const {
+    const qint64 locationId = defaultLocationId();
+    if (locationId == -1) {
+        manager->addNotification("❌ Cannot create file: no registered location");
+        return;
+    }
+
+    qint64 fileId = -1;
+    if (fs_.createFile(locationId, fileName, fileId) != UI::FileSystem::FsResult::Ok) {
+        manager->addNotification("❌ Failed to create file: " + fileName);
+        return;
+    }
+    openFileInCurrentWindow(manager, fileId);
+}
+
+
+void UIManager::createFileInNewWindow(const QString& fileName) {
+    const qint64 locationId = defaultLocationId();
+    if (locationId == -1) return;
+
+    qint64 fileId = -1;
+    if (fs_.createFile(locationId, fileName, fileId) != UI::FileSystem::FsResult::Ok) return;
+
+    UI::FileSystem::FileData data;
+    if (fs_.openFile(fileId, data) != UI::FileSystem::FsResult::Ok) return;
+
+    auto* manager = createEditorProjectManager(new RenderEngine(), new CustomConsole());
+    manager->setActiveToolEditorWindow(UI::ToolsType::Size);
+    manager->addTabSlot(data.name, fileId);
+    manager->addNotification("✨ File created in new window: " + data.name);
+}
+
+
+void UIManager::renameFile(qint64 fileId, const QString& newName) const {
+    if (newName.isEmpty()) return;
+
+    UI::FileSystem::FileData old;
+    const bool hasOld = fs_.openFile(fileId, old) == UI::FileSystem::FsResult::Ok;
+    const QString oldName = hasOld ? old.name : QString::number(fileId);
+
+    if (fs_.renameFile(fileId, newName) != UI::FileSystem::FsResult::Ok) {
+        return;
+    }
+
+    for (auto* manager : projectManagers_) {
+        if (manager) manager->renameTabSlot(fileId, newName);
+    }
+}
+
+
+void UIManager::deleteFile(UI::ProjectManager* manager, qint64 fileId) const {
+    UI::FileSystem::FileData data;
+    const bool hasData = fs_.openFile(fileId, data) == UI::FileSystem::FsResult::Ok;
+    const QString name = hasData ? data.name : QString::number(fileId);
+
+    if (fs_.removeFile(fileId) != UI::FileSystem::FsResult::Ok) {
+        manager->addNotification("❌ Failed to remove file: " + name);
+        return;
+    }
+
+    for (auto* m : projectManagers_) {
+        if (m) m->deleteTabSlot(fileId);
+    }
+    refreshFiles(manager);
+    manager->addNotification("🗑️ File removed: " + name);
+}
+
+
+void UIManager::openLightEditor(UI::ProjectManager* manager, const QString& fileName, qint64 fileId) {
+    if (!manager) return;
+    manager->openLightEditorWindow(fileName, fileId, new RenderEngine(), new CustomConsole());
+    manager->setActiveToolLightEditorWindow(fileId, UI::ToolsType::Size);
+}
+
+
+void UIManager::returnTabFromLight(UI::ProjectManager* manager, qint64 fileId) const {
+    if (!manager) return;
+    UI::FileSystem::FileData data;
+    if (fs_.openFile(fileId, data) != UI::FileSystem::FsResult::Ok) return;
+    manager->addTabSlot(data.name, fileId);
+}
+
+
+void UIManager::setActiveTab(UI::ProjectManager* manager, qint64 fileId) const {
+    if (manager) manager->setActiveTab(fileId);
+}
+
+
+void UIManager::goToStartWindow(UI::ProjectManager* manager) const {
+    if (!manager) return;
+    refreshFiles(manager);
+    manager->openStartWindow();
+}
+
+
+void UIManager::sentCommandFromConsole(UI::ProjectManager* manager, qint64 fileId,
+                                       const QString& command) const {
+    manager->addNotification(fileId, "Console command received: " + command);
+}
+
+
+void UIManager::primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type, qint64 fileId) {
+    Q_UNUSED(type);
+    manager->addNotification(fileId, "Primitive selected for file " + QString::number(fileId));
+}
+
+
+void UIManager::constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type, qint64 fileId) {
+    Q_UNUSED(type);
+    manager->addNotification(fileId, "Constraint selected for file " + QString::number(fileId));
+}
+
+
+void UIManager::toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type, qint64 fileId) {
+    Q_UNUSED(type);
+    manager->addNotification(fileId, "Tool selected for file " + QString::number(fileId));
 }
 
 
 void UIManager::scriptSlot(UI::ProjectManager* manager, const QString& path) {
-    manager->addNotification("Close tab slot "+path);
+    manager->addNotification("Script: " + path);
 }
 
 
-void UIManager::primitiveSlot(UI::ProjectManager* manager, UI::PrimitiveType& type,const QString& name) {
-    Q_UNUSED(type);
-    manager->addNotification(name,"Primitive slot selected "+name);
-}
-
-
-void UIManager::constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type,const QString& name) {
-    Q_UNUSED(type);
-    manager->addNotification(name,"Constraint slot selected "+name);
-}
-
-
-void UIManager::toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type,const QString& name) {
-    Q_UNUSED(type);
-    manager->addNotification(name,"Tools slot "+name);
-}
-void UIManager::settingsSlot(UI::ProjectManager *manager, double f, double s, double t) {
-  qDebug()<<f<<s<<t;
-}
-
-UI::ProjectManager* UIManager::createOpenedProjectManager(const UI::ProjectManager::ProjectData& projectData,
-                                                              QWindow* windowRender,
-                                                              QLineEdit* consoleEngine) {
-    auto* manager = new UI::ProjectManager(projectData, windowRender, consoleEngine);
-    projectManagers_.push_back(manager);
-    manager->setDefaultProjectsPath(fs_.defaultProjectsPath());
-    manager->setProjectsList(fs_.projects());
-    manager->addNotification("Welcome to OurPaint! 🎨");
-    initSignals(*manager);
-    return manager;
-}
-
-
-UI::ProjectManager* UIManager::createProjectManager(const UI::ProjectManager::ProjectData& projectData) {
-    auto* manager = new UI::ProjectManager(projectData);
-    projectManagers_.push_back(manager);
-    manager->setDefaultProjectsPath(fs_.defaultProjectsPath());
-    manager->setProjectsList(fs_.projects());
-    manager->addNotification("Welcome to OurPaint! 🎨");
-    initSignals(*manager);
-    return manager;
+void UIManager::settingsSlot(UI::ProjectManager* manager, double f, double s, double t) {
+    Q_UNUSED(manager);
+    qDebug() << f << s << t;
 }
 
 
 void UIManager::initSignals(UI::ProjectManager& manager) {
-    connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
-            [this, &manager](const QString& name,const QString& command) {
-                sentCommandFromConsole(&manager, command,name);
-            });
-
-    connect(&manager, &UI::ProjectManager::openNewWindowOpenProjectTriggered, this,
+    connect(&manager, &UI::ProjectManager::openFileThisWindowTriggered, this,
             [this, &manager](const QString& path) {
-                openNewWindowOpenProjectSlot(&manager, path);
+                openFileByPathInCurrentWindow(&manager, path);
             });
 
-    connect(&manager, &UI::ProjectManager::openNewWindowCreateProjectTriggered, this,
-            [this, &manager](const QString& path) {
-                openNewWindowCreateProjectSlot(&manager, path);
+    connect(&manager, &UI::ProjectManager::createFileThisWindowTriggered, this,
+            [this, &manager](const QString& fileName) {
+                createFileInCurrentWindow(&manager, fileName);
             });
 
-    connect(&manager, &UI::ProjectManager::openProjectThisWindowTriggered, this,
-            [this, &manager](const QString& path) {
-                openProjectThisWindowSlot(&manager, path);
+    connect(&manager, &UI::ProjectManager::renameFileTriggered, this,
+            [this](qint64 fileId, const QString& newName) {
+                renameFile(fileId, newName);
             });
 
-    connect(&manager, &UI::ProjectManager::openNewWindowTabTriggered, this,
-            [this, &manager](const QString& name) {
-                openTabWindowSlot(&manager, name);
+    connect(&manager, &UI::ProjectManager::deleteFileTriggered, this,
+            [this, &manager](qint64 fileId) {
+                deleteFile(&manager, fileId);
             });
 
-    connect(&manager, &UI::ProjectManager::createProjectThisWindowTriggered, this,
-            [this, &manager](const QString& path) {
-                createProjectThisWindowSlot(&manager, path);
+    connect(&manager, &UI::ProjectManager::openNewWindowOpenFileTriggered, this,
+            [this](const QString& path) {
+                openFileByPathInNewWindow(path);
+            });
+
+    connect(&manager, &UI::ProjectManager::openNewWindowCreateFileTriggered, this,
+            [this](const QString& fileName) {
+                createFileInNewWindow(fileName);
             });
 
     connect(&manager, &UI::ProjectManager::openFileTriggered, this,
-            [this, &manager](const QString& fileName) {
-                openFileSlot(&manager, fileName);
-            });
-
-    connect(&manager, &UI::ProjectManager::renameTabTriggered, this,
-            [this, &manager](const QString& oldName, const QString& newName) {
-                renameTabSlot(&manager, oldName, newName);
-            });
-
-    connect(&manager, &UI::ProjectManager::removeTabTriggered, this,
-            [this, &manager](const QString& tabName) {
-                removeTabSlot(&manager, tabName);
+            [this, &manager](const QString& path) {
+                openFileByPathInCurrentWindow(&manager, path);
             });
 
     connect(&manager, &UI::ProjectManager::createFileTriggered, this,
             [this, &manager](const QString& fileName) {
-                createFileSlot(&manager, fileName);
+                createFileInCurrentWindow(&manager, fileName);
+            });
+
+    connect(&manager, &UI::ProjectManager::renameTabTriggered, this,
+            [this](qint64 fileId, const QString& newName) {
+                renameFile(fileId, newName);
+            });
+
+    connect(&manager, &UI::ProjectManager::removeTabTriggered, this,
+            [this, &manager](qint64 fileId) {
+                deleteFile(&manager, fileId);
+            });
+
+    connect(&manager, &UI::ProjectManager::setActiveTabTriggered, this,
+            [this, &manager](qint64 fileId) {
+                setActiveTab(&manager, fileId);
             });
 
     connect(&manager, &UI::ProjectManager::goToStartWindowTriggered, this,
             [this, &manager]() {
-                goToStartWindowSlot(&manager);
+                goToStartWindow(&manager);
             });
 
-    connect(&manager, &UI::ProjectManager::renameProjectTriggered, this,
-            [this, &manager](const QString& newName, const QString& path) {
-                renameProjectSlot(&manager, newName, path);
+    connect(&manager, &UI::ProjectManager::openLightEditorTriggered, this,
+            [this, &manager](qint64 fileId) {
+                UI::FileData data;
+               UI::FileSystem::FsResult f =  fs_.getFileData(fileId,data);
+                openLightEditor(&manager, data.name, fileId);
             });
 
-    connect(&manager, &UI::ProjectManager::deleteProjectTriggered, this,
-            [this, &manager](const QString& path) {
-                deleteProjectSlot(&manager, path);
+    connect(&manager, &UI::ProjectManager::returnLightEditorWindowTriggered, this,
+            [this, &manager](qint64 fileId) {
+                returnTabFromLight(&manager, fileId);
+            });
+
+    connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
+            [this, &manager](qint64 fileId, const QString& command) {
+                sentCommandFromConsole(&manager, fileId, command);
             });
 
     connect(&manager, &UI::ProjectManager::primitiveTriggered, this,
-            [this, &manager](const QString& name,UI::PrimitiveType type) {
-                primitiveSlot(&manager, type,name);
+            [this, &manager](qint64 fileId, UI::PrimitiveType type) {
+                primitiveSlot(&manager, type, fileId);
             });
 
     connect(&manager, &UI::ProjectManager::constraintTriggered, this,
-            [this, &manager](const QString& name,UI::ConstraintType type) {
-                constraintSlot(&manager, type,name);
+            [this, &manager](qint64 fileId, UI::ConstraintType type) {
+                constraintSlot(&manager, type, fileId);
             });
 
     connect(&manager, &UI::ProjectManager::toolsTriggered, this,
-            [this, &manager](const QString& name,UI::ToolsType type) {
-                toolsSlot(&manager, type,name);
+            [this, &manager](qint64 fileId, UI::ToolsType type) {
+                toolsSlot(&manager, type, fileId);
             });
 
-  connect(&manager, &UI::ProjectManager::applySettings, this,
-        [this, &manager](double f,double s,double t) {
-            settingsSlot(&manager, f,s,t);
-        });
-
-    connect(&manager, &UI::ProjectManager::setActiveTabTriggered, this,
-      [this, &manager](const QString& name) {
-          setActiveTabSlot(&manager,name);
-      });
-
-    connect(&manager, &UI::ProjectManager::returnTabWindowTriggered, this,
-  [this, &manager](const QString& name) {
-      returnTabWindowSlot(&manager,name);
-  });
-
-    connect(&manager, &UI::ProjectManager::closeTabWindowTriggered, this,
-[this, &manager](const QString& name) {
-  closeTabWindowSlot(&manager,name);
-});
-
     connect(&manager, &UI::ProjectManager::scriptTriggered, this,
-[this, &manager](const QString& path) {
-scriptSlot(&manager,path);
-});
+            [this, &manager](const QString& path) {
+                scriptSlot(&manager, path);
+            });
+
+    connect(&manager, &UI::ProjectManager::applySettings, this,
+            [this, &manager](double f, double s, double t) {
+                settingsSlot(&manager, f, s, t);
+            });
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] {

@@ -12,16 +12,16 @@ namespace UI {
     class CollaborationMenu;
     class MenuButton;
     class VersionControlMenu;
-    class ProjectMenu;
+    class FileMenu;
 
 
     // Top bar for Project workspace
-    class TopBarProject final : public BaseEditorTopBar {
+    class TopBarEditor final : public BaseEditorTopBar {
         Q_OBJECT
 
     public:
-        explicit TopBarProject(QWidget* parent = nullptr);
-        ~TopBarProject() override = default;
+        explicit TopBarEditor(QWidget* parent = nullptr);
+        ~TopBarEditor() override = default;
 
         void setTabBar(TabBar* bar);
         void setLeftMenu(SideMenu* menu);
@@ -35,8 +35,6 @@ namespace UI {
 
     signals:
         /// Project
-        void createProjectTriggered();
-        void openProjectTriggered();
         void createFileTriggered();
         void openFileTriggered();
         void exportFileTriggered();
@@ -62,7 +60,7 @@ namespace UI {
         // Buttons
         QPushButton* btnTabs_{nullptr};
         QPushButton* btnSettings_{nullptr};
-        ProjectMenu* projectMenu_{nullptr};
+        FileMenu* projectMenu_{nullptr};
         CollaborationMenu* collaborationMenu_{nullptr};
         VersionControlMenu* versionControlMenu_{nullptr};
         MenuButton* projectButton_{nullptr};

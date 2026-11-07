@@ -59,14 +59,12 @@
         <file>Assets/icons/panel/info.png</file>
         <file>Assets/icons/panel/message.png</file>
 
-        <file>Assets/icons/folder/openProjectLight.svg</file>
-        <file>Assets/icons/folder/openProjectDark.svg</file>
-        <file>Assets/icons/folder/createProject.svg</file>
+        <file>Assets/icons/folder/openFileLight.svg</file>
+        <file>Assets/icons/folder/openFileDark.svg</file>
+        <file>Assets/icons/folder/createFile.svg</file>
 
         <file>Assets/icons/menus/fileCreate.ico</file>
         <file>Assets/icons/menus/fileOpen.ico</file>
-        <file>Assets/icons/menus/projectCreate.ico</file>
-        <file>Assets/icons/menus/projectOpen.ico</file>
 
         <file>Assets/icons/console/enter.ico</file>
 

@@ -22,18 +22,19 @@ class TabWidget;
         explicit TabBar(QWidget* parent = nullptr);
         [[nodiscard]] bool isEmptyTab() const;
     signals:
-        void renameTabTriggered(const QString& oldName, const QString& newName);
-        void removeTabTriggered(const QString& name);
+        void renameTabTriggered(const qint64 id, const QString& newName);
+        void removeTabTriggered(const qint64 id);
         void createTabTriggered(const QString& name);
-        void setActiveTabTriggered(const QString& name);
-        void openTabWindowTriggered(const QString& tab);
+        void setActiveTabTriggered(const qint64 id);
+        void openLightEditorWindowTriggered(const qint64 id);
+        void closeTabTriggered(const qint64 id);
         void allTabsCloseTriggered();
 
     public slots:
-        void renameTab(const QString& oldName, const QString& newName);
-        void deleteTabSlot(const QString& name);
-        UI::TabWidget* closeTabOnNameSlot(const QString& name);
-        void addTabSlot(const QString& name);
+        void renameTab(const qint64 id, const QString& newName);
+        void deleteTabSlot(const qint64 id);
+        UI::TabWidget* closeTabSlot(const qint64 id);
+        void addTabSlot(const QString& name, const qint64 id);
         void createTabSlot();
 
 

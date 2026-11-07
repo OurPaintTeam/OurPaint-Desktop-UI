@@ -24,8 +24,8 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit BaseEditorPage(QWidget* parent = nullptr,const QString& name = "");
-        QString name() const;
+        explicit BaseEditorPage(QWidget* parent = nullptr, const qint64& id = -1);
+        qint64 id() const;
         ~BaseEditorPage() override = default;
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;
@@ -36,13 +36,13 @@ namespace UI {
         void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
         void takeOffHint();
         void setActiveTool(ConstraintType type);
-        void setActiveName(const QString name);
+        void setActiveID(const qint64 id);
 
     signals:
-        void sentCommandTriggered(const QString tabName, const QString command);
-        void primitiveTriggered(const QString tabName,PrimitiveType type);
-        void constraintTriggered(const QString tabName,ConstraintType type);
-        void toolsTriggered(const QString tabName, ToolsType type);
+        void sentCommandTriggered(const qint64 id, const QString command);
+        void primitiveTriggered(const qint64 id, PrimitiveType type);
+        void constraintTriggered(const qint64 id,ConstraintType type);
+        void toolsTriggered(const qint64 id, ToolsType type);
 
     protected:
         void initBaseEditorPage();
@@ -62,7 +62,7 @@ namespace UI {
         ToolBar* toolBar_{nullptr};
         PainterWidget* painter_{nullptr};
         CommandConsole* console_{nullptr};
-        QString activeName_;
+        qint64 activeID_{-1};
     };
 } // namespace UI
 

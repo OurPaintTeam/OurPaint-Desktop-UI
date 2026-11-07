@@ -7,28 +7,30 @@ class QHBoxLayout;
 class QVBoxLayout;
 
 namespace UI {
+    struct FileData;
     class TopBarStart;
     class AnimationArea;
-    class ProjectsListWidget;
+    class FilesListWidget;
 
 
-    // Landing page with recent projects.
+    // Landing page with recent Files.
     class StartPage final : public BasePage {
         Q_OBJECT
 
     public:
         explicit StartPage(QWidget *parent = nullptr);
-        void setProjectsList(const QVector<QPair<QString, QString> >& projects) const;
-        void setDefaultProjectsPath(const QString& projectPath);
+        void setFilesList(const QVector<FileData>& files) const;
+        void setDefaultFilesPath(const QString& path);
 
     public slots:
-        void onOpenProjectSlot();
-        void onCreateProjectSlot();
+        void onOpenFileSlot();
+        void onCreateFileSlot();
     signals:
-        void openProjectInThisWindowTriggered(const QString& projectPath);
-        void createProjectInThisWindowTriggered(const QString& projectPath);
-        void renameProjectTriggered(const QString& newName, const QString& path);
-        void deleteProjectTriggered(const QString& path);
+        void pressFileTriggered(const qint64 id);
+        void openFileInThisWindowTriggered(const QString& path);
+        void createFileInThisWindowTriggered(const QString& path);
+        void renameFileTriggered(const qint64 id, const QString& path);
+        void deleteFileTriggered(const qint64 id);
 
     protected:
         void changeEvent(QEvent *e) override;
@@ -38,12 +40,12 @@ namespace UI {
         void translate() const;
 
         TopBarStart *topBar_{nullptr};
-        ProjectsListWidget *projectsListWidget_{nullptr};
+        FilesListWidget *filesListWidget_{nullptr};
         AnimationArea *animationArea_{nullptr};
 
         QHBoxLayout *contentLayout_{nullptr};
 
-        QString defaultProjectsPath_;
+        QString defaultFilesPath_;
     };
 } // namespace UI
 

@@ -12,20 +12,21 @@ class QFrame;
 
 
 namespace UI {
-    class ProjectButton;
+    struct FileData;
+    class FileButton;
 
 
-    class ProjectsListWidget final : public QWidget {
+    class FilesListWidget final : public QWidget {
         Q_OBJECT
 
     public:
-        explicit ProjectsListWidget(QWidget *parent = nullptr);
-        void setProjects(const QVector<QPair<QString, QString> >& projects);
+        explicit FilesListWidget(QWidget *parent = nullptr);
+        void setFiles(const QVector<FileData>& files);
 
     signals:
-        void renameProjectTriggered(const QString& newName, const QString& path);
-        void deleteProjectTriggered(const QString& path);
-        void pressProjectTriggered(const QString& path);
+        void renameFileTriggered(qint64 fileId, const QString& newName);
+        void deleteFileTriggered(qint64 fileId);
+        void pressFileTriggered(qint64 fileId);
 
         void pressCreateButtonTriggered();
         void pressOpenButtonTriggered();
@@ -49,8 +50,8 @@ namespace UI {
         QFrame *linePtr_{nullptr};
         QScrollArea *scrollAreaPtr_{nullptr};
         QWidget *scrollContent_{nullptr};
-        QVBoxLayout *projectsLayout_{nullptr};
-        QList<ProjectButton*> allProjects_{};
+        QVBoxLayout *filesLayout_{nullptr};
+        QList<FileButton*> allFiles_{};
 
         // Constants
         static constexpr int WIDGET_WIDTH = 300;

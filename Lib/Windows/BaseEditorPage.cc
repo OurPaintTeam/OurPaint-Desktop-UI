@@ -17,13 +17,13 @@ namespace {
 } // namespace
 
 
-UI::BaseEditorPage::BaseEditorPage(QWidget *parent,const QString& name)
-    : BasePage(parent),activeName_(name) {
+UI::BaseEditorPage::BaseEditorPage(QWidget *parent,const qint64& id)
+    : BasePage(parent),activeID_(id) {
 }
 
 
-QString UI::BaseEditorPage::name() const {
-   return activeName_;
+qint64 UI::BaseEditorPage::id() const {
+   return activeID_;
 }
 
 void UI::BaseEditorPage::setQOpenGLPainter(QOpenGLWindow *engine) const {
@@ -71,8 +71,8 @@ void UI::BaseEditorPage::setActiveTool(const ConstraintType type) {
 }
 
 
-void UI::BaseEditorPage::setActiveName(const QString name) {
-    activeName_ = name;
+void UI::BaseEditorPage::setActiveID(const qint64 id) {
+    activeID_ = id;
 }
 
 
@@ -123,40 +123,40 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
     connect(console_, &CommandConsole::sentCommandTriggered,
             this, [this](const QString command) {
-                if (activeName_.isEmpty()) {
+                if (activeID_!=-1) {
                     return;
                 }
 
-                emit sentCommandTriggered(activeName_, command);
+                emit sentCommandTriggered(activeID_, command);
             });
 
     connect(toolBar_, &ToolBar::primitiveTriggered,
             this, [this](PrimitiveType type) {
-                if (activeName_.isEmpty()) {
+                if (activeID_!=-1) {
                     return;
                 }
 
-                emit primitiveTriggered(activeName_, type);
+                emit primitiveTriggered(activeID_, type);
             });
 
 
     connect(toolBar_, &ToolBar::constraintTriggered,
             this, [this](ConstraintType type) {
-                if (activeName_.isEmpty()) {
+                if (activeID_!=-1) {
                     return;
                 }
 
-                emit constraintTriggered(activeName_, type);
+                emit constraintTriggered(activeID_, type);
             });
 
 
     connect(toolBar_, &ToolBar::toolsTriggered,
             this, [this](ToolsType type) {
-                if (activeName_.isEmpty()) {
+                if (activeID_!=-1) {
                     return;
                 }
 
-                emit toolsTriggered(activeName_, type);
+                emit toolsTriggered(activeID_, type);
             });
 
     return workspacePage;

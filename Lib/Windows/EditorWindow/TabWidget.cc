@@ -22,18 +22,17 @@ namespace {
 } // namespace
 
 
-UI::TabWidget::TabWidget(QWidget* parent,const QString& name)
-    : QWidget(parent)
+UI::TabWidget::TabWidget(QWidget *parent, const qint64 id, const QString& name)
+    : QWidget(parent), fileId_(id)
       , nameButton_(new QPushButton(this)), closeButton_(new QToolButton(this)), layout_(new QHBoxLayout(this)),
       name_(name), edit_(new RenameTabLineEdit(this)) {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-  setMaximumWidth(140);
+    setMaximumWidth(140);
 
     layout_->setContentsMargins(K_TAB_HORIZONTAL_PADDING_PX, 0, K_TAB_HORIZONTAL_PADDING_PX, 0);
     layout_->setSpacing(K_TAB_LAYOUT_SPACING_PX);
     nameButton_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    setName(name);
 
     closeButton_->setText("✕");
     closeButton_->setFixedWidth(K_CLOSE_BUTTON_WIDTH_PX);
@@ -52,39 +51,33 @@ UI::TabWidget::TabWidget(QWidget* parent,const QString& name)
         emit closeRequestedTriggered(this);
     });
 
-  edit_->hide();
-  edit_->setText(name_);
-  edit_->setFrame(false);
+    edit_->hide();
+    edit_->setText(name_);
+    edit_->setFrame(false);
     edit_->setObjectName("TabLineEdit");
 
 
+    layout_->insertWidget(0, edit_);
 
-  layout_->insertWidget(0, edit_);
+    connect(edit_, &QLineEdit::returnPressed, this, &TabWidget::finishRename);
 
-  connect(edit_, &QLineEdit::returnPressed, this, &TabWidget::finishRename);
+    connect(edit_, &RenameTabLineEdit::focusLost, this, &TabWidget::cancelRename);
 
-    connect(edit_, &RenameTabLineEdit::focusLost, this,&TabWidget::cancelRename);
-
-  nameButton_->installEventFilter(this);
+    nameButton_->installEventFilter(this);
     setObjectName(QStringLiteral("TabWidgetActive"));
     translate();
 }
 
 
-bool UI::TabWidget::eventFilter(QObject* obj, QEvent* event)
-{
-  if (obj == nameButton_) {
-    if (event->type() == QEvent::MouseButtonDblClick) {
-      startRename();
-      return true;
+bool UI::TabWidget::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == nameButton_) {
+        if (event->type() == QEvent::MouseButtonDblClick) {
+            startRename();
+            return true;
+        }
     }
-  }
 
-  return QWidget::eventFilter(obj, event);
-}
-
-QString UI::TabWidget::getName() const {
-    return name_;
+    return QWidget::eventFilter(obj, event);
 }
 
 
@@ -102,21 +95,21 @@ void UI::TabWidget::setActive(const bool active) {
 }
 
 
-void UI::TabWidget::mousePressEvent(QMouseEvent* e) {
+void UI::TabWidget::mousePressEvent(QMouseEvent *e) {
     if (e->button() == Qt::LeftButton) {
         dragStartPos_ = e->pos();
     }
 
-  if (e->button() == Qt::RightButton) {
-    emit rightClickedTriggered(this, e->pos());
-    return;
-  }
+    if (e->button() == Qt::RightButton) {
+        emit rightClickedTriggered(this, e->pos());
+        return;
+    }
 
     QWidget::mousePressEvent(e);
 }
 
 
-void UI::TabWidget::mouseMoveEvent(QMouseEvent* e) {
+void UI::TabWidget::mouseMoveEvent(QMouseEvent *e) {
     if (!(e->buttons() & Qt::LeftButton)) {
         return;
     }
@@ -131,7 +124,7 @@ void UI::TabWidget::mouseMoveEvent(QMouseEvent* e) {
 
     mime->setData(K_TAB_MIME_TYPE, QByteArray::number(reinterpret_cast<quintptr>(this)));
     mime->setData("application/x-window-id",
-              QByteArray::number(reinterpret_cast<quintptr>(window())));
+                  QByteArray::number(reinterpret_cast<quintptr>(window())));
     drag->setMimeData(mime.release());
 
     if (const auto action = drag->exec(Qt::MoveAction);
@@ -163,55 +156,58 @@ void UI::TabWidget::applyActiveStyle() {
     update();
 }
 
+qint64 UI::TabWidget::getFileId() const {
+    return fileId_;
+}
 
-void UI::TabWidget::startRename()
-{
-  edit_->setText(name_);
-  nameButton_->hide();
+
+void UI::TabWidget::startRename() {
+    edit_->setText(name_);
+    nameButton_->hide();
     edit_->show();
 
-  edit_->setFocus();
-  edit_->selectAll();
-}
-
-void UI::TabWidget::finishRename()
-{
-  const QString newName = edit_->text().trimmed();
-
-  if (!newName.isEmpty() && newName != name_) {
-    emit renameTriggered(name_, newName);
-  }
-
-  edit_->hide();
-  nameButton_->show();
+    edit_->setFocus();
+    edit_->selectAll();
 }
 
 
-void UI::TabWidget::cancelRename()
-{
-  if (edit_) {
+void UI::TabWidget::finishRename() {
+    const QString newName = edit_->text().trimmed();
+
+    if (!newName.isEmpty()) {
+        emit renameTriggered(fileId_,newName);
+    }
+
     edit_->hide();
-  }
-  nameButton_->show();
+    nameButton_->show();
+}
+
+
+void UI::TabWidget::cancelRename() {
+    if (edit_) {
+        edit_->hide();
+    }
+    nameButton_->show();
     emit cancelRenameTriggered();
 }
 
-QString UI::TabWidget::elideText(const QString& text, int maxWidth) const
-{
+
+QString UI::TabWidget::elideText(const QString& text, int maxWidth) const {
     QFontMetrics fm(nameButton_->font());
     return fm.elidedText(text, Qt::ElideRight, maxWidth);
 }
 
 
-void UI::TabWidget::changeEvent(QEvent* e) {
+void UI::TabWidget::changeEvent(QEvent *e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
     QWidget::changeEvent(e);
 }
 
+
 void UI::TabWidget::translate() const {
     if (closeButton_) {
-        closeButton_->setToolTip(UI::TabWidget::tr("Close tab"));
+        closeButton_->setToolTip(UI::TabWidget::tr("Close file"));
     }
 }

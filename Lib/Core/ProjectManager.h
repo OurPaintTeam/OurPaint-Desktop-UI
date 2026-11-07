@@ -5,97 +5,90 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
+#include "Utils.h"
 
 class QLineEdit;
 class QWindow;
 class QOpenGLWindow;
 
 namespace UI {
+    struct FileData;
     enum class ToolsType;
     enum class ConstraintType;
     enum class PrimitiveType;
     class BaseWindow;
     class BaseEditorWindow;
     class StartWindow;
-    class ProjectWindow;
-    class TabWindow;
+    class EditorWindow;
+    class LightEditorWindow;
 
 
     class ProjectManager final : public QObject {
         Q_OBJECT
 
     public:
-        struct ProjectData {
-            QString path{};
-            QString id{};
-        };
-
 
         // Creates only StartWindow. ProjectWindow is created later via openProjectWindow().
-        explicit ProjectManager(ProjectData data = {{}, {}});
+        explicit ProjectManager();
         // Creates and opens ProjectWindow immediately (no StartWindow).
-        ProjectManager(ProjectData data, QWindow *windowRender, QLineEdit *consoleEngine);
+        ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine);
         ~ProjectManager() override;
 
-        void setActiveToolProjectWindow(ToolsType tool) const;
-        void setActiveToolProjectWindow(PrimitiveType tool) const;
-        void setActiveToolProjectWindow(ConstraintType tool);
-        void setHintConstraintToolsProjectWindow(const QVector<ConstraintType>& vecTools);
-        void takeOffHintConstraintToolsProjectWindow();
-        void setActiveToolTabWindow(const QString& tabName, ConstraintType tool);
-        void takeOffHintConstraintToolsTabWindow(const QString& tabName);
-        void setHintConstraintToolsTabWindow(const QString& tabName, const QVector<ConstraintType>& vecTools);
-        void setActiveToolTabWindow(const QString& tabName, ToolsType tool);
-        void setActiveToolTabWindow(const QString& tabName, PrimitiveType tool);
+        void setActiveToolEditorWindow(ToolsType tool) const;
+        void setActiveToolEditorWindow(PrimitiveType tool) const;
+        void setActiveToolEditorWindow(ConstraintType tool);
+        void setHintConstraintToolsEditorWindow(const QVector<ConstraintType>& vecTools);
+        void takeOffHintConstraintToolsEditorWindow();
+        void setActiveToolLightEditorWindow(const qint64 id, ConstraintType tool);
+        void takeOffHintConstraintToolsLightEditorWindow(const qint64 id);
+        void setHintConstraintToolsLightEditorWindow(const qint64 id, const QVector<ConstraintType>& vecTools);
+        void setActiveToolLightEditorWindow(const qint64 id, ToolsType tool);
+        void setActiveToolLightEditorWindow(const qint64 id, PrimitiveType tool);
 
-        QString projectPath() const;
-        QString projectID() const;
-        void setProjectPath(const QString& projectPath);
-        void setProjectData(const ProjectData& data);
-        void setActiveTabNameProject(const QString& name);
+        void setActiveTab(const qint64 id);
 
-        void setDefaultProjectsPath(const QString& projectPath);
-        void setProjectsList(const QVector<QPair<QString, QString> >& projectsList);
-        void addNotification(const QString& tabName, const QString& text) const;
+        void setFilesList(const QVector<FileData>& files);
+        void addNotification(const qint64 id, const QString& text) const;
         void addNotification(const QString& text) const;
 
         // StartWindow is created (if needed) and ProjectWindow is removed.
         void openStartWindow();
         // ProjectWindow is created (or recreated), StartWindow is removed.
-        void openProjectWindow();
-        void openProjectWindow(const ProjectData& data, QWindow *windowRender, QLineEdit *consoleEngine);
-        void openTabWindow(const QString& tabName, QWindow *windowRender, QLineEdit *consoleEngine);
-        void checkOpenedTabWindow(const QString& tabName);
+        void openNewWindow();
+        void openNewWindow(QWindow *windowRender, QLineEdit *consoleEngine);
+        void openLightEditorWindow(const QString& fileName,const qint64 id, QWindow *windowRender, QLineEdit *consoleEngine);
+        void checkOpenedNewWindow(const qint64 id);
 
-        void addTabSlot(const QString& name);
-        void deleteTabSlot(const QString& name);
-        void renameTabSlot(const QString& oldName, const QString& newName);
+        void addTabSlot(const QString& name,const qint64 id);
+        void deleteTabSlot(const qint64 id);
+        void renameTabSlot(const qint64 id, const QString& newName);
 
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
         void setCommandConsoleEngine(QLineEdit *engine) const;
 
     signals:
-        void sentCommandTriggered(const QString tabName, const QString command);
-        void primitiveTriggered(const QString tabName, PrimitiveType type);
-        void constraintTriggered(const QString tabName, ConstraintType type);
-        void toolsTriggered(const QString tabName, ToolsType type);
+        void sentCommandTriggered(const qint64 id, const QString command);
+        void primitiveTriggered(const qint64 id, PrimitiveType type);
+        void constraintTriggered(const qint64 id, ConstraintType type);
+        void toolsTriggered(const qint64 id, ToolsType type);
 
         void saveFullProjectTriggered();
-        void openProjectThisWindowTriggered(const QString& path);
-        void createProjectThisWindowTriggered(const QString& path);
-        void openNewWindowOpenProjectTriggered(const QString& path);
-        void openNewWindowCreateProjectTriggered(const QString& path);
-        void openNewWindowTabTriggered(const QString& name);
-        void renameProjectTriggered(const QString& newName, const QString& path);
-        void deleteProjectTriggered(const QString& path);
+        void openFileThisWindowTriggered(const QString& path);
+        void createFileThisWindowTriggered(const QString& path);
+        void openNewWindowOpenFileTriggered(const QString& path);
+        void openNewWindowCreateFileTriggered(const QString& path);
+        void openLightEditorTriggered(const qint64 id);
+        void renameFileTriggered(const qint64 id, const QString& path);
+        void deleteFileTriggered(const qint64 id);
         void openFileTriggered(const QString& filePath);
-        void createFileTriggered(const QString& fileName);
-        void renameTabTriggered(const QString& oldName, const QString& newName);
-        void removeTabTriggered(const QString& fileName);
-        void setActiveTabTriggered(const QString& name);
-        void returnTabWindowTriggered(const QString& name);
-        void closeTabWindowTriggered(const QString& name);
+        void createFileTriggered(const QString& path);
+        void renameTabTriggered(const qint64 id, const QString& newName);
+        void removeTabTriggered(const qint64 id);
+        void closeTabTriggered(const qint64 id);
+        void setActiveTabTriggered(const qint64 id);
+        void returnLightEditorWindowTriggered(const qint64 id);
+        void closeLightEditorWindowTriggered(const qint64 id);
         void scriptTriggered(const QString& text);
         void goToStartWindowTriggered();
 
@@ -106,27 +99,26 @@ namespace UI {
 
     private:
         void connectStartWindowSignals();
-        void connectProjectWindowSignals();
+        void connectEditorWindowSignals();
         void ensureStartWindow();
-        void ensureProjectWindow();
-        void closeTabWindows();
-        void handleProjectWindowClosed();
+        void ensureEditorWindow();
+        void closeLightEditorWindows();
+        void handleEditorWindowClosed();
 
-        void removeProjectWindow();
+        void removeEditorWindow();
         void removeStartWindow();
 
-        TabWindow* findTabWindow(const QString& tabName) const;
+        LightEditorWindow* findTabWindow(const qint64 id) const;
         BaseWindow* activeWindow() const;
         BaseEditorWindow* activeEditorWindow() const;
 
-        ProjectData projectData_{};
-        QString defaultProjectPath_{};
-        QVector<QPair<QString, QString> > projectsList_{};
+        QString defaultFilePath_{};
+        QVector<FileData> filesList_;
 
         StartWindow *startWindow_{nullptr};
-        ProjectWindow *projectWindow_{nullptr};
-        QVector<TabWindow*> tabWindows_{};
-        bool removingProjectWindow_{false};
+        EditorWindow *editorWindow_{nullptr};
+        QVector<LightEditorWindow*> lightEditorWindows_{};
+        bool removingEditorWindow_{false};
     };
 } // namespace UI
 

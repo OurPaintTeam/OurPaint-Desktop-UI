@@ -5,15 +5,13 @@
 #include "CustomMenu.h"
 
 namespace UI {
-    class ProjectMenu final : public CustomMenu {
+    class FileMenu final : public CustomMenu {
         Q_OBJECT
 
     public:
-        explicit ProjectMenu(QWidget *parent = nullptr);
+        explicit FileMenu(QWidget *parent = nullptr);
 
     signals:
-        void createProjectTriggered();
-        void openProjectTriggered();
         void createFileTriggered();
         void openFileTriggered();
         void exportFileTriggered();
@@ -23,8 +21,6 @@ namespace UI {
         void translate() const override;
 
     private:
-        QAction *createProject_{nullptr};
-        QAction *openProject_{nullptr};
         QAction *createFile_{nullptr};
         QAction *exportFile_{nullptr};
         QAction *openFile_{nullptr};

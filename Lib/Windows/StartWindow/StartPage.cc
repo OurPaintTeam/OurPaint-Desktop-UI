@@ -4,7 +4,7 @@
 
 #include "AnimationArea.h"
 #include "InputWidget.h"
-#include "ProjectsListWidget.h"
+#include "FilesListWidget.h"
 #include "TopBarStart.h"
 
 #include <QFileDialog>
@@ -18,32 +18,32 @@ UI::StartPage::StartPage(QWidget* parent)
     setObjectName("StartPage");
     initUI();
     translate();
-    connect(projectsListWidget_, &ProjectsListWidget::pressProjectTriggered, this,
-            &StartPage::openProjectInThisWindowTriggered);
-    connect(projectsListWidget_, &ProjectsListWidget::renameProjectTriggered, this, &StartPage::renameProjectTriggered);
-    connect(projectsListWidget_, &ProjectsListWidget::deleteProjectTriggered, this, &StartPage::deleteProjectTriggered);
+    connect(filesListWidget_, &FilesListWidget::pressFileTriggered, this,
+            &StartPage::pressFileTriggered);
+    connect(filesListWidget_, &FilesListWidget::renameFileTriggered, this, &StartPage::renameFileTriggered);
+    connect(filesListWidget_, &FilesListWidget::deleteFileTriggered, this, &StartPage::deleteFileTriggered);
 
-    connect(projectsListWidget_, &ProjectsListWidget::pressOpenButtonTriggered, this, &StartPage::onOpenProjectSlot);
-    connect(projectsListWidget_, &ProjectsListWidget::pressCreateButtonTriggered, this,
-            &StartPage::onCreateProjectSlot);
+    connect(filesListWidget_, &FilesListWidget::pressOpenButtonTriggered, this, &StartPage::onOpenFileSlot);
+    connect(filesListWidget_, &FilesListWidget::pressCreateButtonTriggered, this,
+            &StartPage::onCreateFileSlot);
 }
 
 
-void UI::StartPage::setProjectsList(const QVector<QPair<QString, QString> >& projects) const {
-    projectsListWidget_->setProjects(projects);
+void UI::StartPage::setFilesList(const QVector<FileData>& files) const {
+    filesListWidget_->setFiles(files);
 }
 
 
-void UI::StartPage::setDefaultProjectsPath(const QString& projectPath){
-    defaultProjectsPath_ = projectPath;
+void UI::StartPage::setDefaultFilesPath(const QString& path){
+    defaultFilesPath_ = path;
 }
 
 
-void UI::StartPage::onOpenProjectSlot() {
+void UI::StartPage::onOpenFileSlot() {
     const auto folderPath = QFileDialog::getExistingDirectory(
         this,
-        tr("Open File or Project"),
-        defaultProjectsPath_,
+        tr("Open File"),
+        defaultFilesPath_,
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
     );
 
@@ -51,19 +51,19 @@ void UI::StartPage::onOpenProjectSlot() {
         return;
     }
 
-    emit openProjectInThisWindowTriggered(folderPath);
+    emit openFileInThisWindowTriggered(folderPath);
 }
 
 
-void UI::StartPage::onCreateProjectSlot() {
-    auto* prompt = new PathInputWidget(tr("Project Path:"), this);
+void UI::StartPage::onCreateFileSlot() {
+    auto* prompt = new PathInputWidget(tr("File path:"), this);
     const auto rect = this->rect();
     const auto size = prompt->sizeHint();
 
     prompt->move(rect.center().x() - size.width() / 2,
                  rect.center().y() - size.height() / 2);
 
-    prompt->setDefaultText(defaultProjectsPath_);
+    prompt->setDefaultText(defaultFilesPath_);
     prompt->show();
 
     connect(prompt, &InputWidget::inputEnteredTriggered, this, [this,prompt](const QString& text) {
@@ -72,7 +72,7 @@ void UI::StartPage::onCreateProjectSlot() {
         }
         prompt->deleteLater();
 
-        emit createProjectInThisWindowTriggered(text);
+        emit createFileInThisWindowTriggered(text);
     });
 }
 
@@ -83,7 +83,7 @@ void UI::StartPage::initUI() {
 
     topBar_ = new TopBarStart(this);
 
-    projectsListWidget_ = new ProjectsListWidget(mainArea_);
+    filesListWidget_ = new FilesListWidget(mainArea_);
     animationArea_ = new AnimationArea(mainArea_);
 
     contentLayout_->setContentsMargins(0, 0, 0, 0);
@@ -91,7 +91,7 @@ void UI::StartPage::initUI() {
 
     mainLayout_->insertWidget(0, topBar_);
 
-    contentLayout_->addWidget(projectsListWidget_);
+    contentLayout_->addWidget(filesListWidget_);
     contentLayout_->addWidget(animationArea_, 1);
 }
 

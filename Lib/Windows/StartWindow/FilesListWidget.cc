@@ -1,13 +1,14 @@
-#include "ProjectsListWidget.h"
+#include "FilesListWidget.h"
 
 #include <QEvent>
 #include <QLineEdit>
 #include <QScrollArea>
 
-#include "ProjectButton.h"
+#include "FileButton.h"
+#include "Utils.h"
 
 
-UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
+UI::FilesListWidget::FilesListWidget(QWidget* parent)
     : QWidget(parent),
       rootLayoutPtr_(new QVBoxLayout(this)),
       openPanelPtr_(new QWidget(this)),
@@ -18,7 +19,7 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
       linePtr_(new QFrame(openPanelPtr_)),
       scrollAreaPtr_(new QScrollArea(openPanelPtr_)),
       scrollContent_(new QWidget()),
-      projectsLayout_(new QVBoxLayout(scrollContent_)) {
+      filesLayout_(new QVBoxLayout(scrollContent_)) {
     setMinimumWidth(WIDGET_WIDTH);
     setMaximumWidth(WIDGET_WIDTH);
     setObjectName("projectsListWidget");
@@ -47,15 +48,15 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
 
     inputLayoutPtr_->addWidget(projectInput_, 1);
 
-    createButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/createProject.svg"));
+    createButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/createFile.svg"));
     createButtonPtr_->setObjectName("createButtonStartWindow");
     createButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
-    connect(createButtonPtr_, &QPushButton::clicked, this, &ProjectsListWidget::pressCreateButtonTriggered);
+    connect(createButtonPtr_, &QPushButton::clicked, this, &FilesListWidget::pressCreateButtonTriggered);
 
-    openButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/openProjectDark.svg"));
+    openButtonPtr_->setIcon(QIcon(":/Assets/icons/folder/openFileDark.svg"));
     openButtonPtr_->setObjectName("createButtonStartWindow");
     openButtonPtr_->setFixedSize(BUTTON_SIZE, BUTTON_SIZE);
-    connect(openButtonPtr_, &QPushButton::clicked, this, &ProjectsListWidget::pressOpenButtonTriggered);
+    connect(openButtonPtr_, &QPushButton::clicked, this, &FilesListWidget::pressOpenButtonTriggered);
 
     inputLayoutPtr_->addWidget(openButtonPtr_);
     inputLayoutPtr_->addWidget(createButtonPtr_);
@@ -73,67 +74,67 @@ UI::ProjectsListWidget::ProjectsListWidget(QWidget* parent)
 
     scrollContent_->setObjectName("projectsScrollContent");
 
-    projectsLayout_->setSpacing(0);
-    projectsLayout_->setContentsMargins(
+    filesLayout_->setSpacing(0);
+    filesLayout_->setContentsMargins(
         CONTENT_MARGINS_LEFT,
         CONTENT_MARGINS_TOP,
         CONTENT_MARGINS_RIGHT,
         CONTENT_MARGINS_BOTTOM
     );
-    projectsLayout_->setSpacing(LAYOUT_SPACING);
-    projectsLayout_->addStretch();
-    projectsLayout_->setObjectName("projectsLayout_");
+    filesLayout_->setSpacing(LAYOUT_SPACING);
+    filesLayout_->addStretch();
+    filesLayout_->setObjectName("filesLayout_");
 
     scrollAreaPtr_->setWidget(scrollContent_);
 
     panelLayoutPtr_->addWidget(scrollAreaPtr_, 1);
 
     connect(projectInput_, &QLineEdit::textChanged,
-            this, &ProjectsListWidget::filterProjectsSlot);
+            this, &FilesListWidget::filterProjectsSlot);
 
     translate();
 }
 
 
-void UI::ProjectsListWidget::setProjects(const QVector<QPair<QString, QString> >& projects) {
-    for (auto* project: allProjects_) {
-        projectsLayout_->removeWidget(project);
+void UI::FilesListWidget::setFiles(const QVector<FileData>& files) {
+    for (auto* project: allFiles_) {
+        filesLayout_->removeWidget(project);
         project->deleteLater();
     }
-    allProjects_.clear();
+    allFiles_.clear();
 
-    for (const auto& [name, path]: projects) {
-        auto* project = new ProjectButton(name, path, scrollContent_);
+    for (const auto& file : files) {
+        auto* project = new FileButton(file, scrollContent_);
 
-        connect(project, &ProjectButton::pressProjectTriggered, this, &ProjectsListWidget::pressProjectTriggered);
-        connect(project, &ProjectButton::deleteProjectTriggered, this, &ProjectsListWidget::deleteProjectTriggered);
-        connect(project, &ProjectButton::renameProjectTriggered, this, &ProjectsListWidget::renameProjectTriggered);
+        connect(project, &FileButton::pressFileTriggered, this, &FilesListWidget::pressFileTriggered);
+        connect(project, &FileButton::deleteFileTriggered, this, &FilesListWidget::deleteFileTriggered);
+        connect(project, &FileButton::renameFileTriggered, this, &FilesListWidget::renameFileTriggered);
 
-        allProjects_.append(project);
-        projectsLayout_->insertWidget(projectsLayout_->count() - 1, project);
+        allFiles_.append(project);
+        filesLayout_->insertWidget(filesLayout_->count() - 1, project);
     }
 }
 
 
-void UI::ProjectsListWidget::filterProjectsSlot(const QString& text) {
-    for (auto* const project: allProjects_) {
-        projectsLayout_->removeWidget(project);
+void UI::FilesListWidget::filterProjectsSlot(const QString& text) {
+    for (auto* const project: allFiles_) {
+        filesLayout_->removeWidget(project);
         project->hide();
     }
 
     if (text.isEmpty()) {
-        for (auto* const project: allProjects_) {
-            projectsLayout_->addWidget(project);
+        for (auto* const project: allFiles_) {
+            filesLayout_->addWidget(project);
             project->show();
         }
         return;
     }
 
-    auto sortedProjects = allProjects_;
+    auto sortedProjects = allFiles_;
     auto lowerText = text.toLower();
 
     std::sort(sortedProjects.begin(), sortedProjects.end(),
-              [lowerText](const ProjectButton* a, const ProjectButton* b) {
+              [lowerText](const FileButton* a, const FileButton* b) {
                   const auto nameA = a->getName().toLower();
                   const auto nameB = b->getName().toLower();
 
@@ -160,35 +161,35 @@ void UI::ProjectsListWidget::filterProjectsSlot(const QString& text) {
 
     for (auto* const project: sortedProjects) {
         if (project->getName().toLower().contains(lowerText)) {
-            projectsLayout_->addWidget(project);
+            filesLayout_->addWidget(project);
             project->show();
         }
     }
 
-    for (auto* const project: allProjects_) {
+    for (auto* const project: allFiles_) {
         if (!project->getName().toLower().contains(lowerText)) {
-            projectsLayout_->addWidget(project);
+            filesLayout_->addWidget(project);
             project->show();
         }
     }
 }
 
 
-void UI::ProjectsListWidget::changeEvent(QEvent* e) {
+void UI::FilesListWidget::changeEvent(QEvent* e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
     QWidget::changeEvent(e);
 }
 
-void UI::ProjectsListWidget::translate() const {
+void UI::FilesListWidget::translate() const {
     if (createButtonPtr_) {
-        createButtonPtr_->setToolTip(UI::ProjectsListWidget::tr("Create Project"));
+        createButtonPtr_->setToolTip(UI::FilesListWidget::tr("Create new file"));
     }
     if (openButtonPtr_) {
-        openButtonPtr_->setToolTip(UI::ProjectsListWidget::tr("Open Project"));
+        openButtonPtr_->setToolTip(UI::FilesListWidget::tr("Open file"));
     }
     if (projectInput_) {
-        projectInput_->setPlaceholderText(UI::ProjectsListWidget::tr("Enter the project name..."));
+        projectInput_->setPlaceholderText(UI::FilesListWidget::tr("Enter the file name..."));
     }
 }
