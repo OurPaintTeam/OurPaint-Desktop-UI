@@ -265,7 +265,6 @@ void UI::EditorPage::onRenameTabSlot(FileData& data) const {
 
 void UI::EditorPage::changeEvent(QEvent* e) {
     if (e && e->type() == QEvent::LanguageChange) {
-        qDebug() << "[TopBarEditor] LanguageChange received";
         translate();
     }
     QWidget::changeEvent(e);

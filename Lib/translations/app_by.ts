@@ -35,17 +35,17 @@
 <context>
     <name>UI::BaseEditorTopBar</name>
     <message>
-        <location filename="../Windows/BaseEditorTopBar.cc" line="111"/>
+        <location filename="../Windows/BaseEditorTopBar.cc" line="115"/>
         <source>Show/Hide left panel</source>
         <translation>Паказаць/Схаваць левую панэль</translation>
     </message>
     <message>
-        <location filename="../Windows/BaseEditorTopBar.cc" line="114"/>
+        <location filename="../Windows/BaseEditorTopBar.cc" line="118"/>
         <source>Show/Hide right panel</source>
         <translation>Паказаць/Схаваць правую панэль</translation>
     </message>
     <message>
-        <location filename="../Windows/BaseEditorTopBar.cc" line="117"/>
+        <location filename="../Windows/BaseEditorTopBar.cc" line="121"/>
         <source>Show/Hide concole</source>
         <translation>Паказаць/Схаваць кансоль</translation>
     </message>
@@ -105,10 +105,87 @@
     </message>
 </context>
 <context>
+    <name>UI::EditorPage</name>
+    <message>
+        <location filename="../Windows/EditorWindow/EditorPage.cc" line="237"/>
+        <source>Open File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/EditorPage.cc" line="239"/>
+        <source>Files (*.ourp);;All Files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/EditorPage.cc" line="276"/>
+        <source>Information menu</source>
+        <translation type="unfinished">Информационная панель</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/EditorPage.cc" line="279"/>
+        <source>Messanger</source>
+        <translation type="unfinished">Чат</translation>
+    </message>
+</context>
+<context>
+    <name>UI::FileButton</name>
+    <message>
+        <location filename="../Windows/StartWindow/FileButton.cc" line="179"/>
+        <source>Rename file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Windows/StartWindow/FileButton.cc" line="182"/>
+        <source>Delete file</source>
+        <translation type="unfinished">Выдаліць файл</translation>
+    </message>
+</context>
+<context>
+    <name>UI::FileMenu</name>
+    <message>
+        <location filename="../Menus/FileMenu.cc" line="30"/>
+        <source>Create new file</source>
+        <translation type="unfinished">Стварыць новы файл</translation>
+    </message>
+    <message>
+        <location filename="../Menus/FileMenu.cc" line="33"/>
+        <source>Open file</source>
+        <translation type="unfinished">Адкрыць файл</translation>
+    </message>
+    <message>
+        <location filename="../Menus/FileMenu.cc" line="36"/>
+        <source>Export file to...</source>
+        <translation type="unfinished">Экспартаваць файл у...</translation>
+    </message>
+    <message>
+        <location filename="../Menus/FileMenu.cc" line="39"/>
+        <source>Script</source>
+        <translation type="unfinished">Скрыпт</translation>
+    </message>
+</context>
+<context>
+    <name>UI::FilesListWidget</name>
+    <message>
+        <location filename="../Windows/StartWindow/FilesListWidget.cc" line="187"/>
+        <source>Create new file</source>
+        <translation type="unfinished">Стварыць новы файл</translation>
+    </message>
+    <message>
+        <location filename="../Windows/StartWindow/FilesListWidget.cc" line="190"/>
+        <source>Open file</source>
+        <translation type="unfinished">Адкрыць файл</translation>
+    </message>
+    <message>
+        <location filename="../Windows/StartWindow/FilesListWidget.cc" line="193"/>
+        <source>Enter the file name...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>UI::FramelessWindow</name>
     <message>
-        <location filename="../Windows/FramelessWindow.cc" line="49"/>
-        <location filename="../Windows/FramelessWindow.cc" line="193"/>
+        <location filename="../Windows/FramelessWindow.cc" line="103"/>
+        <location filename="../Windows/FramelessWindow.cc" line="326"/>
         <source>OurPaint</source>
         <translation>OurPaint</translation>
     </message>
@@ -157,121 +234,79 @@
 <context>
     <name>UI::ProjectButton</name>
     <message>
-        <location filename="../Windows/StartWindow/ProjectButton.cc" line="175"/>
         <source>Rename project</source>
-        <translation type="unfinished">Переименовать проект</translation>
+        <translation type="obsolete">Переименовать проект</translation>
     </message>
     <message>
-        <location filename="../Windows/StartWindow/ProjectButton.cc" line="178"/>
         <source>Delete project</source>
-        <translation type="unfinished">Удалить проект</translation>
+        <translation type="obsolete">Удалить проект</translation>
     </message>
 </context>
 <context>
     <name>UI::ProjectMenu</name>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="37"/>
         <source>Create new project</source>
-        <translation>Стварыць новы праект</translation>
+        <translation type="vanished">Стварыць новы праект</translation>
     </message>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="40"/>
         <source>Open project</source>
-        <translation>Адкрыць праект</translation>
+        <translation type="vanished">Адкрыць праект</translation>
     </message>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="43"/>
         <source>Create new file</source>
-        <translation>Стварыць новы файл</translation>
+        <translation type="vanished">Стварыць новы файл</translation>
     </message>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="46"/>
         <source>Open file</source>
-        <translation>Адкрыць файл</translation>
+        <translation type="vanished">Адкрыць файл</translation>
     </message>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="49"/>
         <source>Export file to...</source>
-        <translation>Экспартаваць файл у...</translation>
+        <translation type="vanished">Экспартаваць файл у...</translation>
     </message>
     <message>
-        <location filename="../Menus/ProjectMenu.cc" line="52"/>
         <source>Script</source>
-        <translation>Скрыпт</translation>
+        <translation type="vanished">Скрыпт</translation>
     </message>
 </context>
 <context>
     <name>UI::ProjectPage</name>
     <message>
-        <location filename="../Windows/ProjectWindow/ProjectPage.cc" line="285"/>
         <source>Open File or Project</source>
-        <translation>Адкрыць файл ці праект</translation>
+        <translation type="vanished">Адкрыць файл ці праект</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/ProjectPage.cc" line="287"/>
         <source>Project Files (*.ourp);;All Files (*)</source>
-        <translation>Файлы праектаў (*.ourp);;Усе файлы (*)</translation>
+        <translation type="vanished">Файлы праектаў (*.ourp);;Усе файлы (*)</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/ProjectPage.cc" line="335"/>
         <source>Information menu</source>
-        <translation type="unfinished">Информационная панель</translation>
+        <translation type="obsolete">Информационная панель</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/ProjectPage.cc" line="338"/>
         <source>Messanger</source>
-        <translation type="unfinished">Чат</translation>
+        <translation type="obsolete">Чат</translation>
     </message>
 </context>
 <context>
     <name>UI::ProjectsListWidget</name>
     <message>
-        <location filename="../Windows/StartWindow/ProjectsListWidget.cc" line="186"/>
         <source>Create Project</source>
-        <translation>Стварыць праект</translation>
+        <translation type="vanished">Стварыць праект</translation>
     </message>
     <message>
-        <location filename="../Windows/StartWindow/ProjectsListWidget.cc" line="189"/>
         <source>Open Project</source>
-        <translation>Адкрыць праект</translation>
+        <translation type="vanished">Адкрыць праект</translation>
     </message>
     <message>
-        <location filename="../Windows/StartWindow/ProjectsListWidget.cc" line="192"/>
         <source>Enter the project name...</source>
-        <translation>Увядзіце назву праекта...</translation>
-    </message>
-</context>
-<context>
-    <name>UI::SettingsWidget</name>
-    <message>
-        <location filename="../Widgets/SettingsWidget.cc" line="152"/>
-        <location filename="../Widgets/SettingsWidget.cc" line="153"/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Widgets/SettingsWidget.cc" line="156"/>
-        <location filename="../Widgets/SettingsWidget.cc" line="157"/>
-        <source>Text 1: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Widgets/SettingsWidget.cc" line="160"/>
-        <location filename="../Widgets/SettingsWidget.cc" line="161"/>
-        <source>Text 2: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Widgets/SettingsWidget.cc" line="164"/>
-        <location filename="../Widgets/SettingsWidget.cc" line="165"/>
-        <source>Text 3: </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Увядзіце назву праекта...</translation>
     </message>
 </context>
 <context>
     <name>UI::SlotWidget</name>
     <message>
-        <location filename="../DragDrop/SlotWidget.cc" line="179"/>
+        <location filename="../DragDrop/SlotWidget.cc" line="227"/>
         <source>Drop here</source>
         <translation>Перацягніце сюды</translation>
     </message>
@@ -279,20 +314,28 @@
 <context>
     <name>UI::StartPage</name>
     <message>
-        <location filename="../Windows/StartWindow/StartPage.cc" line="45"/>
         <source>Open File or Project</source>
-        <translation>Адкрыць файл ці праект</translation>
+        <translation type="vanished">Адкрыць файл ці праект</translation>
+    </message>
+    <message>
+        <source>Project Path:</source>
+        <translation type="vanished">Шлях да праекта:</translation>
+    </message>
+    <message>
+        <location filename="../Windows/StartWindow/StartPage.cc" line="45"/>
+        <source>Open File</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Windows/StartWindow/StartPage.cc" line="59"/>
-        <source>Project Path:</source>
-        <translation>Шлях да праекта:</translation>
+        <source>File path:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>UI::TabBar</name>
     <message>
-        <location filename="../Windows/ProjectWindow/TabBar.cc" line="377"/>
+        <location filename="../Windows/EditorWindow/TabBar.cc" line="379"/>
         <source>Create new file</source>
         <translation type="unfinished">Стварыць новы файл</translation>
     </message>
@@ -310,9 +353,13 @@
         <translation>Выдаліць файл</translation>
     </message>
     <message>
-        <location filename="../Menus/TabMenu.cc" line="49"/>
         <source>Close tab</source>
-        <translation>Закрыць укладку</translation>
+        <translation type="vanished">Закрыць укладку</translation>
+    </message>
+    <message>
+        <location filename="../Menus/TabMenu.cc" line="49"/>
+        <source>Close file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Menus/TabMenu.cc" line="52"/>
@@ -333,139 +380,277 @@
 <context>
     <name>UI::TabWidget</name>
     <message>
-        <location filename="../Windows/ProjectWindow/TabWidget.cc" line="215"/>
         <source>Close tab</source>
-        <translation type="unfinished">Закрыць укладку</translation>
+        <translation type="obsolete">Закрыць укладку</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TabWidget.cc" line="217"/>
+        <source>Close file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>UI::ToolBar</name>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="294"/>
+        <location filename="../Widgets/ToolBar.cc" line="392"/>
         <source>Point</source>
         <translation>Кропка</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="297"/>
+        <location filename="../Widgets/ToolBar.cc" line="395"/>
         <source>CubicBezier</source>
         <translation>Кубічная Безье</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="300"/>
+        <location filename="../Widgets/ToolBar.cc" line="398"/>
         <source>Cursor tool</source>
         <translation>Інструмент &quot;Курсор&quot;</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="303"/>
+        <location filename="../Widgets/ToolBar.cc" line="406"/>
+        <source>Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="407"/>
+        <source>Vertical Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="408"/>
+        <source>Horizontal Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="409"/>
+        <source>Angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="410"/>
+        <source>Coincident</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="411"/>
+        <source>Horizontal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="412"/>
+        <source>Vertical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="413"/>
+        <source>Parallel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="414"/>
+        <source>Perpendicular</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="415"/>
+        <source>Tangent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="416"/>
+        <source>Equal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="417"/>
+        <source>FixUnfix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="418"/>
+        <source>Concentric</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="419"/>
+        <source>Collinear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="420"/>
+        <source>Midpoint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="421"/>
+        <source>Symmetric</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Widgets/ToolBar.cc" line="422"/>
+        <source>Curvature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Show size</source>
-        <translation>Паказаць памер</translation>
+        <translation type="vanished">Паказаць памер</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="308"/>
         <source>Object – Object Distance</source>
-        <translation>Адлегласць паміж аб&apos;ектамі</translation>
+        <translation type="vanished">Адлегласць паміж аб&apos;ектамі</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="309"/>
         <source>Point on Line</source>
-        <translation>Кропка на лініі</translation>
+        <translation type="vanished">Кропка на лініі</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="310"/>
         <source>Coincident Points</source>
-        <translation>Супадальныя кропкі</translation>
+        <translation type="vanished">Супадальныя кропкі</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="311"/>
         <source>Line on Circle</source>
-        <translation>Лінія на акружнасці</translation>
+        <translation type="vanished">Лінія на акружнасці</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="312"/>
         <source>Line Inside Circle</source>
-        <translation>Лінія ўнутры акружнасці</translation>
+        <translation type="vanished">Лінія ўнутры акружнасці</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="313"/>
         <source>Parallel Lines</source>
-        <translation>Паралельныя лініі</translation>
+        <translation type="vanished">Паралельныя лініі</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="314"/>
         <source>Perpendicular Lines</source>
-        <translation>Перпендыкулярныя лініі</translation>
+        <translation type="vanished">Перпендыкулярныя лініі</translation>
     </message>
     <message>
-        <location filename="../Widgets/ToolBar.cc" line="315"/>
         <source>Angle Between Lines</source>
-        <translation>Вугал паміж лініямі</translation>
+        <translation type="vanished">Вугал паміж лініямі</translation>
     </message>
 </context>
 <context>
     <name>UI::TopBar</name>
     <message>
-        <location filename="../Widgets/TopBar.cc" line="178"/>
+        <location filename="../Widgets/TopBar.cc" line="162"/>
         <source>Minimize window</source>
         <translation>Згарнуць акно</translation>
     </message>
     <message>
-        <location filename="../Widgets/TopBar.cc" line="181"/>
+        <location filename="../Widgets/TopBar.cc" line="165"/>
+        <location filename="../Widgets/TopBar.cc" line="216"/>
         <source>Maximize window</source>
         <translation>Разгарнуць акно</translation>
     </message>
     <message>
-        <location filename="../Widgets/TopBar.cc" line="184"/>
+        <location filename="../Widgets/TopBar.cc" line="168"/>
         <source>Close</source>
         <translation>Закрыць</translation>
+    </message>
+    <message>
+        <location filename="../Widgets/TopBar.cc" line="216"/>
+        <source>Restore window</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UI::TopBarEditor</name>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="193"/>
+        <source>File menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="194"/>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="197"/>
+        <source>Version menu</source>
+        <translation type="unfinished">Меню версій</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="198"/>
+        <source>Version control</source>
+        <translation type="unfinished">Кантроль версій</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="201"/>
+        <source>Collaboration menu</source>
+        <translation type="unfinished">Меню сумеснай працы</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="202"/>
+        <source>Collaboration</source>
+        <translation type="unfinished">Сумесная праца</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="205"/>
+        <source>Settings</source>
+        <translation type="unfinished">Налады</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="208"/>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="209"/>
+        <source>Help</source>
+        <translation type="unfinished">Даведка</translation>
+    </message>
+    <message>
+        <location filename="../Windows/EditorWindow/TopBarEditor.cc" line="212"/>
+        <source>Show/Hide tab panel</source>
+        <translation type="unfinished">Паказаць/Схаваць панэль укладак</translation>
+    </message>
+</context>
+<context>
+    <name>UI::TopBarLightEditor</name>
+    <message>
+        <location filename="../Windows/LightEditorWindow/TopBarLightEditor.cc" line="25"/>
+        <source>OurPaint</source>
+        <translation type="unfinished">OurPaint</translation>
+    </message>
+    <message>
+        <location filename="../Windows/LightEditorWindow/TopBarLightEditor.cc" line="68"/>
+        <source>Return</source>
+        <translation type="unfinished">Вярнуцца</translation>
     </message>
 </context>
 <context>
     <name>UI::TopBarProject</name>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="187"/>
         <source>Project menu</source>
-        <translation>Меню праекта</translation>
+        <translation type="vanished">Меню праекта</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="188"/>
         <source>Project</source>
-        <translation>Праект</translation>
+        <translation type="vanished">Праект</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="191"/>
         <source>Version menu</source>
-        <translation>Меню версій</translation>
+        <translation type="vanished">Меню версій</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="192"/>
         <source>Version control</source>
-        <translation>Кантроль версій</translation>
+        <translation type="vanished">Кантроль версій</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="195"/>
         <source>Collaboration menu</source>
-        <translation>Меню сумеснай працы</translation>
+        <translation type="vanished">Меню сумеснай працы</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="196"/>
         <source>Collaboration</source>
-        <translation>Сумесная праца</translation>
+        <translation type="vanished">Сумесная праца</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="199"/>
         <source>Settings</source>
-        <translation>Налады</translation>
+        <translation type="vanished">Налады</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="202"/>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="203"/>
         <source>Help</source>
-        <translation>Даведка</translation>
+        <translation type="vanished">Даведка</translation>
     </message>
     <message>
-        <location filename="../Windows/ProjectWindow/TopBarProject.cc" line="206"/>
         <source>Show/Hide tab panel</source>
-        <translation>Паказаць/Схаваць панэль укладак</translation>
+        <translation type="vanished">Паказаць/Схаваць панэль укладак</translation>
     </message>
 </context>
 <context>
@@ -479,14 +664,12 @@
 <context>
     <name>UI::TopBarTab</name>
     <message>
-        <location filename="../Windows/TabWindow/TopBarTab.cc" line="56"/>
         <source>OurPaint</source>
-        <translation>OurPaint</translation>
+        <translation type="vanished">OurPaint</translation>
     </message>
     <message>
-        <location filename="../Windows/TabWindow/TopBarTab.cc" line="59"/>
         <source>Return</source>
-        <translation>Вярнуцца</translation>
+        <translation type="vanished">Вярнуцца</translation>
     </message>
 </context>
 <context>

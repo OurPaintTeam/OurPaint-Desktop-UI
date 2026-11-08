@@ -291,7 +291,7 @@ void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
 
     const QString primary =
         lang == UI::SettingsSystem::Language::Russian    ? QStringLiteral(":/translations/app_ru.qm") :
-        lang == UI::SettingsSystem::Language::Belarusian ? QStringLiteral(":/translations/app_be.qm") :
+        lang == UI::SettingsSystem::Language::Belarusian ? QStringLiteral(":/translations/app_by.qm") :
                                                            QStringLiteral(":/translations/app_eng.qm");
 
     if (!tryLoad(primary)) {
