@@ -31,6 +31,8 @@ void UI::StartWindow::initUI() {
     startPage_ = new StartPage(contentWidget_);
     rootLayout_->addWidget(startPage_);
 
+    connect(startPage_, &StartPage::pressFileTriggered,
+        this, &StartWindow::openFileThisWindowByIDTriggered);
     connect(startPage_, &StartPage::openFileInThisWindowTriggered,
             this, &StartWindow::openFileThisWindowTriggered);
     connect(startPage_, &StartPage::createFileInThisWindowTriggered,
@@ -44,7 +46,7 @@ void UI::StartWindow::initUI() {
 }
 
 
-void UI::StartWindow::setFilesList(const QVector<FileData>& files) const {
+void UI::StartWindow::setFilesList(const QVector<ProjectData>& files) const {
     if (startPage_) {
         startPage_->setFilesList(files);
     }

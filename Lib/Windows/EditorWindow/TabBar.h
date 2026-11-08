@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QPointer>
 
+#include "Utils.h"
+
 class QHBoxLayout;
 class QPushButton;
 class QScrollArea;
@@ -22,7 +24,7 @@ class TabWidget;
         explicit TabBar(QWidget* parent = nullptr);
         [[nodiscard]] bool isEmptyTab() const;
     signals:
-        void renameTabTriggered(const qint64 id, const QString& newName);
+        void renameTabTriggered(UI::FileData& data);
         void removeTabTriggered(const qint64 id);
         void createTabTriggered(const QString& name);
         void setActiveTabTriggered(const qint64 id);
@@ -31,10 +33,10 @@ class TabWidget;
         void allTabsCloseTriggered();
 
     public slots:
-        void renameTab(const qint64 id, const QString& newName);
+        void renameTab(UI::FileData& data);
         void deleteTabSlot(const qint64 id);
         UI::TabWidget* closeTabSlot(const qint64 id);
-        void addTabSlot(const QString& name, const qint64 id);
+        void addTabSlot(const FileData& data);
         void createTabSlot();
 
 

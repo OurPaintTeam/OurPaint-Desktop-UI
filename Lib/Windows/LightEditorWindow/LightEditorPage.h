@@ -2,8 +2,10 @@
 #define OURPAINT_DESKTOP_UI_TABPAGE_H
 
 #include "BaseEditorPage.h"
+#include "Utils.h"
 
 namespace UI {
+    struct FileData;
     class SideTool;
     class TopBarLightEditor;
 
@@ -12,7 +14,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit LightEditorPage(QWidget* parent = nullptr, const qint64& id = -1, QString  displayName = "");
+        explicit LightEditorPage(QWidget* parent = nullptr, FileData fileData=FileData{});
         void setName(const QString& name);
         ~LightEditorPage() override = default;
 
@@ -24,7 +26,7 @@ namespace UI {
         TopBarLightEditor* topBar_{nullptr};
         SideTool* leftTool_{nullptr};
         SideTool* rightTool_{nullptr};
-        QString displayName_;
+        FileData& fileData_;
     };
 } // namespace UI
 

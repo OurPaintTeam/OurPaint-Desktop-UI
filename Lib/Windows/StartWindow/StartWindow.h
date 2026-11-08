@@ -1,7 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_STARTWINDOW_H
 #define OURPAINT_DESKTOP_UI_STARTWINDOW_H
 
+#include <QList>
+
 #include "BaseWindow.h"
+#include "Utils.h"
 
 class QVBoxLayout;
 
@@ -18,13 +21,14 @@ namespace UI {
         ~StartWindow() override = default;
 
         void initUI() override;
-        void setFilesList(const QVector<FileData>& files) const;
+        void setFilesList(const QVector<ProjectData>& files) const;
         void setDefaultFilesPath(const QString& path) const;
 
     signals:
+        void openFileThisWindowByIDTriggered(qint64 id);
         void openFileThisWindowTriggered(const QString& path);
         void createFileThisWindowTriggered(const QString& path);
-        void renameFileTriggered(const qint64 id, const QString& path);
+        void renameFileTriggered(FileData& data);
         void deleteFileTriggered(const qint64 id);
 
     private:

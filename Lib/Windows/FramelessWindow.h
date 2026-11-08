@@ -41,7 +41,6 @@ private:
 
     static QString loadStyle(const QString& path);
     static QString loadStyles(const QStringList& files);
-    static void initTranslations();
     static void initFonts();
 
 #ifdef Q_OS_WIN

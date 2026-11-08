@@ -5,6 +5,11 @@
 #include "EditorPage.h"
 
 
+namespace UI {
+    struct FileData;
+}
+
+
 UI::EditorWindow::EditorWindow(QWidget* parent)
     : BaseEditorWindow(parent){
     initUI();
@@ -12,7 +17,7 @@ UI::EditorWindow::EditorWindow(QWidget* parent)
 
 
 void UI::EditorWindow::initUI() {
-    editorPage_ = new EditorPage(this,id_);
+    editorPage_ = new EditorPage(this);
     initEditor(editorPage_);
 
     connect(editorPage_, &EditorPage::goToStartWindowTriggered,
@@ -55,9 +60,9 @@ void UI::EditorWindow::setDefaultPath(const QString& path) {
 }
 
 
-void UI::EditorWindow::addTabSlot(const QString& name,const qint64 id) const {
+void UI::EditorWindow::addTabSlot(const FileData& data) const {
     if (editorPage_) {
-        editorPage_->onAddTabSlot(name,id);
+        editorPage_->onAddTabSlot(data);
     }
 }
 
@@ -69,10 +74,10 @@ void UI::EditorWindow::deleteTabSlot( const qint64 id) const {
 }
 
 
-void UI::EditorWindow::renameTabSlot(const qint64 id, const QString& newName) const {
+void UI::EditorWindow::renameTabSlot(FileData& data) const {
     if (editorPage_) {
-        editorPage_->onRenameTabSlot(id, newName);
-        editorPage_->setActiveID(id);
+        editorPage_->onRenameTabSlot(data);
+        editorPage_->setActiveID(data.id);
     }
 }
 

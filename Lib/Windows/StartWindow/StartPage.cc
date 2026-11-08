@@ -29,7 +29,7 @@ UI::StartPage::StartPage(QWidget* parent)
 }
 
 
-void UI::StartPage::setFilesList(const QVector<FileData>& files) const {
+void UI::StartPage::setFilesList(const QVector<ProjectData>& files) const {
     filesListWidget_->setFiles(files);
 }
 

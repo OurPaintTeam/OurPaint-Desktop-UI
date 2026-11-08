@@ -21,27 +21,26 @@ class QTranslator;
         UI::SettingsSystem settingsSystem_;
         QTranslator* translator_{nullptr};
         UI::SettingsSystem::Language currentLanguage_{UI::SettingsSystem::Language::English};
+        QVector<UI::ProjectData> collectProjectData() ;
 
-        qint64 defaultLocationId() const;
-
-        UI::ProjectManager* createProjectManager();
+        UI::ProjectManager* createStartWindow();
         UI::ProjectManager* createEditorProjectManager(QWindow* windowRender,
                                                        QLineEdit* consoleEngine);
         void deleteSlot(UI::ProjectManager* manager);
+        void refreshFiles(UI::ProjectManager *manager) ;
         void initSignals(UI::ProjectManager& manager);
-        void refreshFiles(UI::ProjectManager* manager) const;
 
-        void openFileInCurrentWindow(UI::ProjectManager* manager, qint64 fileId) const;
-        void openFileByPathInCurrentWindow(UI::ProjectManager* manager, const QString& path) const;
+        void openFileInCurrentWindow(UI::ProjectManager* manager, qint64 fileId) ;
+        void openFileByPathInCurrentWindow(UI::ProjectManager* manager, const QString& path) ;
         void openFileByPathInNewWindow(const QString& path);
-        void createFileInCurrentWindow(UI::ProjectManager* manager, const QString& fileName) const;
+        void createFileInCurrentWindow(UI::ProjectManager* manager, const QString& fileName) ;
         void createFileInNewWindow(const QString& fileName);
-        void renameFile(qint64 fileId, const QString& newName) const;
-        void deleteFile(UI::ProjectManager* manager, qint64 fileId) const;
-        void openLightEditor(UI::ProjectManager* manager, const QString& fileName, qint64 fileId);
-        void returnTabFromLight(UI::ProjectManager* manager, qint64 fileId) const;
+        void renameFile(UI::FileData& data) ;
+        void deleteFile(UI::ProjectManager* manager, qint64 fileId) ;
+        void openLightEditor(UI::ProjectManager *manager, UI::FileData& data);
+        void returnTabFromLight(UI::ProjectManager* manager, qint64 fileId) ;
         void setActiveTab(UI::ProjectManager* manager, qint64 fileId) const;
-        void goToStartWindow(UI::ProjectManager* manager) const;
+        void goToStartWindow(UI::ProjectManager* manager) ;
 
         void sentCommandFromConsole(UI::ProjectManager* manager, qint64 fileId,
                                     const QString& command) const;

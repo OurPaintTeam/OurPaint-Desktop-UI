@@ -21,12 +21,12 @@ namespace {
 } // namespace
 
 
-UI::BaseEditorPage::BaseEditorPage(QWidget *parent,const qint64& id)
-    : BasePage(parent),activeID_(id) {
+UI::BaseEditorPage::BaseEditorPage(QWidget *parent)
+    : BasePage(parent) {
 }
 
 
-qint64 UI::BaseEditorPage::id() const {
+qint64 UI::BaseEditorPage::activeID() const {
    return activeID_;
 }
 

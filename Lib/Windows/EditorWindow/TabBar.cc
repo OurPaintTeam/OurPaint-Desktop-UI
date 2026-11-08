@@ -14,6 +14,11 @@
 #include "TabWidget.h"
 
 
+namespace UI {
+    struct FileData;
+}
+
+
 UI::TabBar::TabBar(QWidget *parent)
     : QWidget(parent), tabBar_(new QWidget(this)),
       tabLayout_(new QHBoxLayout(tabBar_)), mainLayout_(new QHBoxLayout(this)),
@@ -119,17 +124,14 @@ UI::TabBar::TabBar(QWidget *parent)
     translate();
 }
 
-void UI::TabBar::addTabSlot(const QString &name, const qint64 id) {
-  if (name.isEmpty()) {
-    return;
-  }
+void UI::TabBar::addTabSlot(const FileData& data) {
   // for (const auto &t : tabs_) {
   //   if (t->getName() == name) {
   //     return;
   //   }
   // }
 
-  auto *tab = new UI::TabWidget(tabBar_,id, name);
+  auto *tab = new UI::TabWidget(tabBar_,data);
   tabs_.append(tab);
 
   const auto plusIndex = tabLayout_->indexOf(plusButton_);
@@ -154,10 +156,10 @@ void UI::TabBar::addTabSlot(const QString &name, const qint64 id) {
 
 bool UI::TabBar::isEmptyTab() const { return tabs_.isEmpty(); }
 
-void UI::TabBar::renameTab(const qint64 id, const QString &newName) {
+void UI::TabBar::renameTab(FileData& data) {
   for (auto *tab : tabs_) {
-    if (tab->getFileId() == id) {
-      tab->setName(newName);
+    if (tab->getFileId() == data.id) {
+      tab->setName(data.name);
       return;
     }
   }
@@ -348,9 +350,9 @@ void UI::TabBar::createTabSlot() {
 
     tab->startRename();
     connect(tab, &TabWidget::renameTriggered, this,
-            [this, tab](const qint64 id, const QString& nameNew) {
+            [this, tab](FileData& data) {
 
-        emit createTabTriggered(nameNew);
+        emit createTabTriggered(data.name);
          tabLayout_->removeWidget(tab);
                 tab->deleteLater();
     });

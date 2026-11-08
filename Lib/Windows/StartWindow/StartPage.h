@@ -1,6 +1,9 @@
 #ifndef OURPAINT_DESKTOP_UI_STARTPAGE_H
 #define OURPAINT_DESKTOP_UI_STARTPAGE_H
 
+#include <QList>
+
+#include "Utils.h"
 #include "../BasePage.h"
 
 class QHBoxLayout;
@@ -19,7 +22,7 @@ namespace UI {
 
     public:
         explicit StartPage(QWidget *parent = nullptr);
-        void setFilesList(const QVector<FileData>& files) const;
+        void setFilesList(const QVector<ProjectData>& files) const;
         void setDefaultFilesPath(const QString& path);
 
     public slots:
@@ -29,7 +32,7 @@ namespace UI {
         void pressFileTriggered(const qint64 id);
         void openFileInThisWindowTriggered(const QString& path);
         void createFileInThisWindowTriggered(const QString& path);
-        void renameFileTriggered(const qint64 id, const QString& path);
+        void renameFileTriggered(FileData& data);
         void deleteFileTriggered(const qint64 id);
 
     protected:

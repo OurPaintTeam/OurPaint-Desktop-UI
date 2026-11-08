@@ -5,31 +5,31 @@
 #include "LightEditorPage.h"
 
 
-UI::LightEditorWindow::LightEditorWindow(qint64 fileId, const QString& tabName, QWidget* parent)
-    : BaseEditorWindow(parent), fileId_(fileId), fileName_(tabName) {
+UI::LightEditorWindow::LightEditorWindow(FileData& data, QWidget* parent)
+    : BaseEditorWindow(parent), fileData_(data){
     initUI();
 }
 
 
 void UI::LightEditorWindow::initUI() {
-    lightEditorPage_ = new LightEditorPage(this,fileId_, fileName_);
+    lightEditorPage_ = new LightEditorPage(this,fileData_);
     initEditor(lightEditorPage_);
-    setWindowTitle(fileName_);
+    setWindowTitle(fileData_.name);
     connect(lightEditorPage_, &LightEditorPage::returnLightEditorWindowTriggered, this, [this] {
-        emit returnTabTriggered(fileId_);
+        emit returnTabTriggered(fileData_.id);
     });
 }
 
 
 void UI::LightEditorWindow::setName(const QString& name) {
     setWindowTitle(name);
-    fileName_=name;
+    fileData_.name=name;
     lightEditorPage_->setName(name);
 }
 
 
 qint64 UI::LightEditorWindow::id() const {
-    return fileId_;
+    return fileData_.id;
 }
 
 void UI::LightEditorWindow::closeEvent(QCloseEvent* event) {

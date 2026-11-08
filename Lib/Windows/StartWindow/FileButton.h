@@ -7,6 +7,8 @@
 #include <QHBoxLayout>
 #include <QStackedLayout>
 
+#include "Utils.h"
+
 namespace UI {
     struct FileData;
 
@@ -18,7 +20,7 @@ namespace UI {
 
     public:
         explicit FileButton(
-        const FileData& file,
+        const ProjectData& file,
         QWidget* parent = nullptr
     );
 
@@ -32,7 +34,7 @@ namespace UI {
         QString getPath() const;
 
     signals:
-        void renameFileTriggered(qint64 fileId, const QString& newName);
+        void renameFileTriggered(FileData& fileData);
         void deleteFileTriggered(qint64 fileId);
         void pressFileTriggered(qint64 fileId);
     protected:

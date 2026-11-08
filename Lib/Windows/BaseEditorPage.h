@@ -25,8 +25,8 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit BaseEditorPage(QWidget* parent = nullptr, const qint64& id = -1);
-        qint64 id() const;
+        explicit BaseEditorPage(QWidget* parent = nullptr);
+        qint64 activeID() const;
         ~BaseEditorPage() override = default;
 
         void setQOpenGLPainter(QOpenGLWindow* engine) const;

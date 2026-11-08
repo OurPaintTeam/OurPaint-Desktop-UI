@@ -3,12 +3,15 @@
 
 #include <QWidget>
 
+#include "Utils.h"
+
 class QLineEdit;
 class QHBoxLayout;
 class QPushButton;
 class QToolButton;
 
 namespace UI {
+    struct FileData;
     class RenameTabLineEdit;
 
 
@@ -17,7 +20,7 @@ namespace UI {
 
     public:
         bool eventFilter(QObject* obj, QEvent* event) override;
-        explicit TabWidget(QWidget* parent = nullptr, const qint64 fileId = -1, const QString& name="");
+        explicit TabWidget(QWidget* parent = nullptr, FileData  data = FileData());
         void setActive(bool active);
         void startRename();
         void setName(const QString& name);
@@ -28,7 +31,7 @@ namespace UI {
         void draggedOutTriggered(UI::TabWidget* tab);
         void closeRequestedTriggered(UI::TabWidget* tab);
         void rightClickedTriggered(UI::TabWidget* tab, const QPoint& localPos);
-        void renameTriggered(const qint64 id, const QString& newName);
+        void renameTriggered(UI::FileData& fileData);
         void cancelRenameTriggered();
 
     protected:
@@ -39,10 +42,9 @@ namespace UI {
         QPushButton* nameButton_{nullptr};
         QToolButton* closeButton_{nullptr};
         QHBoxLayout* layout_{nullptr};
-        QString name_;
         QPoint dragStartPos_;
-        qint64 fileId_{-1};
 
+        FileData fileData_;
        RenameTabLineEdit* edit_{nullptr};
 
         void finishRename();

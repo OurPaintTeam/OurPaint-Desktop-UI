@@ -5,24 +5,25 @@
 
 #include "SideTool.h"
 #include "TopBarLightEditor.h"
+#include "Utils.h"
 
 
-UI::LightEditorPage::LightEditorPage(QWidget* parent, const qint64& id, QString  displayName)
-    : BaseEditorPage(parent,id),displayName_(std::move(displayName)) {
+UI::LightEditorPage::LightEditorPage(QWidget* parent, FileData data)
+    : BaseEditorPage(parent),fileData_(data) {
     setObjectName(QStringLiteral("TabPage"));
     initUI();
 }
 
 void UI::LightEditorPage::setName(const QString& name) {
     topBar_->setDisplayName(name);
-    displayName_=name;
+    fileData_.name=name;
 }
 
 void UI::LightEditorPage::initUI() {
     initBaseEditorPage();
 
     topBar_ = new TopBarLightEditor(this);
-    topBar_->setDisplayName(displayName_);
+    topBar_->setDisplayName(fileData_.name);
     mainLayout_->insertWidget(0, topBar_);
 
     leftTool_ = new SideTool(mainArea_);

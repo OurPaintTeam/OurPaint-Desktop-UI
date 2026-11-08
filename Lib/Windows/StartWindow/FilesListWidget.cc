@@ -96,7 +96,7 @@ UI::FilesListWidget::FilesListWidget(QWidget* parent)
 }
 
 
-void UI::FilesListWidget::setFiles(const QVector<FileData>& files) {
+void UI::FilesListWidget::setFiles(const QVector<ProjectData>& files) {
     for (auto* project: allFiles_) {
         filesLayout_->removeWidget(project);
         project->deleteLater();

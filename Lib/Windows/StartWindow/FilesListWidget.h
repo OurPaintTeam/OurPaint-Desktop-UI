@@ -1,7 +1,10 @@
 #ifndef OURPAINT_DESKTOP_UI_PROJECTSLISTWIDGET_H
 #define OURPAINT_DESKTOP_UI_PROJECTSLISTWIDGET_H
 
+#include <QList>
 #include <QWidget>
+
+#include "Utils.h"
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -21,10 +24,10 @@ namespace UI {
 
     public:
         explicit FilesListWidget(QWidget *parent = nullptr);
-        void setFiles(const QVector<FileData>& files);
+        void setFiles(const QVector<ProjectData>& files);
 
     signals:
-        void renameFileTriggered(qint64 fileId, const QString& newName);
+        void renameFileTriggered(FileData& fileData);
         void deleteFileTriggered(qint64 fileId);
         void pressFileTriggered(qint64 fileId);
 

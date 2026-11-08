@@ -26,8 +26,8 @@ namespace {
 } // namespace
 
 
-UI::EditorPage::EditorPage(QWidget* parent,const qint64 id)
-    : BaseEditorPage(parent,id) {
+UI::EditorPage::EditorPage(QWidget* parent)
+    : BaseEditorPage(parent) {
     setObjectName("ProjectPage");
 
     initUI();
@@ -247,12 +247,8 @@ void UI::EditorPage::openFileSlot() {
 }
 
 
-void UI::EditorPage::onAddTabSlot(const QString& name,const qint64 id) const {
-    if (name.isEmpty()) {
-        return;
-    }
-
-    tabBar_->addTabSlot(name,id);
+void UI::EditorPage::onAddTabSlot(const FileData& data) const {
+    tabBar_->addTabSlot(data);
     updatePageSlot();
 }
 
@@ -263,16 +259,13 @@ void UI::EditorPage::onDeleteTabSlot(const qint64 id) const {
 }
 
 
-void UI::EditorPage::onRenameTabSlot(const qint64 id, const QString& newName) const {
-    if ( newName.isEmpty()) {
-        return;
-    }
-
-    tabBar_->renameTab(id, newName);
+void UI::EditorPage::onRenameTabSlot(FileData& data) const {
+    tabBar_->renameTab(data);
 }
 
 void UI::EditorPage::changeEvent(QEvent* e) {
     if (e && e->type() == QEvent::LanguageChange) {
+        qDebug() << "[TopBarEditor] LanguageChange received";
         translate();
     }
     QWidget::changeEvent(e);

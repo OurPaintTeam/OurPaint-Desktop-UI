@@ -3,6 +3,7 @@
 
 #include <QString>
 
+#include "Utils.h"
 #include "../BaseEditorPage.h"
 
 class QPushButton;
@@ -21,7 +22,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit EditorPage(QWidget* parent = nullptr, const qint64 id = -1);
+        explicit EditorPage(QWidget* parent = nullptr);
         ~EditorPage() override = default;
 
         void setDefaultPath(const QString& path);
@@ -37,7 +38,7 @@ namespace UI {
         void crateFileTriggered(const QString& fileName);
         void setActiveTabTriggered(const qint64 id);
         void removeTabTriggered(const qint64 id);
-        void renameTabTriggered(const qint64 id, const QString& newName);
+        void renameTabTriggered(FileData& data);
         void openLightEditorWindowTriggered(const qint64 id);
         void tabMovedToAnotherWindowTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
@@ -83,9 +84,9 @@ namespace UI {
         void onOpenScriptSlot();
 
     public slots:
-        void onAddTabSlot(const QString& name,const qint64 id) const;
+        void onAddTabSlot(const FileData& data) const;
         void onDeleteTabSlot(const qint64 id) const;
-        void onRenameTabSlot(const qint64 id, const QString& newName) const;
+        void onRenameTabSlot(FileData& data) const;
 
     private:
         void translate() const;

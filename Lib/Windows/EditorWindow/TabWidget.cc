@@ -9,9 +9,14 @@
 #include <QStyle>
 #include <QToolButton>
 #include <QLineEdit>
+#include <utility>
 
 #include "RenameTabLineEdit.h"
 
+
+namespace UI {
+    struct FileData;
+}
 
 namespace {
     constexpr int MAX_TAB_TEXT_WIDTH = 120;
@@ -22,10 +27,10 @@ namespace {
 } // namespace
 
 
-UI::TabWidget::TabWidget(QWidget *parent, const qint64 id, const QString& name)
-    : QWidget(parent), fileId_(id)
+UI::TabWidget::TabWidget(QWidget *parent, FileData  data)
+    : QWidget(parent), fileData_(std::move(data))
       , nameButton_(new QPushButton(this)), closeButton_(new QToolButton(this)), layout_(new QHBoxLayout(this)),
-      name_(name), edit_(new RenameTabLineEdit(this)) {
+       edit_(new RenameTabLineEdit(this)) {
     setAttribute(Qt::WA_StyledBackground, true);
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     setMaximumWidth(140);
@@ -52,7 +57,7 @@ UI::TabWidget::TabWidget(QWidget *parent, const qint64 id, const QString& name)
     });
 
     edit_->hide();
-    edit_->setText(name_);
+    edit_->setText(data.name);
     edit_->setFrame(false);
     edit_->setObjectName("TabLineEdit");
 
@@ -82,11 +87,11 @@ bool UI::TabWidget::eventFilter(QObject *obj, QEvent *event) {
 
 
 void UI::TabWidget::setName(const QString& name) {
-    name_ = name;
+    fileData_.name = name;
 
-    const QString displayText = elideText(name_, MAX_TAB_TEXT_WIDTH);
+    const QString displayText = elideText(name, MAX_TAB_TEXT_WIDTH);
     nameButton_->setText(displayText);
-    nameButton_->setToolTip(name_);
+    nameButton_->setToolTip(name);
 }
 
 
@@ -157,12 +162,12 @@ void UI::TabWidget::applyActiveStyle() {
 }
 
 qint64 UI::TabWidget::getFileId() const {
-    return fileId_;
+    return fileData_.id;
 }
 
 
 void UI::TabWidget::startRename() {
-    edit_->setText(name_);
+    edit_->setText(fileData_.name);
     nameButton_->hide();
     edit_->show();
 
@@ -175,7 +180,8 @@ void UI::TabWidget::finishRename() {
     const QString newName = edit_->text().trimmed();
 
     if (!newName.isEmpty()) {
-        emit renameTriggered(fileId_,newName);
+        FileData newData = {fileData_.id,newName};
+        emit renameTriggered(newData);
     }
 
     edit_->hide();

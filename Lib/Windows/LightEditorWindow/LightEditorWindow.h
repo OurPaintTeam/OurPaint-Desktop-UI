@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "BaseEditorWindow.h"
+#include "Utils.h"
 
 class QCloseEvent;
 
@@ -15,7 +16,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit LightEditorWindow(qint64 fileId, const QString& fileName, QWidget* parent = nullptr);
+        explicit LightEditorWindow(FileData& data, QWidget* parent = nullptr);
         ~LightEditorWindow() override = default;
 
         void initUI() override;
@@ -28,8 +29,7 @@ namespace UI {
         void closeEvent(QCloseEvent* event) override;
 
     private:
-        qint64 fileId_{-1};
-        QString fileName_;
+        FileData& fileData_;
         LightEditorPage* lightEditorPage_{nullptr};
     };
 } // namespace UI

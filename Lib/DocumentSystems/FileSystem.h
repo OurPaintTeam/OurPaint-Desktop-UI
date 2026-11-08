@@ -35,7 +35,6 @@ public:
     FileSystem(const FileSystem&) = delete;
     FileSystem& operator=(const FileSystem&) = delete;
 
-    // Directories are platform-independent and based on DocumentsLocation.
     QString rootPath() const;
     QString projectsPath() const;
     QString settingsPath() const;
@@ -48,20 +47,16 @@ public:
     qint64 defaultPathId() const;
     FsResult getPath(qint64 pathId, PathData& outPath) const;
 
-    // Every listing/read operation reconciles the database with the disk first.
-    QVector<ProjectData> projects() const;
-    FsResult getProject(qint64 projectId, ProjectData& outProject) const;
-    FsResult getProjectPath(qint64 projectId, QString& outPath) const;
+    QVector<ProjectData> projects() ;
+    FsResult getProject(qint64 projectId, ProjectData& outProject) ;
+    FsResult getProjectPath(qint64 projectId, QString& outPath) ;
     FsResult getProjectIdByPath(const QString& fullPath, qint64& outId) const;
 
-    // Projects are stored directly in OurPaint/Projects.
     FsResult createProject(const QString& name, qint64& outId);
     FsResult registerProject(const QString& fullPath, qint64& outId);
     FsResult renameProject(qint64 projectId, const QString& newName);
-    FsResult moveProject(qint64 projectId, qint64 newPathId);
     FsResult removeProject(qint64 projectId);
 
-    // Removes stale records and discovers .ourp files added outside the application.
     FsResult synchronize();
 
 private:
@@ -76,15 +71,17 @@ private:
     bool initialized_ = false;
 
     FsResult synchronizeInternal();
-    FsResult insertProject(const QString& fileName, qint64& outId);
-    FsResult getProjectInternal(qint64 projectId, ProjectData& outProject) const;
-    FsResult validateProjectName(const QString& name, QString& outName) const;
+    FsResult insertProject(const QString& baseName, qint64& outId);
+    FsResult getProjectInternal(qint64 projectId, ProjectData& outProject) ;
+    FsResult validateProjectName(const QString& name, QString& outBaseName) const;
+    FsResult migrateLegacyNames();
 
     static QString normalizePath(const QString& path);
     static QString pathKey(const QString& path);
     static bool isOurPaintFile(const QString& path);
+    QString fullPathFor(const QString& directory, const QString& baseName);
 };
 
 } // namespace UI
 
-#endif // OURPAINT_DESKTOP_UI_FILESYSTEM_H
+#endif

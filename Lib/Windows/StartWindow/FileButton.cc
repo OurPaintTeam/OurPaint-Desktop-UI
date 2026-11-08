@@ -9,7 +9,7 @@
 #include "Utils.h"
 
 
-UI::FileButton::FileButton( const FileData& file,
+UI::FileButton::FileButton( const ProjectData& file,
                             QWidget* parent)
     : QPushButton(parent),
       nameLabel_(new QLabel(file.name, this)),
@@ -145,12 +145,13 @@ void UI::FileButton::finishRenameInline()
     const QString newName = edit_->text().trimmed();
 
     if (!newName.isEmpty() && newName != getName()) {
-        emit renameFileTriggered(fileId_, getPath());
-        nameLabel_->setText(newName);
+        FileData file = {fileId_, newName};
+        emit renameFileTriggered(file);
     }
 
     nameStack_->setCurrentWidget(nameLabel_);
 }
+
 
 void UI::FileButton::cancelRenameInline()
 {

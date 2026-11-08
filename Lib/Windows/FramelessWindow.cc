@@ -112,7 +112,6 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
         setStyleSheet(style);
     }
 
-    initTranslations();
     initFonts();
 
     setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
@@ -398,27 +397,6 @@ void UI::FramelessWindow::initFonts() {
     font.setStyleStrategy(QFont::PreferQuality);
 
     qApp->setFont(font);
-}
-
-void UI::FramelessWindow::initTranslations() {
-    static QTranslator translator;
-    static bool installed = false;
-
-    if (installed) {
-        qDebug() << "[i18n] Already installed, skip";
-        return;
-    }
-
-    bool ok = translator.load(":/translations/app_ru.qm")
-           || translator.load(":/translations/app_eng.qm")
-    || translator.load(":/translations/app_by.qm");
-
-    if (ok) {
-        qApp->installTranslator(&translator);
-        installed = true;
-    } else {
-        qWarning() << "[i18n] No .qm";
-    }
 }
 
 void UI::FramelessWindow::resizeEvent(QResizeEvent* event) { QMainWindow::resizeEvent(event); }

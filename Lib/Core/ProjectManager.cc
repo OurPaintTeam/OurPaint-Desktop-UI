@@ -11,15 +11,17 @@
 #include <QOpenGLWindow>
 #include <QWindow>
 
-UI::ProjectManager::ProjectManager() {
-    // For this constructor we always start with StartWindow.
+UI::ProjectManager::ProjectManager() = default;
+
+void UI::ProjectManager::createStartWindow(const QVector<ProjectData>& data)  {
     ensureStartWindow();
-    openStartWindow();
+    openStartWindow(data);
 }
 
-UI::ProjectManager::ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) {
+
+void UI::ProjectManager::createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) {
     // No StartWindow. Create EditorWindow and apply engines.
-    reOpenNewWindow();
+    reOpenNewEditorWindow();
 
     if (windowRender) {
         setQWindowRender(windowRender);
@@ -32,17 +34,9 @@ UI::ProjectManager::ProjectManager(QWindow *windowRender, QLineEdit *consoleEngi
     }
 }
 
-UI::ProjectManager::~ProjectManager() {
-    closeLightEditorWindows();
 
-    if (editorWindow_) {
-        editorWindow_->close();
-        editorWindow_->deleteLater();
-    }
-    if (startWindow_) {
-        startWindow_->close();
-        startWindow_->deleteLater();
-    }
+void UI::ProjectManager::refreshFilesRequested(const QVector<ProjectData>& files) {
+    if (startWindow_) startWindow_->setFilesList(files);
 }
 
 void UI::ProjectManager::setActiveToolEditorWindow(ToolsType tool) const {
@@ -121,9 +115,8 @@ void UI::ProjectManager::setActiveTab(const qint64 id) {
 }
 
 void UI::ProjectManager::setFilesList(
-    const QVector<FileData>& files) {
-    filesList_ = files;
-    if (startWindow_) startWindow_->setFilesList(filesList_);
+    const QVector<ProjectData>& files) {
+    if (startWindow_) startWindow_->setFilesList(files);
 }
 
 void UI::ProjectManager::addNotification(
@@ -141,19 +134,17 @@ void UI::ProjectManager::addNotification(const QString& text) const {
     if (const auto *window = activeWindow()) window->addNotification(text);
 }
 
-void UI::ProjectManager::openStartWindow() {
+void UI::ProjectManager::openStartWindow(const QVector<ProjectData>& data) {
     closeLightEditorWindows();
     removeEditorWindow();
     ensureStartWindow();
-
-     startWindow_->setFilesList(filesList_);
-
+    startWindow_ -> setFilesList(data);
     startWindow_->show();
     startWindow_->raise();
     startWindow_->activateWindow();
 }
 
-void UI::ProjectManager::reOpenNewWindow() {
+void UI::ProjectManager::reOpenNewEditorWindow() {
     removeStartWindow();
     closeLightEditorWindows();
     removeEditorWindow();
@@ -175,18 +166,18 @@ void UI::ProjectManager::reOpenNewWindow() {
 // }
 
 void UI::ProjectManager::openLightEditorWindow(
-   const QString& fileName,const qint64 id,
+   FileData& data,
    QWindow *windowRender,
    QLineEdit *consoleEngine) {
 
-    if (auto *existingWindow = findTabWindow(id)) {
+    if (auto *existingWindow = findTabWindow(data.id)) {
         existingWindow->show();
         existingWindow->raise();
         existingWindow->activateWindow();
         return;
     }
 
-    auto *tabWindow = new LightEditorWindow(id,fileName);
+    auto *tabWindow = new LightEditorWindow(data);
     tabWindow->setAttribute(Qt::WA_DeleteOnClose, true);
     lightEditorWindows_.append(tabWindow);
 
@@ -230,8 +221,14 @@ void UI::ProjectManager::checkOpenedNewWindow(const qint64 id) {
     emit openLightEditorTriggered(id);
 }
 
-void UI::ProjectManager::addTabSlot(const QString& name,const qint64 id) {
-    if (!name.isEmpty() && editorWindow_) editorWindow_->addTabSlot(name,id);
+bool UI::ProjectManager::editor() {
+    return editorWindow_;
+}
+
+void UI::ProjectManager::addTabSlot(const FileData& data) {
+    if (editorWindow_) {
+        editorWindow_->addTabSlot(data);
+    }
 }
 
 void UI::ProjectManager::deleteTabSlot(const qint64 id) {
@@ -247,13 +244,12 @@ void UI::ProjectManager::deleteTabSlot(const qint64 id) {
 }
 
 void UI::ProjectManager::renameTabSlot(
-    const qint64 id, const QString& newName) {
-    if (newName.isEmpty()) return;
+    FileData& data) {
 
-    if (editorWindow_) editorWindow_->renameTabSlot(id, newName);
+    if (editorWindow_) editorWindow_->renameTabSlot(data);
 
-    if (auto *tabWindow = findTabWindow(id)) {
-        tabWindow->setName(newName);
+    if (auto *tabWindow = findTabWindow(data.id)) {
+        tabWindow->setName(data.name);
     }
 }
 
@@ -282,6 +278,8 @@ void UI::ProjectManager::closeEvent(QCloseEvent *event) {
 void UI::ProjectManager::connectStartWindowSignals() {
     if (!startWindow_) return;
 
+    connect(startWindow_, &StartWindow::openFileThisWindowByIDTriggered,
+            this, &ProjectManager::openFileThisWindowByIDTriggered);
     connect(startWindow_, &StartWindow::openFileThisWindowTriggered,
             this, &ProjectManager::openFileThisWindowTriggered);
     connect(startWindow_, &StartWindow::createFileThisWindowTriggered,

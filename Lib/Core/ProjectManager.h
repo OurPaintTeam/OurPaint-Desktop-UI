@@ -30,12 +30,10 @@ namespace UI {
 
     public:
 
-        // Creates only StartWindow. ProjectWindow is created later via openProjectWindow().
-        explicit ProjectManager();
-        // Creates and opens ProjectWindow immediately (no StartWindow).
-        ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem);
-        ~ProjectManager() override;
-
+        ProjectManager();
+        void createStartWindow(const QVector<ProjectData>& data) ;
+        void createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) ;
+        void refreshFilesRequested(const QVector<ProjectData>& files);
         void setActiveToolEditorWindow(ToolsType tool) const;
         void setActiveToolEditorWindow(PrimitiveType tool) const;
         void setActiveToolEditorWindow(ConstraintType tool);
@@ -49,21 +47,22 @@ namespace UI {
 
         void setActiveTab(const qint64 id);
 
-        void setFilesList(const QVector<FileData>& files);
+        void setFilesList(const QVector<ProjectData>& files);
         void addNotification(const qint64 id, const QString& text) const;
         void addNotification(const QString& text) const;
 
         // StartWindow is created (if needed) and ProjectWindow is removed.
-        void openStartWindow();
+        void openStartWindow(const QVector<ProjectData>& data);
         // ProjectWindow is created (or recreated), StartWindow is removed.
-        void reOpenNewWindow();
+        void reOpenNewEditorWindow();
         //void openNewWindow(QWindow *windowRender = nullptr, QLineEdit *consoleEngine = nullptr,  SettingsSystem* settings = nullptr);
-        void openLightEditorWindow(const QString& fileName,const qint64 id, QWindow *windowRender= nullptr, QLineEdit *consoleEngine= nullptr);
+        void openLightEditorWindow(FileData& data, QWindow *windowRender = nullptr, QLineEdit *consoleEngine = nullptr);
         void checkOpenedNewWindow(const qint64 id);
+        bool editor();
 
-        void addTabSlot(const QString& name,const qint64 id);
+        void addTabSlot(const FileData& data);
         void deleteTabSlot(const qint64 id);
-        void renameTabSlot(const qint64 id, const QString& newName);
+        void renameTabSlot(FileData& data);
 
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
@@ -78,15 +77,16 @@ namespace UI {
 
         void saveFullProjectTriggered();
         void openFileThisWindowTriggered(const QString& path);
+        void openFileThisWindowByIDTriggered(qint64 id);
         void createFileThisWindowTriggered(const QString& path);
         void openNewWindowOpenFileTriggered(const QString& path);
         void openNewWindowCreateFileTriggered(const QString& path);
         void openLightEditorTriggered(const qint64 id);
-        void renameFileTriggered(const qint64 id, const QString& path);
+        void renameFileTriggered(FileData& data);
         void deleteFileTriggered(const qint64 id);
         void openFileTriggered(const QString& filePath);
         void createFileTriggered(const QString& path);
-        void renameTabTriggered(const qint64 id, const QString& newName);
+        void renameTabTriggered(UI::FileData& data);
         void removeTabTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
         void setActiveTabTriggered(const qint64 id);
@@ -116,7 +116,6 @@ namespace UI {
         BaseEditorWindow* activeEditorWindow() const;
 
         QString defaultFilePath_{};
-        QVector<FileData> filesList_;
 
         StartWindow *startWindow_{nullptr};
         EditorWindow *editorWindow_{nullptr};

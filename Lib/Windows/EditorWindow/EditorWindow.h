@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "BaseEditorWindow.h"
+#include "Utils.h"
 
 class QCloseEvent;
 
@@ -21,9 +22,9 @@ namespace UI {
 
         void initUI() override;
         void setDefaultPath(const QString& path);
-        void addTabSlot(const QString& name,const qint64 id) const;
+        void addTabSlot(const FileData& data) const;
         void deleteTabSlot(const qint64 id) const;
-        void renameTabSlot(const qint64 id, const QString& newName) const;
+        void renameTabSlot(FileData& data) const;
 
     signals:
         void windowClosedTriggered();
@@ -35,7 +36,7 @@ namespace UI {
         void openNewWindowCreateFileTriggered(const QString& path);
         void openFileTriggered(const QString& filePath);
         void createFileTriggered(const QString& fileName);
-        void renameTabTriggered(const qint64 id, const QString& newName);
+        void renameTabTriggered(FileData& data);
         void removeTabTriggered(const qint64 id);
         void openLightEditorWindowTriggered(const qint64 id);
         void onOpenScriptTriggered(const QString& path);
