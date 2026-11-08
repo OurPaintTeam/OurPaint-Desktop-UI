@@ -43,6 +43,8 @@ void UI::EditorWindow::initUI() {
         this, &EditorWindow::settingsChanged);
     connect(editorPage_, &EditorPage::scriptTriggered,
       this, &EditorWindow::onOpenScriptTriggered);
+    connect(editorPage_, &EditorPage::closeTabTriggered,
+  this, &EditorWindow::closeTabTriggered);
 }
 
 

@@ -329,6 +329,8 @@ void UI::ProjectManager::connectEditorWindowSignals() {
             this, &ProjectManager::setActiveTabTriggered);
     connect(editorWindow_, &EditorWindow::onOpenScriptTriggered,
             this, &ProjectManager::scriptTriggered);
+    connect(editorWindow_, &EditorWindow::closeTabTriggered,
+        this, &ProjectManager::closeTabTriggered);
 
     connect(editorWindow_, &EditorWindow::closeApplicationTriggered,
             this, [this]() {

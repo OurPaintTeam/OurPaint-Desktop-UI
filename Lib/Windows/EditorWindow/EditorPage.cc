@@ -63,6 +63,7 @@ void UI::EditorPage::setupConnections() {
     connect(tabBar_, &TabBar::allTabsCloseTriggered, this, &EditorPage::updatePageSlot);
     connect(tabBar_, &TabBar::renameTabTriggered, this, &EditorPage::renameTabTriggered);
     connect(tabBar_, &TabBar::removeTabTriggered, this, &EditorPage::removeTabTriggered);
+    connect(tabBar_, &TabBar::closeTabTriggered, this, &EditorPage::closeTabTriggered);
 
     connect(navigationPage_, &NavigationWidget::closeApplicationTriggered, this,
             &EditorPage::closeApplicationTriggered);

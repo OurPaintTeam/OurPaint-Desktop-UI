@@ -40,6 +40,7 @@ namespace UI {
         void openLightEditorWindowTriggered(const qint64 id);
         void onOpenScriptTriggered(const QString& path);
         void closeApplicationTriggered();
+        void closeTabTriggered(const qint64 id);
 
       void settingsChanged();
     protected:

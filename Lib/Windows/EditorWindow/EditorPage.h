@@ -40,6 +40,7 @@ namespace UI {
         void renameTabTriggered(const qint64 id, const QString& newName);
         void openLightEditorWindowTriggered(const qint64 id);
         void tabMovedToAnotherWindowTriggered(const qint64 id);
+        void closeTabTriggered(const qint64 id);
 
         void goToStartWindowTriggered();
         void createFileTriggered(const QString& fileName);
