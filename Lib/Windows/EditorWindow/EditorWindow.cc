@@ -6,71 +6,71 @@
 
 
 UI::EditorWindow::EditorWindow(QWidget* parent)
-    : BaseEditorWindow(parent) {
+    : BaseEditorWindow(parent){
     initUI();
 }
 
 
 void UI::EditorWindow::initUI() {
-    projectPage_ = new EditorPage(this);
-    initEditor(projectPage_);
+    editorPage_ = new EditorPage(this,id_);
+    initEditor(editorPage_);
 
-    connect(projectPage_, &EditorPage::goToStartWindowTriggered,
+    connect(editorPage_, &EditorPage::goToStartWindowTriggered,
             this, &EditorWindow::goToStartWindowTriggered);
-    connect(projectPage_, &EditorPage::openFileThisWindowTriggered,
+    connect(editorPage_, &EditorPage::openFileThisWindowTriggered,
             this, &EditorWindow::openFileThisWindowTriggered);
-    connect(projectPage_, &EditorPage::createFileThisWindowTriggered,
+    connect(editorPage_, &EditorPage::createFileThisWindowTriggered,
             this, &EditorWindow::createFileThisWindowTriggered);
-    connect(projectPage_, &EditorPage::openNewWindowOpenFileTriggered,
+    connect(editorPage_, &EditorPage::openNewWindowOpenFileTriggered,
             this, &EditorWindow::openNewWindowOpenFileTriggered);
-    connect(projectPage_, &EditorPage::openNewWindowCreateFileTriggered,
+    connect(editorPage_, &EditorPage::openNewWindowCreateFileTriggered,
             this, &EditorWindow::openNewWindowCreateFileTriggered);
-    connect(projectPage_, &EditorPage::openFileTriggered,
+    connect(editorPage_, &EditorPage::openFileTriggered,
             this, &EditorWindow::openFileTriggered);
-    connect(projectPage_, &EditorPage::createFileTriggered,
+    connect(editorPage_, &EditorPage::createFileTriggered,
             this, &EditorWindow::createFileTriggered);
-    connect(projectPage_, &EditorPage::renameTabTriggered,
+    connect(editorPage_, &EditorPage::renameTabTriggered,
             this, &EditorWindow::renameTabTriggered);
-    connect(projectPage_, &EditorPage::setActiveTabTriggered,
+    connect(editorPage_, &EditorPage::setActiveTabTriggered,
            this, &EditorWindow::setActiveTabTriggered);
-    connect(projectPage_, &EditorPage::removeTabTriggered,
+    connect(editorPage_, &EditorPage::removeTabTriggered,
             this, &EditorWindow::removeTabTriggered);
-    connect(projectPage_, &EditorPage::openLightEditorWindowTriggered,
+    connect(editorPage_, &EditorPage::openLightEditorWindowTriggered,
             this, &EditorWindow::openLightEditorWindowTriggered);
-    connect(projectPage_, &EditorPage::closeApplicationTriggered,
+    connect(editorPage_, &EditorPage::closeApplicationTriggered,
             this, &EditorWindow::closeApplicationTriggered);
-  connect(projectPage_, &EditorPage::applySettings,
-        this, &EditorWindow::applySettings);
-    connect(projectPage_, &EditorPage::scriptTriggered,
+  connect(editorPage_, &EditorPage::settingsChanged,
+        this, &EditorWindow::settingsChanged);
+    connect(editorPage_, &EditorPage::scriptTriggered,
       this, &EditorWindow::onOpenScriptTriggered);
 }
 
 
 void UI::EditorWindow::setDefaultPath(const QString& path) {
-    if (projectPage_) {
-        projectPage_->setDefaultPath(path);
+    if (editorPage_) {
+        editorPage_->setDefaultPath(path);
     }
 }
 
 
 void UI::EditorWindow::addTabSlot(const QString& name,const qint64 id) const {
-    if (projectPage_) {
-        projectPage_->onAddTabSlot(name,id);
+    if (editorPage_) {
+        editorPage_->onAddTabSlot(name,id);
     }
 }
 
 
 void UI::EditorWindow::deleteTabSlot( const qint64 id) const {
-    if (projectPage_) {
-        projectPage_->onDeleteTabSlot(id);
+    if (editorPage_) {
+        editorPage_->onDeleteTabSlot(id);
     }
 }
 
 
 void UI::EditorWindow::renameTabSlot(const qint64 id, const QString& newName) const {
-    if (projectPage_) {
-        projectPage_->onRenameTabSlot(id, newName);
-        projectPage_->setActiveID(id);
+    if (editorPage_) {
+        editorPage_->onRenameTabSlot(id, newName);
+        editorPage_->setActiveID(id);
     }
 }
 
@@ -78,4 +78,9 @@ void UI::EditorWindow::renameTabSlot(const qint64 id, const QString& newName) co
 void UI::EditorWindow::closeEvent(QCloseEvent* event) {
     emit windowClosedTriggered();
     BaseEditorWindow::closeEvent(event);
+}
+
+
+void UI::EditorWindow::applyLanguage(UI::SettingsSystem::Language lang) {
+
 }

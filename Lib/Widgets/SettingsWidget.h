@@ -1,49 +1,63 @@
 #ifndef OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
 #define OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
+
 #include <QWidget>
 
+class QCheckBox;
+class QCloseEvent;
+class QComboBox;
 class QLineEdit;
 class QLabel;
 class QPushButton;
-class QVBoxLayout;
-class QHBoxLayout;
 class QSlider;
+class QVBoxLayout;
 
 namespace UI {
+
+    class SettingsSystem;
+
     class SettingsWidget final : public QWidget {
         Q_OBJECT
 
     public:
-        explicit SettingsWidget(QWidget *parent = nullptr);
+        explicit SettingsWidget(SettingsSystem* settings,
+                                QWidget* parent = nullptr);
 
-    signals:
-        void settingsApplied(double value1, double value2, double value3);
+        signals:
+            void settingsChanged();
+
     protected:
-        void changeEvent(QEvent *e) override;
-    private slots:
-        void onApplyClicked();
-
-
+        void changeEvent(QEvent* e) override;
+        void closeEvent(QCloseEvent* e) override;
 
     private:
+        void loadFromSettings();
+        void wireSignals();
         void translate() const;
-        QPushButton *closeButton_{nullptr};
-        QVBoxLayout *layout_{nullptr};
+        void commitGridStep(double value);
+        void commitSnapStep(double value);
 
-        QLabel *label1_{nullptr};
-        QLineEdit *valueEdit1_{nullptr};
-        QSlider *slider1_{nullptr};
+        SettingsSystem* settings_{nullptr};
 
-        QLabel *label2_{nullptr};
-        QLineEdit *valueEdit2_{nullptr};
-        QSlider *slider2_{nullptr};
+        QPushButton* closeButton_{nullptr};
+        QVBoxLayout* layout_{nullptr};
 
-        QLabel *label3_{nullptr};
-        QLineEdit *valueEdit3_{nullptr};
-        QSlider *slider3_{nullptr};
+        QCheckBox*   gridCheck_{nullptr};
+        QLabel*      gridStepLabel_{nullptr};
+        QLineEdit*   gridStepEdit_{nullptr};
+        QSlider*     gridStepSlider_{nullptr};
 
-        QPushButton *applyButton_{nullptr};
+        QCheckBox*   snapCheck_{nullptr};
+        QLabel*      snapStepLabel_{nullptr};
+        QLineEdit*   snapStepEdit_{nullptr};
+        QSlider*     snapStepSlider_{nullptr};
+
+        QLabel*      languageLabel_{nullptr};
+        QComboBox*   languageCombo_{nullptr};
+
+        // applyButton_ удалён
     };
+
 } // namespace UI
 
-#endif // OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
+#endif

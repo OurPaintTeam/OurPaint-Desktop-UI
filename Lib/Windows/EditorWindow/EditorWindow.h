@@ -3,11 +3,12 @@
 
 #include <QString>
 
-#include "../BaseEditorWindow.h"
+#include "BaseEditorWindow.h"
 
 class QCloseEvent;
 
 namespace UI {
+    class SettingsSystem;
     class EditorPage;
 
 
@@ -40,12 +41,15 @@ namespace UI {
         void onOpenScriptTriggered(const QString& path);
         void closeApplicationTriggered();
 
-      void applySettings(double value1, double value2, double value3);
+      void settingsChanged();
     protected:
         void closeEvent(QCloseEvent* event) override;
+        void applyLanguage(UI::SettingsSystem::Language lang);
 
     private:
-        EditorPage* projectPage_{nullptr};
+        EditorPage* editorPage_{nullptr};
+        SettingsSystem* settings_{nullptr};
+        qint64 id_{-1};
     };
 } // namespace UI
 

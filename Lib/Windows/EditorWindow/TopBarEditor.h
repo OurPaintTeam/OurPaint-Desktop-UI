@@ -7,6 +7,7 @@ class QPushButton;
 class QToolButton;
 
 namespace UI {
+    class SettingsSystem;
     class TabBar;
     class SideMenu;
     class CollaborationMenu;
@@ -27,6 +28,7 @@ namespace UI {
         void setLeftMenu(SideMenu* menu);
         void setRightMenu(SideMenu* menu);
         void setConsole(QWidget* console);
+        void setSettings(SettingsSystem* settings = nullptr);
 
         void setTabsButtonEnabled(bool enabled) const;
         void setLeftButtonEnabled(bool enabled) const;
@@ -51,9 +53,12 @@ namespace UI {
         void versionPullTriggered();
         void versionCommitTriggered();
 
-      void applySettings(double value1, double value2, double value3);
+        /// Settings
+        void settingsChanged();
+
     protected:
         void changeEvent(QEvent *e) override;
+
     private:
         // Pointers to linked UI components
         TabBar* tabBar_{nullptr};
@@ -67,6 +72,7 @@ namespace UI {
         MenuButton* collabButton_{nullptr};
         MenuButton* verButton_{nullptr};
         QPushButton* helpButton_{nullptr};
+        SettingsSystem* settingsSystem_{nullptr};
 
         void createProjectButtons();
         void setupSettings();

@@ -1,6 +1,7 @@
 #include "BaseEditorWindow.h"
 
 #include "BaseEditorPage.h"
+#include "SettingsSystem.h"
 
 
 UI::BaseEditorWindow::BaseEditorWindow(QWidget *parent)
@@ -53,6 +54,12 @@ void UI::BaseEditorWindow::setQWindowRender(QWindow *engine) const {
 void UI::BaseEditorWindow::setCommandConsoleEngine(QLineEdit *engine) const {
     if (editorPage_) {
         editorPage_->setCommandConsoleEngine(engine);
+    }
+}
+
+void UI::BaseEditorWindow::setSettings(SettingsSystem *settings) const {
+    if (editorPage_) {
+        editorPage_->setSettings(settings);
     }
 }
 

@@ -9,6 +9,7 @@ class QPushButton;
 class QStackedWidget;
 
 namespace UI {
+    class SettingsSystem;
     class ContainerWidget;
     class NavigationWidget;
     class SideMenu;
@@ -24,6 +25,7 @@ namespace UI {
         ~EditorPage() override = default;
 
         void setDefaultPath(const QString& path);
+
 
     signals:
         void openFileThisWindowTriggered(const QString& projectPath);
@@ -54,10 +56,10 @@ namespace UI {
         void versionPullTriggered();
         void versionCommitTriggered();
 
-      void applySettings(double value1, double value2, double value3);
-
+        void settingsChanged();
     protected:
         void changeEvent(QEvent *e) override;
+        void setSettings(SettingsSystem* settings) const override;
 
     private:
         void initUI() override;

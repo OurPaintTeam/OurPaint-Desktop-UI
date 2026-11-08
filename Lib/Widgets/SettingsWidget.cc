@@ -1,167 +1,229 @@
 #include "SettingsWidget.h"
+#include "SettingsSystem.h"
 
+#include <QCheckBox>
+#include <QCloseEvent>
+#include <QComboBox>
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSignalBlocker>
 #include <QSlider>
 #include <QVBoxLayout>
 
-UI::SettingsWidget::SettingsWidget(QWidget *parent)
-    : QWidget(parent), layout_(new QVBoxLayout(this))
-{
-    constexpr auto size = QSize(360, 220);
-    setFixedSize(size);
+namespace {
 
+constexpr int kSliderScale = 100;
+constexpr int kSliderMax   = 10000;
+
+QString formatStep(double v) { return QString::number(v, 'f', 2); }
+
+int languageToIndex(UI::SettingsSystem::Language lang)
+{
+    switch (lang) {
+    case UI::SettingsSystem::Language::Russian:    return 1;
+    case UI::SettingsSystem::Language::Belarusian: return 2;
+    case UI::SettingsSystem::Language::English:
+    default:                                        return 0;
+    }
+}
+
+UI::SettingsSystem::Language languageFromIndex(int index)
+{
+    switch (index) {
+    case 1: return UI::SettingsSystem::Language::Russian;
+    case 2: return UI::SettingsSystem::Language::Belarusian;
+    default: return UI::SettingsSystem::Language::English;
+    }
+}
+
+} // namespace
+
+UI::SettingsWidget::SettingsWidget(SettingsSystem* settings, QWidget* parent)
+    : QWidget(parent),
+      layout_(new QVBoxLayout(this)),
+      settings_(settings)
+{
+    setFixedSize(400, 320);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     setAttribute(Qt::WA_StyledBackground, true);
+    setObjectName(QStringLiteral("SettingsWidget"));
 
-    constexpr auto sizeClB = QSize(28, 28);
-    constexpr auto margins = 8;
+    constexpr int margins = 8;
     layout_->setContentsMargins(margins, margins, margins, margins);
-    closeButton_ = new QPushButton("✕", this);
-    closeButton_->setFixedSize(sizeClB);
+
+    closeButton_ = new QPushButton(QStringLiteral("✕"), this);
+    closeButton_->setFixedSize(28, 28);
     closeButton_->setFocusPolicy(Qt::NoFocus);
     closeButton_->setCursor(Qt::PointingHandCursor);
-
     connect(closeButton_, &QPushButton::clicked, this, &QWidget::close);
-
     layout_->addWidget(closeButton_, 0, Qt::AlignRight | Qt::AlignTop);
 
-    auto *row1 = new QHBoxLayout();
-    label1_ = new QLabel(this);
-    valueEdit1_ = new QLineEdit(this);
-    valueEdit1_->setText("0.00");
-    valueEdit1_->setFixedWidth(60);
-    slider1_ = new QSlider(Qt::Horizontal, this);
-    slider1_->setRange(0, 10000); // Диапазон 0–100.00 (умножаем на 100)
-    slider1_->setValue(0);
+    gridCheck_ = new QCheckBox(this);
+    layout_->addWidget(gridCheck_);
 
-    row1->addWidget(label1_);
-    row1->addWidget(valueEdit1_);
-    row1->addWidget(slider1_);
+    auto* gridRow = new QHBoxLayout();
+    gridStepLabel_  = new QLabel(this);
+    gridStepEdit_   = new QLineEdit(this);
+    gridStepEdit_->setFixedWidth(70);
+    gridStepSlider_ = new QSlider(Qt::Horizontal, this);
+    gridStepSlider_->setRange(0, kSliderMax);
+    gridRow->addWidget(gridStepLabel_);
+    gridRow->addWidget(gridStepEdit_);
+    gridRow->addWidget(gridStepSlider_);
+    layout_->addLayout(gridRow);
 
-    auto *row2 = new QHBoxLayout();
-    label2_ = new QLabel(this);
-    valueEdit2_ = new QLineEdit(this);
-    valueEdit2_->setText("0.00");
-    valueEdit2_->setFixedWidth(60);
-    slider2_ = new QSlider(Qt::Horizontal, this);
-    slider2_->setRange(0, 10000);
-    slider2_->setValue(0);
+    snapCheck_ = new QCheckBox(this);
+    layout_->addWidget(snapCheck_);
 
-    row2->addWidget(label2_);
-    row2->addWidget(valueEdit2_);
-    row2->addWidget(slider2_);
+    auto* snapRow = new QHBoxLayout();
+    snapStepLabel_  = new QLabel(this);
+    snapStepEdit_   = new QLineEdit(this);
+    snapStepEdit_->setFixedWidth(70);
+    snapStepSlider_ = new QSlider(Qt::Horizontal, this);
+    snapStepSlider_->setRange(0, kSliderMax);
+    snapRow->addWidget(snapStepLabel_);
+    snapRow->addWidget(snapStepEdit_);
+    snapRow->addWidget(snapStepSlider_);
+    layout_->addLayout(snapRow);
 
-    auto *row3 = new QHBoxLayout();
-    label3_ = new QLabel( this);
-    valueEdit3_ = new QLineEdit(this);
-    valueEdit3_->setText("0.00");
-    valueEdit3_->setFixedWidth(60);
-    slider3_ = new QSlider(Qt::Horizontal, this);
-    slider3_->setRange(0, 10000);
-    slider3_->setValue(0);
-
-    row3->addWidget(label3_);
-    row3->addWidget(valueEdit3_);
-    row3->addWidget(slider3_);
-
-    layout_->addLayout(row1);
-    layout_->addLayout(row2);
-    layout_->addLayout(row3);
-
-    applyButton_ = new QPushButton(this);
-    applyButton_->setFixedSize(80, 30);
-    applyButton_->setCursor(Qt::PointingHandCursor);
-
-    auto *buttonLayout = new QHBoxLayout();
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(applyButton_);
-
-    layout_->addLayout(buttonLayout);
-
-    connect(applyButton_, &QPushButton::clicked, this,
-            &UI::SettingsWidget::onApplyClicked);
-
-    connect(slider1_, &QSlider::valueChanged, [this](int value) {
-        double doubleValue = value / 100.0; // Преобразуем 1234 → 12.34
-        valueEdit1_->setText(QString::number(doubleValue, 'f', 2));
-    });
-
-    connect(slider2_, &QSlider::valueChanged, [this](int value) {
-        double doubleValue = value / 100.0;
-        valueEdit2_->setText(QString::number(doubleValue, 'f', 2));
-    });
-
-    connect(slider3_, &QSlider::valueChanged, [this](int value) {
-        double doubleValue = value / 100.0;
-        valueEdit3_->setText(QString::number(doubleValue, 'f', 2));
-    });
-
-    connect(valueEdit1_, &QLineEdit::textChanged, [this](const QString &text) {
-        bool ok;
-        double value = text.toDouble(&ok);
-        if (ok) {
-            slider1_->setValue(static_cast<int>(value * 100));
-        }
-    });
-
-    connect(valueEdit2_, &QLineEdit::textChanged, [this](const QString &text) {
-        bool ok;
-        double value = text.toDouble(&ok);
-        if (ok) {
-            slider2_->setValue(static_cast<int>(value * 100));
-        }
-    });
-
-    connect(valueEdit3_, &QLineEdit::textChanged, [this](const QString &text) {
-        bool ok;
-        double value = text.toDouble(&ok);
-        if (ok) {
-            slider3_->setValue(static_cast<int>(value * 100));
-        }
-    });
+    auto* langRow = new QHBoxLayout();
+    languageLabel_ = new QLabel(this);
+    languageCombo_ = new QComboBox(this);
+    langRow->addWidget(languageLabel_);
+    langRow->addWidget(languageCombo_, 1);
+    layout_->addLayout(langRow);
 
     layout_->addStretch();
 
-    setObjectName(QStringLiteral("SettingsWidget"));
+    wireSignals();
     translate();
+    loadFromSettings();
 }
 
-void UI::SettingsWidget::onApplyClicked()
+void UI::SettingsWidget::wireSignals()
 {
-    double value1 = valueEdit1_->text().toDouble();
-    double value2 = valueEdit2_->text().toDouble();
-    double value3 = valueEdit3_->text().toDouble();
+    connect(gridCheck_, &QCheckBox::toggled, this, [this](bool on) {
+        if (settings_) settings_->setGridEnabled(on);
+        emit settingsChanged();
+    });
 
-    emit settingsApplied(value1, value2, value3);
-    close();
+    connect(snapCheck_, &QCheckBox::toggled, this, [this](bool on) {
+        if (settings_) settings_->setSnapEnabled(on);
+        emit settingsChanged();
+    });
+
+    connect(gridStepSlider_, &QSlider::valueChanged, this, [this](int v) {
+        const QSignalBlocker blocker(gridStepEdit_);
+        gridStepEdit_->setText(formatStep(v / double(kSliderScale)));
+        commitGridStep(v / double(kSliderScale));
+    });
+    connect(gridStepEdit_, &QLineEdit::textEdited, this, [this](const QString& text) {
+        bool ok = false;
+        const double v = text.toDouble(&ok);
+        if (!ok) return;
+        const QSignalBlocker blocker(gridStepSlider_);
+        gridStepSlider_->setValue(qBound(0, int(v * kSliderScale), kSliderMax));
+        commitGridStep(v);
+    });
+
+    connect(snapStepSlider_, &QSlider::valueChanged, this, [this](int v) {
+        const QSignalBlocker blocker(snapStepEdit_);
+        snapStepEdit_->setText(formatStep(v / double(kSliderScale)));
+        commitSnapStep(v / double(kSliderScale));
+    });
+    connect(snapStepEdit_, &QLineEdit::textEdited, this, [this](const QString& text) {
+        bool ok = false;
+        const double v = text.toDouble(&ok);
+        if (!ok) return;
+        const QSignalBlocker blocker(snapStepSlider_);
+        snapStepSlider_->setValue(qBound(0, int(v * kSliderScale), kSliderMax));
+        commitSnapStep(v);
+    });
+
+    connect(languageCombo_, &QComboBox::currentIndexChanged, this, [this](int idx) {
+        if (settings_) settings_->setLanguage(languageFromIndex(idx));
+        emit settingsChanged();
+    });
 }
 
-void UI::SettingsWidget::changeEvent(QEvent* e) {
-    if (e && e->type() == QEvent::LanguageChange) {
+void UI::SettingsWidget::commitGridStep(double value)
+{
+    if (settings_) settings_->setGridStep(value);
+    emit settingsChanged();
+}
+
+void UI::SettingsWidget::commitSnapStep(double value)
+{
+    if (settings_) settings_->setSnapStep(value);
+    emit settingsChanged();
+}
+
+void UI::SettingsWidget::loadFromSettings()
+{
+    if (!settings_) return;
+
+    const QSignalBlocker b1(gridCheck_);
+    const QSignalBlocker b2(snapCheck_);
+    const QSignalBlocker b3(gridStepEdit_);
+    const QSignalBlocker b4(gridStepSlider_);
+    const QSignalBlocker b5(snapStepEdit_);
+    const QSignalBlocker b6(snapStepSlider_);
+    const QSignalBlocker b7(languageCombo_);
+
+    gridCheck_->setChecked(settings_->isGridEnabled());
+    snapCheck_->setChecked(settings_->isSnapEnabled());
+
+    const double g = settings_->gridStep();
+    gridStepEdit_->setText(formatStep(g));
+    gridStepSlider_->setValue(qBound(0, int(g * kSliderScale), kSliderMax));
+
+    const double s = settings_->snapStep();
+    snapStepEdit_->setText(formatStep(s));
+    snapStepSlider_->setValue(qBound(0, int(s * kSliderScale), kSliderMax));
+
+    if (languageCombo_->count() >= 3)
+        languageCombo_->setCurrentIndex(languageToIndex(settings_->language()));
+}
+
+void UI::SettingsWidget::closeEvent(QCloseEvent* e)
+{
+    if (settings_) settings_->save(); 
+    QWidget::closeEvent(e);
+}
+
+void UI::SettingsWidget::changeEvent(QEvent* e)
+{
+    if (e && e->type() == QEvent::LanguageChange)
         translate();
-    }
     QWidget::changeEvent(e);
 }
 
-void UI::SettingsWidget::translate() const {
-    if (applyButton_) {
-        applyButton_->setToolTip(UI::SettingsWidget::tr("Apply"));
-        applyButton_->setText(UI::SettingsWidget::tr("Apply"));
-    }
-    if (label1_) {
-        label1_->setToolTip(UI::SettingsWidget::tr("Text 1: "));
-        label1_->setText(UI::SettingsWidget::tr("Text 1: "));
-    }
-    if (label2_) {
-        label2_->setToolTip(UI::SettingsWidget::tr("Text 2: "));
-        label2_->setText(UI::SettingsWidget::tr("Text 2: "));
-    }
-    if (label3_) {
-        label3_->setToolTip(UI::SettingsWidget::tr("Text 3: "));
-        label3_->setText(UI::SettingsWidget::tr("Text 3: "));
+void UI::SettingsWidget::translate() const
+{
+    if (closeButton_) closeButton_->setToolTip(tr("Close"));
+
+    if (gridCheck_)      gridCheck_->setText(tr("Show grid"));
+    if (gridStepLabel_)  gridStepLabel_->setText(tr("Grid step:"));
+    if (gridStepEdit_)   gridStepEdit_->setToolTip(tr("Grid step"));
+    if (gridStepSlider_) gridStepSlider_->setToolTip(tr("Grid step"));
+
+    if (snapCheck_)      snapCheck_->setText(tr("Enable snapping"));
+    if (snapStepLabel_)  snapStepLabel_->setText(tr("Snap step:"));
+    if (snapStepEdit_)   snapStepEdit_->setToolTip(tr("Snap step"));
+    if (snapStepSlider_) snapStepSlider_->setToolTip(tr("Snap step"));
+
+    if (languageLabel_) languageLabel_->setText(tr("Language:"));
+
+    if (languageCombo_) {
+        const int current = languageCombo_->currentIndex();
+        const QSignalBlocker blocker(languageCombo_);
+        languageCombo_->clear();
+        languageCombo_->addItem(tr("English"));
+        languageCombo_->addItem(tr("Russian"));
+        languageCombo_->addItem(tr("Belarusian"));
+        languageCombo_->setCurrentIndex(current >= 0 ? current : 0);
     }
 }

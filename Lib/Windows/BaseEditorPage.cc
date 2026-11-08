@@ -9,6 +9,10 @@
 #include "../Widgets/PainterWidget.h"
 #include "ToolBar.h"
 
+namespace UI {
+    class SettingsSystem;
+}
+
 namespace {
     constexpr int LAYOUT_MARGIN = 0;
     constexpr int LAYOUT_SPACING = 0;
@@ -44,6 +48,10 @@ void UI::BaseEditorPage::setCommandConsoleEngine(QLineEdit *engine) const {
     if (console_) {
         console_->setLineEditEngine(engine);
     }
+}
+
+void UI::BaseEditorPage::setSettings(SettingsSystem *settings) const {
+
 }
 
 

@@ -95,8 +95,8 @@ void UI::EditorPage::setupConnections() {
     connect(topBar_, &TopBarEditor::versionCommitTriggered,
             this, &EditorPage::versionCommitTriggered);
 
-  connect(topBar_, &TopBarEditor::applySettings,
-        this, &EditorPage::applySettings);
+  connect(topBar_, &TopBarEditor::settingsChanged,
+        this, &EditorPage::settingsChanged);
 }
 
 
@@ -105,6 +105,9 @@ void UI::EditorPage::createTopBar() {
     mainLayout_->insertWidget(0, topBar_);
 }
 
+void UI::EditorPage::setSettings(SettingsSystem* settings) const{
+    if (topBar_) topBar_->setSettings(settings);
+}
 
 void UI::EditorPage::createSideColumns() {
     leftColumn_  = new SideMenu(mainArea_);

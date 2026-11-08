@@ -150,10 +150,11 @@ set(POP_UP
         PopUp/ConfirmDialog.h
 )
 
-set(FILE_SYSTEM
-        FileSystem/FileSystem.cc
-        FileSystem/FileSystem.h
-        Core/Utils.h
+set(DOCUMENT_SYSTEMS
+        DocumentSystems/FileSystem.cc
+        DocumentSystems/FileSystem.h
+        DocumentSystems/SettingsSystem.cc
+        DocumentSystems/SettingsSystem.h
 )
 
 qt_add_library(ourpaint_ui STATIC
@@ -169,7 +170,7 @@ qt_add_library(ourpaint_ui STATIC
         ${UI_EDITOR}
         ${UI_LIGHT_EDITOR}
         ${POP_UP}
-        ${FILE_SYSTEM}
+        ${DOCUMENT_SYSTEMS}
 )
 
 target_include_directories(ourpaint_ui PUBLIC
@@ -180,7 +181,7 @@ target_include_directories(ourpaint_ui PUBLIC
         Menus
         DragDrop
         PopUp
-        FileSystem
+        DocumentSystems
         Windows
         Windows/StartWindow
         Windows/EditorWindow

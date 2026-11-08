@@ -323,17 +323,19 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
 }
 
 void UI::FramelessWindow::changeEvent(QEvent* event) {
-#ifdef Q_OS_WIN
     if (event->type() == QEvent::LanguageChange) {
         setWindowTitle(tr("OurPaint"));
         update();
     }
+
     if (event->type() == QEvent::WindowStateChange) {
+#ifdef Q_OS_WIN
         if (auto* tb = findChild<UI::TopBar*>()) {
             tb->updateMaximizeIcon(isMaximized());
         }
-    }
 #endif
+    }
+
     QMainWindow::changeEvent(event);
 }
 
@@ -399,15 +401,23 @@ void UI::FramelessWindow::initFonts() {
 }
 
 void UI::FramelessWindow::initTranslations() {
-    /// lupdate . -ts Lib/translations/app_ru.ts
-    /// lrelease Lib/translations/app_ru.ts
-
     static QTranslator translator;
-    const bool ok = translator.load(":/translations/app_eng.qm");
-    qApp->installTranslator(&translator);
+    static bool installed = false;
 
-    if (!ok) {
-        qWarning() << "No translate files";
+    if (installed) {
+        qDebug() << "[i18n] Already installed, skip";
+        return;
+    }
+
+    bool ok = translator.load(":/translations/app_ru.qm")
+           || translator.load(":/translations/app_eng.qm")
+    || translator.load(":/translations/app_by.qm");
+
+    if (ok) {
+        qApp->installTranslator(&translator);
+        installed = true;
+    } else {
+        qWarning() << "[i18n] No .qm";
     }
 }
 

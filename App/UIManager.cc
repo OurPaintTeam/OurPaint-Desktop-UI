@@ -3,18 +3,36 @@
 #include <clocale>
 #include <QDebug>
 #include <QFileInfo>
+#include <QTranslator>
 
 #include "CustomConsole.h"
 #include "RenderEngine.h"
 #include "ToolsType.h"
 #include "Utils.h"
 
-UIManager::UIManager() {
+UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
     setlocale(LC_ALL, "");
-    auto* manager = createProjectManager();
+
+    currentLanguage_ = settingsSystem_.language();
+    applyLanguage(currentLanguage_);
+    // TODO all settings
+
+    auto *manager = createProjectManager();
     refreshFiles(manager);
 }
 
+
+void UIManager::settingsChangedSlot(UI::ProjectManager*)
+{
+    const auto d = settingsSystem_.loadChanges();
+    if (d.isEmpty()) return;
+
+    if (!d.sketch.isEmpty())
+      // TODO
+
+    if (d.language)
+        applyLanguage(*d.language);
+}
 
 qint64 UIManager::defaultLocationId() const {
     const auto locations = fs_.locations();
@@ -51,7 +69,7 @@ UI::ProjectManager* UIManager::createProjectManager() {
 
 UI::ProjectManager* UIManager::createEditorProjectManager(QWindow* windowRender,
                                                           QLineEdit* consoleEngine) {
-    auto* manager = new UI::ProjectManager(windowRender, consoleEngine);
+    auto* manager = new UI::ProjectManager(windowRender, consoleEngine,&settingsSystem_);
     projectManagers_.push_back(manager);
     refreshFiles(manager);
     initSignals(*manager);
@@ -233,17 +251,51 @@ void UIManager::scriptSlot(UI::ProjectManager* manager, const QString& path) {
 }
 
 
-void UIManager::settingsSlot(UI::ProjectManager* manager, double f, double s, double t) {
+void UIManager::settingsChangedSlot(UI::ProjectManager* manager) {
     Q_UNUSED(manager);
-    qDebug() << f << s << t;
+
 }
 
+void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
+    if (translator_) {
+        qApp->removeTranslator(translator_);
+        delete translator_;
+        translator_ = nullptr;
+    }
+
+    const QString path =
+        lang == UI::SettingsSystem::Language::Russian    ? QStringLiteral(":/translations/app_ru.qm") :
+        lang == UI::SettingsSystem::Language::Belarusian ? QStringLiteral(":/translations/app_be.qm") :
+                                                           QStringLiteral(":/translations/app_eng.qm");
+
+    auto* tr = new QTranslator(this);
+    if (!tr->load(path)) {
+        qWarning() << "[UIManager] Failed to load translation:" << path;
+        delete tr;
+        return;
+    }
+
+    qApp->installTranslator(tr);
+    translator_ = tr;
+
+
+    currentLanguage_ = lang;
+}
+
+void UIManager::closeTab(const qint64 fileId) {
+
+}
 
 void UIManager::initSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::openFileThisWindowTriggered, this,
             [this, &manager](const QString& path) {
                 openFileByPathInCurrentWindow(&manager, path);
             });
+
+    connect(&manager, &UI::ProjectManager::closeTabTriggered, this,
+        [this](const qint64 fileId) {
+            closeTab(fileId);
+        });
 
     connect(&manager, &UI::ProjectManager::createFileThisWindowTriggered, this,
             [this, &manager](const QString& fileName) {
@@ -337,9 +389,9 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
                 scriptSlot(&manager, path);
             });
 
-    connect(&manager, &UI::ProjectManager::applySettings, this,
-            [this, &manager](double f, double s, double t) {
-                settingsSlot(&manager, f, s, t);
+    connect(&manager, &UI::ProjectManager::settingsChanged, this,
+            [this, &manager]() {
+                settingsChangedSlot(&manager);
             });
 
     connect(&manager, &QObject::destroyed, this,

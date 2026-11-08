@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "BasePage.h"
+#include "SettingsSystem.h"
 
 class QHBoxLayout;
 class QLineEdit;
@@ -37,6 +38,9 @@ namespace UI {
         void takeOffHint();
         void setActiveTool(ConstraintType type);
         void setActiveID(const qint64 id);
+
+    public:
+        virtual void setSettings(UI::SettingsSystem* settings) const;
 
     signals:
         void sentCommandTriggered(const qint64 id, const QString command);

@@ -17,15 +17,18 @@ UI::ProjectManager::ProjectManager() {
     openStartWindow();
 }
 
-UI::ProjectManager::ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine) {
+UI::ProjectManager::ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) {
     // No StartWindow. Create EditorWindow and apply engines.
-    openNewWindow();
+    reOpenNewWindow();
 
     if (windowRender) {
         setQWindowRender(windowRender);
     }
     if (consoleEngine) {
         setCommandConsoleEngine(consoleEngine);
+    }
+    if (settingsSystem) {
+        setSettings(settingsSystem);
     }
 }
 
@@ -150,7 +153,7 @@ void UI::ProjectManager::openStartWindow() {
     startWindow_->activateWindow();
 }
 
-void UI::ProjectManager::openNewWindow() {
+void UI::ProjectManager::reOpenNewWindow() {
     removeStartWindow();
     closeLightEditorWindows();
     removeEditorWindow();
@@ -160,16 +163,21 @@ void UI::ProjectManager::openNewWindow() {
     editorWindow_->raise();
     editorWindow_->activateWindow();
 }
-
-void UI::ProjectManager::openNewWindow(
-    QWindow *windowRender, QLineEdit *consoleEngine) {
-    openNewWindow();
-    if (windowRender) setQWindowRender(windowRender);
-    if (consoleEngine) setCommandConsoleEngine(consoleEngine);
-}
+//
+// void UI::ProjectManager::openNewWindow(
+//     QWindow *windowRender,
+//     QLineEdit *consoleEngine,
+//     SettingsSystem* settings) {
+//     reOpenNewWindow();
+//     if (windowRender) setQWindowRender(windowRender);
+//     if (consoleEngine) setCommandConsoleEngine(consoleEngine);
+//     if (settings) setSettings(settings);
+// }
 
 void UI::ProjectManager::openLightEditorWindow(
-   const QString& fileName,const qint64 id, QWindow *windowRender, QLineEdit *consoleEngine) {
+   const QString& fileName,const qint64 id,
+   QWindow *windowRender,
+   QLineEdit *consoleEngine) {
 
     if (auto *existingWindow = findTabWindow(id)) {
         existingWindow->show();
@@ -262,6 +270,10 @@ void UI::ProjectManager::setCommandConsoleEngine(QLineEdit *engine) const {
     if (const auto *window = activeEditorWindow()) window->setCommandConsoleEngine(engine);
 }
 
+void UI::ProjectManager::setSettings(SettingsSystem *settings) const {
+    if (const auto *window = activeEditorWindow()) window->setSettings(settings);
+}
+
 void UI::ProjectManager::closeEvent(QCloseEvent *event) {
     emit saveFullProjectTriggered();
     if (event) event->accept();
@@ -323,8 +335,8 @@ void UI::ProjectManager::connectEditorWindowSignals() {
                 if (auto *window = activeWindow()) window->close();
             });
 
-    connect(editorWindow_, &EditorWindow::applySettings,
-            this, &ProjectManager::applySettings);
+    connect(editorWindow_, &EditorWindow::settingsChanged,
+            this, &ProjectManager::settingsChanged);
 }
 
 void UI::ProjectManager::ensureStartWindow() {
@@ -339,7 +351,7 @@ void UI::ProjectManager::ensureStartWindow() {
 void UI::ProjectManager::ensureEditorWindow() {
     if (editorWindow_) return;
 
-    editorWindow_ = new EditorWindow();
+    editorWindow_ = new EditorWindow(nullptr);
     editorWindow_->hide();
     editorWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
     connectEditorWindowSignals();

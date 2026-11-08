@@ -6,6 +6,7 @@
 
 class QLineEdit;
 class QWindow;
+class QTranslator;
 
     class UIManager final : public QObject {
         Q_OBJECT
@@ -17,6 +18,9 @@ class QWindow;
     private:
         QVector<UI::ProjectManager*> projectManagers_;
         UI::FileSystem fs_;
+        UI::SettingsSystem settingsSystem_;
+        QTranslator* translator_{nullptr};
+        UI::SettingsSystem::Language currentLanguage_{UI::SettingsSystem::Language::English};
 
         qint64 defaultLocationId() const;
 
@@ -45,7 +49,9 @@ class QWindow;
         void constraintSlot(UI::ProjectManager* manager, UI::ConstraintType& type, qint64 fileId);
         void toolsSlot(UI::ProjectManager* manager, UI::ToolsType& type, qint64 fileId);
         void scriptSlot(UI::ProjectManager* manager, const QString& path);
-        void settingsSlot(UI::ProjectManager* manager, double f, double s, double t);
+        void settingsChangedSlot(UI::ProjectManager *manager);
+        void applyLanguage(UI::SettingsSystem::Language lang);
+        void closeTab(qint64 fileId);
     };
 
 #endif //OURPAINT_DESKTOP_UI_UIMANAGER_H

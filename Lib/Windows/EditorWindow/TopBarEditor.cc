@@ -54,6 +54,11 @@ void UI::TopBarEditor::setRightMenu(SideMenu *menu) {
 }
 
 
+void UI::TopBarEditor::setSettings(SettingsSystem* settings) {
+    if (settings)
+    settingsSystem_ = settings;
+}
+
 void UI::TopBarEditor::setConsole(QWidget *console) {
     if (!console) {
         return;
@@ -161,16 +166,17 @@ void UI::TopBarEditor::setupSettings() {
     constexpr auto btnSize = QSize(32, 32);
     btnSettings_->setFixedSize(btnSize);
     btnSettings_->setFocusPolicy(Qt::NoFocus);
-    btnSettings_->setVisible(false);
+    btnSettings_->setVisible(true);
 
     addCenterWidget(btnSettings_);
     connect(btnSettings_, &QPushButton::clicked, this, [this]() {
-        auto *const settings = new SettingsWidget(this);
-        settings->setAttribute(Qt::WA_DeleteOnClose);
-        settings->show();
+          auto* const w = new SettingsWidget(settingsSystem_, this);
+          w->setAttribute(Qt::WA_DeleteOnClose);
+          w->show();
 
-        connect(settings, &SettingsWidget::settingsApplied, this, &TopBarEditor::applySettings);
-    });
+          connect(w, &SettingsWidget::settingsChanged,
+                  this, &TopBarEditor::settingsChanged);
+      });
 }
 
 

@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "BaseWindow.h"
+#include "SettingsSystem.h"
 
 class QLineEdit;
 class QOpenGLWindow;
@@ -34,6 +35,8 @@ namespace UI {
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
         void setCommandConsoleEngine(QLineEdit *engine) const;
+
+        virtual void setSettings(UI::SettingsSystem* settings) const;
 
     signals:
         void sentCommandTriggered(const qint64 id, const QString command);

@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
+
+#include "SettingsSystem.h"
 #include "Utils.h"
 
 class QLineEdit;
@@ -31,7 +33,7 @@ namespace UI {
         // Creates only StartWindow. ProjectWindow is created later via openProjectWindow().
         explicit ProjectManager();
         // Creates and opens ProjectWindow immediately (no StartWindow).
-        ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine);
+        ProjectManager(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem);
         ~ProjectManager() override;
 
         void setActiveToolEditorWindow(ToolsType tool) const;
@@ -54,9 +56,9 @@ namespace UI {
         // StartWindow is created (if needed) and ProjectWindow is removed.
         void openStartWindow();
         // ProjectWindow is created (or recreated), StartWindow is removed.
-        void openNewWindow();
-        void openNewWindow(QWindow *windowRender, QLineEdit *consoleEngine);
-        void openLightEditorWindow(const QString& fileName,const qint64 id, QWindow *windowRender, QLineEdit *consoleEngine);
+        void reOpenNewWindow();
+        //void openNewWindow(QWindow *windowRender = nullptr, QLineEdit *consoleEngine = nullptr,  SettingsSystem* settings = nullptr);
+        void openLightEditorWindow(const QString& fileName,const qint64 id, QWindow *windowRender= nullptr, QLineEdit *consoleEngine= nullptr);
         void checkOpenedNewWindow(const qint64 id);
 
         void addTabSlot(const QString& name,const qint64 id);
@@ -66,6 +68,7 @@ namespace UI {
         void setQOpenGLPainter(QOpenGLWindow *engine) const;
         void setQWindowRender(QWindow *engine) const;
         void setCommandConsoleEngine(QLineEdit *engine) const;
+        void setSettings(SettingsSystem *settings) const;
 
     signals:
         void sentCommandTriggered(const qint64 id, const QString command);
@@ -92,7 +95,7 @@ namespace UI {
         void scriptTriggered(const QString& text);
         void goToStartWindowTriggered();
 
-        void applySettings(double value1, double value2, double value3);
+        void settingsChanged();
 
     protected:
         void closeEvent(QCloseEvent* event);
@@ -119,6 +122,8 @@ namespace UI {
         EditorWindow *editorWindow_{nullptr};
         QVector<LightEditorWindow*> lightEditorWindows_{};
         bool removingEditorWindow_{false};
+
+        SettingsSystem* settings_{nullptr};
     };
 } // namespace UI
 
