@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=OurPaint
+Comment=A simple paint application
+Exec=OurPaintApp %F
+Icon=ourpaint
+Terminal=false
+Categories=Graphics;Qt;
+StartupWMClass=OurPaintApp
