@@ -3,21 +3,23 @@
 #include <QLabel>
 #include <QPainter>
 #include <QResizeEvent>
+#include <QVBoxLayout>
+
 
 UI::AnimationWidget::AnimationWidget(QWidget* parent)
     : QWidget(parent)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    label_ = new QLabel("", this);
+    label_ = new QLabel(this);
+    label_->setAlignment(Qt::AlignCenter);
+    label_->setWordWrap(true);
+    label_->setObjectName("AreaLabel");
 
-    auto font = label_->font();
-    constexpr auto x = 24;
-    font.setPointSize(x);
-    font.setBold(true);
+    auto* l = new QVBoxLayout(this);
+    l->setContentsMargins(0, 0, 0, 0);
+    l->addWidget(label_, 0, Qt::AlignCenter);
 
-    label_->setFont(font);
-    label_->adjustSize();
     translate();
 }
 
@@ -54,7 +56,13 @@ void UI::AnimationWidget::changeEvent(QEvent* e) {
 }
 
 void UI::AnimationWidget::translate() const {
-    if (label_) {
-        label_->setText(UI::AnimationWidget::tr("In development..."));
-    }
+    if (!label_) return;
+
+    label_->setText(UI::AnimationWidget::tr("In development..."));
+
+    label_->adjustSize();
+
+    const int x = (width()  - label_->width())  / 2;
+    const int y = (height() - label_->height()) / 2;
+    label_->move(x, y);
 }

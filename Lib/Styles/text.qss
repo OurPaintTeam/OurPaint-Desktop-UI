@@ -109,3 +109,12 @@ font-weight: bold;
     font-size: 16px;
     padding-left: 4px;
 }
+
+
+#AreaLabel
+{
+    color: #D8D8F6;
+    font-weight: bold;
+    font-size: 32px;
+    padding-left: 4px;
+}
