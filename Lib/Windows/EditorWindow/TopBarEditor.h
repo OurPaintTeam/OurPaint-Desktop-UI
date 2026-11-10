@@ -9,6 +9,7 @@ class QPushButton;
 class QToolButton;
 
 namespace UI {
+    class SettingsWidget;
     class SettingsSystem;
     class TabBar;
     class SideMenu;
@@ -60,6 +61,7 @@ namespace UI {
         MenuButton* verButton_{nullptr};
         QPushButton* helpButton_{nullptr};
         SettingsSystem* settingsSystem_{nullptr};
+        SettingsWidget* settingsWidget_{nullptr};
 
         void createProjectButtons();
         void setupSettings();

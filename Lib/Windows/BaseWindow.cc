@@ -4,7 +4,7 @@
 UI::BaseWindow::BaseWindow(QWidget* parent)
     : FramelessWindow(parent) {
     if (!notificationManager_) {
-        notificationManager_ = new NotificationManager(const_cast<BaseWindow*>(this), this);
+        notificationManager_ = new NotificationManager(this, this);
     }
 }
 

@@ -19,11 +19,9 @@ namespace UI {
         void addNotification(const QString& text);
 
         void setEnabled(bool enabled);
-        bool isEnabled() const;
 
     private slots:
         void showNext();
-
     private:
         QWidget *anchorWidget_{nullptr};
         QQueue<QString> queue_;

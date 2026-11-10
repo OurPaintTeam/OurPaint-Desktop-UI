@@ -25,9 +25,6 @@
         <file>Assets/icons/primitives/arcDiameter.svg</file>
         <file>Assets/icons/primitives/arc3points.svg</file>
 
-        <file>Assets/icons/tools/cursorTool.png</file>
-        <file>Assets/icons/tools/selectionTool.png</file>
-        <file>Assets/icons/tools/sizeTool.svg</file>
         <file>Assets/icons/tools/settings.svg</file>
 
         <file>Assets/icons/constraints/Coincident.svg</file>
@@ -79,6 +76,7 @@
         <file>Styles/window.qss</file>
         <file>Styles/text.qss</file>
         <file>Styles/scroll.qss</file>
+        <file>Styles/notif.qss</file>
     </qresource>
 
     <qresource prefix="/">

@@ -66,7 +66,7 @@ namespace UI {
         LineMenu *lineMenu_{nullptr};
 
         // TOOLS
-        QPushButton *cursorTool_{nullptr};
+        //QPushButton *cursorTool_{nullptr};
        // QPushButton *sizeTool_{nullptr};
 
         // PRIMITIVES

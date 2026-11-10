@@ -183,7 +183,6 @@ void UIManager::openLightEditor(UI::ProjectManager *manager, UI::FileData& data)
     auto ctx = createLightEditorContext();
     manager->openLightEditor(ctx, data);
 
-    manager->setActiveToolLightEditorWindow(data.id, UI::ToolsType::Cursor);
     manager->addNotification("Opened light editor: " + data.name);
 }
 

@@ -132,16 +132,13 @@ void UI::ToolBar::initFiguresLane() {
     cubicBezierPrimitive_->setObjectName("NoActiveTool");
 
     // TOOLS
-    cursorTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/cursorTool.png"));
-    configureToolButton(cursorTool_);
-    cursorTool_->setCursor(Qt::PointingHandCursor);
+   // configureToolButton(cursorTool_);
+
 
     /*sizeTool_ = toolsContainer_->addButton(QIcon(":/Assets/icons/tools/sizeTool.svg"));
     configureToolButton(sizeTool_);
     sizeTool_->setCursor(Qt::PointingHandCursor);*/
 
-    activeTool_ = cursorTool_;
-    activeTool_->setObjectName("ActiveTool");
 
     // LAYOUT
     firstLayout_->addWidget(figuresSlot_);
@@ -243,10 +240,10 @@ void UI::ToolBar::initSignals() {
     connectMenuSignal(arcMenu_, arcPrimitive_);
 
     // TOOLS
-    connect(cursorTool_, &QPushButton::clicked, this, [this]() {
-        emit toolsTriggered(ToolsType::Cursor);
-        setActiveTool(cursorTool_);
-    });
+    // connect(cursorTool_, &QPushButton::clicked, this, [this]() {
+    //     emit toolsTriggered(ToolsType::Cursor);
+    //     setActiveTool(cursorTool_);
+    // });
 
     // connect(sizeTool_, &QPushButton::clicked, this, [this]() {
     //     emit toolsTriggered(ToolsType::Size);
@@ -280,13 +277,13 @@ void UI::ToolBar::handlePrimitiveActionSlot(const QAction *action) {
 
 // ACTIVE TOOL
 void UI::ToolBar::setActiveTool(const ToolsType tool) {
-    switch (tool) {
-        case ToolsType::Cursor: setActiveTool(cursorTool_);
-            break;
-        // case ToolsType::Size: setActiveTool(sizeTool_);
-        //     break;
-        default: break;
-    }
+    // switch (tool) {
+    //     case ToolsType::Cursor: setActiveTool(cursorTool_);
+    //         break;
+    //     // case ToolsType::Size: setActiveTool(sizeTool_);
+    //     //     break;
+    //     default: break;
+    // }
 }
 
 
@@ -394,9 +391,9 @@ void UI::ToolBar::translate() const {
     if (cubicBezierPrimitive_) {
         cubicBezierPrimitive_->setToolTip(UI::ToolBar::tr("CubicBezier"));
     }
-    if (cursorTool_) {
-        cursorTool_->setToolTip(UI::ToolBar::tr("Cursor tool"));
-    }
+    // if (cursorTool_) {
+    //     cursorTool_->setToolTip(UI::ToolBar::tr("Cursor tool"));
+    // }
     // if (sizeTool_) {
     //     sizeTool_->setToolTip(UI::ToolBar::tr("Show size"));
     // }

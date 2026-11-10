@@ -53,7 +53,7 @@ namespace UI {
     };
 
     enum class ToolsType {
-        Cursor,
+        None,
         Size
     };
 } // namespace UI

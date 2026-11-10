@@ -9,27 +9,27 @@ class QHBoxLayout;
 class QTimer;
 
 namespace UI {
-    class NotificationWidget final : public QFrame  {
+    class NotificationWidget final : public QFrame {
         Q_OBJECT
 
     public:
         explicit NotificationWidget(const QString& text, QWidget *anchorWidget, QWidget *parent = nullptr);
 
         void showFor(int milliseconds);
+        void updatePosition();
 
-    signals:
-        void finished();
+        signals:
+            void finished();
 
     protected:
         void enterEvent(QEnterEvent *event) override;
         void leaveEvent(QEvent *event) override;
+        bool eventFilter(QObject *obj, QEvent *event) override;
 
     private slots:
         void onCloseClicked();
 
     private:
-        void updatePosition();
-
         QHBoxLayout *layout_{nullptr};
         QLabel *label_{nullptr};
         QPushButton *closeButton_{nullptr};

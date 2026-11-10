@@ -54,10 +54,11 @@ void UI::TopBarEditor::setRightMenu(SideMenu *menu) {
 }
 
 
-void UI::TopBarEditor::setSettings(SettingsSystem* settings) {
+void UI::TopBarEditor::setSettings(SettingsSystem *settings) {
     if (settings)
-    settingsSystem_ = settings;
+        settingsSystem_ = settings;
 }
+
 
 void UI::TopBarEditor::setConsole(QWidget *console) {
     if (!console) {
@@ -103,7 +104,7 @@ void UI::TopBarEditor::createProjectButtons() {
     addLeftWidget(projectButton_);
 
     connect(projectMenu_, &FileMenu::projectTriggered,
-            this,               &TopBarEditor::projectTriggered);
+            this, &TopBarEditor::projectTriggered);
 
 
     collaborationMenu_ = new CollaborationMenu(this);
@@ -112,7 +113,7 @@ void UI::TopBarEditor::createProjectButtons() {
     addLeftWidget(collabButton_);
     collabButton_->setVisible(false);
     connect(collaborationMenu_, &CollaborationMenu::collabTriggered,
-            this,               &TopBarEditor::collaborationTriggered);
+            this, &TopBarEditor::collaborationTriggered);
 
 
     versionControlMenu_ = new VersionControlMenu(this);
@@ -123,7 +124,7 @@ void UI::TopBarEditor::createProjectButtons() {
     addLeftWidget(verButton_);
     verButton_->setVisible(false);
     connect(versionControlMenu_, &VersionControlMenu::versionTriggered,
-            this,               &TopBarEditor::versionTriggered);
+            this, &TopBarEditor::versionTriggered);
 
 
     helpButton_ = new QPushButton(this);
@@ -145,14 +146,30 @@ void UI::TopBarEditor::setupSettings() {
     btnSettings_->setVisible(true);
 
     addCenterWidget(btnSettings_);
-    connect(btnSettings_, &QPushButton::clicked, this, [this]() {
-          auto* const w = new SettingsWidget(settingsSystem_, this);
-          w->setAttribute(Qt::WA_DeleteOnClose);
-          w->show();
 
-          connect(w, &SettingsWidget::settingsChanged,
-                  this, &TopBarEditor::settingsChanged);
-      });
+    connect(btnSettings_, &QPushButton::clicked, this, [this]() {
+        if (settingsWidget_ && settingsWidget_->isVisible()) {
+            settingsWidget_->raise();
+            settingsWidget_->activateWindow();
+            return;
+        }
+
+        if (!settingsWidget_) {
+            settingsWidget_ = new SettingsWidget(settingsSystem_, this);
+            settingsWidget_->setAttribute(Qt::WA_DeleteOnClose);
+
+            connect(settingsWidget_, &QObject::destroyed, this, [this]() {
+                settingsWidget_ = nullptr;
+            });
+
+            connect(settingsWidget_, &SettingsWidget::settingsChanged,
+                    this, &TopBarEditor::settingsChanged);
+        }
+
+        settingsWidget_->show();
+        settingsWidget_->raise();
+        settingsWidget_->activateWindow();
+    });
 }
 
 

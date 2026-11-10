@@ -1,0 +1,40 @@
+#NotificationWidget {
+    background-color: #3f3e46;
+    border: 1px solid #3e3d42;
+    border-radius: 8px;
+}
+
+#NotificationWidget:hover {
+    background-color: #5a5962;
+}
+
+#NotificationWidgetLabel {
+    color: #D8D8F6;
+    font-size: 11pt;
+    font-weight: 500;
+    background: transparent;
+}
+
+#NotificationWidgetClose {
+    background-color: transparent;
+    color: #D8D8F6;
+    border: none;
+    border-radius: 8px;
+
+    min-width: 24px;
+    max-width: 24px;
+    min-height: 24px;
+    max-height: 24px;
+
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+#NotificationWidgetClose:hover {
+    background-color: rgba(255, 255, 255, 40);
+    border-radius: 8px;
+}
+
+#NotificationWidgetClose:pressed {
+    background-color: rgba(255, 255, 255, 80);
+}
