@@ -16,18 +16,17 @@
 #include <windowsx.h>
 
 namespace {
+    constexpr DWORD kDwmWindowCornerPreference = 33;
+    constexpr DWORD kDwmBorderColor = 34;
+    constexpr DWORD kDwmCaptionColor = 35;
+    constexpr qint16 START_WIDTH = 960;
+    constexpr qint16 START_HEIGHT = 540;
+    constexpr qint16 MIN_WIDTH = 950;
+    constexpr qint16 MIN_HEIGHT = 500;
 
-constexpr DWORD kDwmWindowCornerPreference = 33;
-constexpr DWORD kDwmBorderColor = 34;
-constexpr DWORD kDwmCaptionColor = 35;
-constexpr qint16 START_WIDTH = 960;
-constexpr qint16 START_HEIGHT = 540;
-constexpr qint16 MIN_WIDTH = 950;
-constexpr qint16 MIN_HEIGHT = 500;
 
-enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round = 2, RoundSmall = 3 };
-
-}  // namespace
+    enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round = 2, RoundSmall = 3 };
+} // namespace
 
 #endif
 
@@ -38,11 +37,12 @@ enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round =
 #include <QScreen>
 #include <QWindow>
 
-bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
+
+bool UI::FramelessWindow::eventFilter(QObject *watched, QEvent *event) {
 #ifdef Q_OS_LINUX
     if (event->type() == QEvent::MouseButtonPress && !isMaximized() && !isFullScreen()) {
-        auto* widget = qobject_cast<QWidget*>(watched);
-        auto* mouse = static_cast<QMouseEvent*>(event);
+        auto *widget = qobject_cast<QWidget*>(watched);
+        auto *mouse = static_cast<QMouseEvent*>(event);
         if (widget && widget->window() == this && mouse->button() == Qt::LeftButton) {
             constexpr int borderWidth = 8;
             const QPoint pos = mapFromGlobal(mouse->globalPosition().toPoint());
@@ -67,11 +67,12 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
 
 #ifdef Q_OS_WIN
     if (event->type() == QEvent::Show) {
-        if (auto* win = qobject_cast<QWindow*>(watched)) {
+        if (auto *win = qobject_cast<QWindow*>(watched)) {
             if (win->metaObject()->indexOfSignal("frameReady()") != -1) {
                 connect(win, SIGNAL(frameReady()), this, SLOT(onViewportFrameReady()), Qt::UniqueConnection);
 
-                qDebug() << "[FramelessWindow] Successfully connected to frameReady of" << win->metaObject()->className();
+                qDebug() << "[FramelessWindow] Successfully connected to frameReady of" << win->metaObject()->
+                        className();
             }
         }
     }
@@ -80,7 +81,8 @@ bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {
     return QMainWindow::eventFilter(watched, event);
 }
 
-UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
+
+UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::Window);
     // | Qt::CustomizeWindowHint | Qt::ExpandedClientAreaHint | Qt::NoTitleBarBackgroundHint
@@ -102,8 +104,10 @@ UI::FramelessWindow::FramelessWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle(tr("OurPaint"));
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
 
-    const auto style = loadStyles({":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
-        ":/Styles/text.qss", ":/Styles/scroll.qss"});
+    const auto style = loadStyles({
+        ":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
+        ":/Styles/text.qss", ":/Styles/scroll.qss"
+    });
 
     if (style.isEmpty()) {
         qWarning() << "No styles loaded!";
@@ -144,7 +148,11 @@ void UI::FramelessWindow::applyNativeWindowStyles() const {
 
     SetWindowLongPtr(hwnd, GWL_STYLE, style);
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
+    DWORD cornerPref = isMaximized() ? 1 /* DoNotRound */ : 2 /* Round */;
+    DwmSetWindowAttribute(hwnd, kDwmWindowCornerPreference, &cornerPref, sizeof(cornerPref));
 }
+
 
 void UI::FramelessWindow::onViewportFrameReady() {
     DwmFlush();
@@ -152,16 +160,16 @@ void UI::FramelessWindow::onViewportFrameReady() {
 
 #endif
 
-bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message, qintptr* result) {
+bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void *message, qintptr *result) {
 #ifdef Q_OS_WIN
-    MSG* msg = static_cast<MSG*>(message);
+    MSG *msg = static_cast<MSG*>(message);
     if (!msg) {
         return QMainWindow::nativeEvent(eventType, message, result);
     }
 
     switch (msg->message) {
         case WM_SIZE: {
-          //  InvalidateRect(msg->hwnd, nullptr, FALSE);
+            //  InvalidateRect(msg->hwnd, nullptr, FALSE);
             break;
         }
         case WM_NCCALCSIZE: {
@@ -169,7 +177,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
             return true;
         }
         case WM_GETMINMAXINFO: {
-            auto* mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
+            auto *mmi = reinterpret_cast<MINMAXINFO*>(msg->lParam);
             const qreal dpr = windowHandle() ? windowHandle()->devicePixelRatio() : 1.0;
             mmi->ptMinTrackSize.x = qRound(MIN_WIDTH * dpr);
             mmi->ptMinTrackSize.y = qRound(MIN_HEIGHT * dpr);
@@ -201,8 +209,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
             const LONG border = 8;
 
             if (!isMaximized()) {
-                const bool L = x<wr.left + border, R = x> wr.right - border;
-                const bool T = y<wr.top + border, B = y> wr.bottom - border;
+                const bool L = x < wr.left + border, R = x > wr.right - border;
+                const bool T = y < wr.top + border, B = y > wr.bottom - border;
                 if (T && L) {
                     *result = HTTOPLEFT;
                     return true;
@@ -242,7 +250,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
             const qreal dpr = windowHandle()->devicePixelRatio();
             const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
 
-            if (auto* tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findChild<UI::TopBar*>()) {
                 const auto hit = tb->hitTestTopBar(posInWindow);
                 switch (hit) {
                     case UI::TopBar::TopBarHit::Maximize:
@@ -262,8 +270,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
         }
         case WM_NCLBUTTONUP: {
             if (msg->wParam == HTMAXBUTTON) {
-                if (auto* tb = findChild<UI::TopBar*>()) {
-                    if (auto* maxBtn = tb->maximizeButton()) {
+                if (auto *tb = findChild<UI::TopBar*>()) {
+                    if (auto *maxBtn = tb->maximizeButton()) {
                         maxBtn->click();
                     }
                 }
@@ -274,7 +282,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
         }
 
         case WM_NCMOUSEMOVE: {
-            if (auto* tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findChild<UI::TopBar*>()) {
                 tb->setMaximizeButtonHovered(msg->wParam == HTMAXBUTTON);
             }
 
@@ -288,14 +296,14 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
         }
 
         case WM_NCMOUSELEAVE: {
-            if (auto* tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findChild<UI::TopBar*>()) {
                 tb->setMaximizeButtonHovered(false);
             }
             break;
         }
 
         case WM_MOUSEMOVE: {
-            if (auto* tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findChild<UI::TopBar*>()) {
                 tb->setMaximizeButtonHovered(false);
             }
             break;
@@ -320,7 +328,8 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void* message
     return QMainWindow::nativeEvent(eventType, message, result);
 }
 
-void UI::FramelessWindow::changeEvent(QEvent* event) {
+
+void UI::FramelessWindow::changeEvent(QEvent *event) {
     if (event->type() == QEvent::LanguageChange) {
         setWindowTitle(tr("OurPaint"));
         update();
@@ -328,7 +337,7 @@ void UI::FramelessWindow::changeEvent(QEvent* event) {
 
     if (event->type() == QEvent::WindowStateChange) {
 #ifdef Q_OS_WIN
-        if (auto* tb = findChild<UI::TopBar*>()) {
+        if (auto *tb = findChild<UI::TopBar*>()) {
             tb->updateMaximizeIcon(isMaximized());
         }
 #endif
@@ -336,6 +345,7 @@ void UI::FramelessWindow::changeEvent(QEvent* event) {
 
     QMainWindow::changeEvent(event);
 }
+
 
 QString UI::FramelessWindow::loadStyle(const QString& path) {
     QFile file(path);
@@ -352,23 +362,26 @@ QString UI::FramelessWindow::loadStyle(const QString& path) {
     return QString::fromUtf8(file.readAll());
 }
 
+
 QString UI::FramelessWindow::loadStyles(const QStringList& files) {
     QString style;
-    for (const auto& file : files) {
+    for (const auto& file: files) {
         style += loadStyle(file);
     }
     return style;
 }
 
-void UI::FramelessWindow::showEvent(QShowEvent* event) {
+
+void UI::FramelessWindow::showEvent(QShowEvent *event) {
 #ifdef Q_OS_WIN
     applyNativeWindowStyles();
-    if (auto* tb = findChild<UI::TopBar*>()) {
+    if (auto *tb = findChild<UI::TopBar*>()) {
         tb->updateMaximizeIcon(isMaximized());
     }
 #endif
     QMainWindow::showEvent(event);
 }
+
 
 void UI::FramelessWindow::initFonts() {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -398,11 +411,14 @@ void UI::FramelessWindow::initFonts() {
     qApp->setFont(font);
 }
 
-void UI::FramelessWindow::resizeEvent(QResizeEvent* event) { QMainWindow::resizeEvent(event); }
 
-bool UI::FramelessWindow::event(QEvent* event) {
+void UI::FramelessWindow::resizeEvent(QResizeEvent *event) { QMainWindow::resizeEvent(event); }
+
+
+bool UI::FramelessWindow::event(QEvent *event) {
     const bool result = QMainWindow::event(event);
     return result;
 }
 
-void UI::FramelessWindow::paintEvent(QPaintEvent* e) { QMainWindow::paintEvent(e); }
+
+void UI::FramelessWindow::paintEvent(QPaintEvent *e) { QMainWindow::paintEvent(e); }

@@ -18,25 +18,26 @@ class QCloseEvent;
 namespace UI {
     class SettingsSystem;
     class BaseEditorWindow;
-    class StartWindow;
-    class EditorWindow;
+    class MainWindow;
     class LightEditorWindow;
 
+
     struct EditorContext {
-        FileSystem* fileSystem{nullptr};
-        SettingsSystem* settingsSystem{nullptr};
-        QWindow* renderEngine{nullptr};
-        QLineEdit* consoleEngine{nullptr};
-        SettingsSystem* settings{nullptr};
+        FileSystem *fileSystem{nullptr};
+        SettingsSystem *settingsSystem{nullptr};
+        QWindow *renderEngine{nullptr};
+        QLineEdit *consoleEngine{nullptr};
+        SettingsSystem *settings{nullptr};
         QString defaultProjectPath;
         QString defaultScriptPath;
     };
+
 
     class ProjectManager final : public QObject {
         Q_OBJECT
 
     public:
-        explicit ProjectManager(const EditorContext& context, QObject* parent = nullptr);
+        explicit ProjectManager(const EditorContext& context, QObject *parent = nullptr);
         ~ProjectManager() override;
 
         void addTabInEditor(const FileData& data);
@@ -91,10 +92,8 @@ namespace UI {
         void returnToStartWindow();
         void handleEditorWindowClosed();
 
-        void ensureStartWindow();
-        void ensureEditorWindow();
-        void connectStartWindowSignals();
-        void connectEditorWindowSignals();
+        void ensureMainWindow();
+        void connectMainWindowSignals();
         void closeLightEditorWindows();
 
         LightEditorWindow* findLightEditorWindow(const qint64 id) const;
@@ -102,11 +101,8 @@ namespace UI {
 
         EditorContext context_;
 
-        StartWindow *startWindow_{nullptr};
-        EditorWindow *editorWindow_{nullptr};
+        MainWindow *mainWindow_{nullptr};
         QVector<LightEditorWindow*> lightEditorWindows_{};
-        QByteArray lastWindowGeometry_;
-        bool removingEditorWindow_{false};
     };
 } // namespace UI
 #endif

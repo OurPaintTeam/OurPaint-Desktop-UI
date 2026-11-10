@@ -1,16 +1,17 @@
 #ifndef OURPAINT_DESKTOP_UI_MAINWINDOW_H
 #define OURPAINT_DESKTOP_UI_MAINWINDOW_H
 
-#include "FramelessWindow.h"
+#include "BaseEditorWindow.h"
+#include "Utils.h"
 #include <QStackedWidget>
+
+class QCloseEvent;
 
 namespace UI {
     class StartPage;
     class EditorPage;
-    class SettingsSystem;
-    class NotificationContainer;
 
-    class MainWindow final : public FramelessWindow {
+    class MainWindow final : public BaseEditorWindow {
         Q_OBJECT
 
     public:
@@ -18,18 +19,46 @@ namespace UI {
         ~MainWindow() override = default;
 
         void initUI() override;
+        void setFilesList(const QVector<ProjectData>& files) const;
+        void setDefaultFilesPath(const QString& path) const;
+        void setDefaultProjectPath(const QString& path);
+        void setDefaultScriptPath(const QString& path);
+        void setDefaultProjectPath(const QString& path) const;
+        void setDefaultScriptPath(const QString& path) const;
+        void addTabSlot(const FileData& data) const;
+        void deleteTabSlot(qint64 id) const;
+        void renameTabSlot(FileData& data) const;
+        void showStartPage();
+        void showEditorPage();
 
-        QStackedWidget* stack() const { return stack_; }
-        StartPage* startPage() const { return startPage_; }
-        EditorPage* editorPage() const { return editorPage_; }
+        QStackedWidget* stack() const;
+        StartPage* startPage() const;
+        EditorPage* editorPage() const;
 
-        void addNotification(const QString& text) const;
+    signals:
+        void closeApplicationTriggered();
+        void goToStartWindowTriggered();
+        void openFileByIDTriggered(qint64 id, bool newWindow);
+        void openFileTriggered(const QString& path, bool newWindow);
+        void createFileTriggered(const QString& path, bool newWindow);
+        void renameFileTriggered(FileData& data);
+        void deleteFileTriggered(qint64 id);
+        void renameTabTriggered(FileData& data);
+        void removeTabTriggered(qint64 id);
+        void setActiveTabTriggered(qint64 id);
+        void closeTabTriggered(qint64 id);
+        void openLightEditorWindowTriggered(qint64 id);
+        void onOpenScriptTriggered(const QString& path);
+        void settingsChanged();
+
+    protected:
+        void closeEvent(QCloseEvent* event) override;
 
     private:
         QStackedWidget* stack_{nullptr};
         StartPage* startPage_{nullptr};
-        EditorPage* editorPage_{nullptr};
-        NotificationContainer* notificationManager_{nullptr};
+        EditorPage* editorPageWidget_{nullptr};
     };
 }
+
 #endif
