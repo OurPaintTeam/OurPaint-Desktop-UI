@@ -102,8 +102,8 @@ void UI::TopBarEditor::createProjectButtons() {
     projectButton_->setDraw(true);
     addLeftWidget(projectButton_);
 
-    connect(versionControlMenu_, &VersionControlMenu::versionTriggered,
-            this,               &TopBarEditor::versionTriggered);
+    connect(projectMenu_, &FileMenu::projectTriggered,
+            this,               &TopBarEditor::projectTriggered);
 
 
     collaborationMenu_ = new CollaborationMenu(this);

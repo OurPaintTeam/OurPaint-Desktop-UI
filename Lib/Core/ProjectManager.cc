@@ -13,13 +13,14 @@
 
 UI::ProjectManager::ProjectManager() = default;
 
-void UI::ProjectManager::createStartWindow(const QVector<ProjectData>& data)  {
+void UI::ProjectManager::createStartWindow(const QVector<ProjectData>& data, const QString& defaultPath)  {
     ensureStartWindow();
-    openStartWindow(data);
+    openStartWindow(data, defaultPath);
 }
 
 
-void UI::ProjectManager::createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) {
+void UI::ProjectManager::createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem
+    ,const QString& defaultPath, const QString& scriptPath) {
     // No StartWindow. Create EditorWindow and apply engines.
     reOpenNewEditorWindow();
 
@@ -31,6 +32,11 @@ void UI::ProjectManager::createEditorWindow(QWindow *windowRender, QLineEdit *co
     }
     if (settingsSystem) {
         setSettings(settingsSystem);
+    }
+
+    if (editorWindow_) {
+        setDefaultProjectPath(defaultPath);
+        setScriptPath(scriptPath);
     }
 }
 
@@ -119,6 +125,17 @@ void UI::ProjectManager::setFilesList(
     if (startWindow_) startWindow_->setFilesList(files);
 }
 
+void UI::ProjectManager::setDefaultProjectPath(
+    const QString& path) {
+    if (startWindow_) startWindow_->setDefaultFilesPath(path);
+    else if (editorWindow_) editorWindow_->setDefaultProjectPath(path);
+}
+
+void UI::ProjectManager::setScriptPath(
+    const QString& path) {
+     if (editorWindow_) editorWindow_->setDefaultScriptPath(path);
+}
+
 void UI::ProjectManager::addNotification(
     const qint64 id, const QString& text) const {
     for (auto *window : lightEditorWindows_) {
@@ -134,11 +151,12 @@ void UI::ProjectManager::addNotification(const QString& text) const {
     if (const auto *window = activeWindow()) window->addNotification(text);
 }
 
-void UI::ProjectManager::openStartWindow(const QVector<ProjectData>& data) {
+void UI::ProjectManager::openStartWindow(const QVector<ProjectData>& data,const QString& defaultPath) {
     closeLightEditorWindows();
     removeEditorWindow();
     ensureStartWindow();
     startWindow_ -> setFilesList(data);
+    startWindow_ -> setDefaultFilesPath(defaultPath);
     startWindow_->show();
     startWindow_->raise();
     startWindow_->activateWindow();
@@ -154,16 +172,7 @@ void UI::ProjectManager::reOpenNewEditorWindow() {
     editorWindow_->raise();
     editorWindow_->activateWindow();
 }
-//
-// void UI::ProjectManager::openNewWindow(
-//     QWindow *windowRender,
-//     QLineEdit *consoleEngine,
-//     SettingsSystem* settings) {
-//     reOpenNewWindow();
-//     if (windowRender) setQWindowRender(windowRender);
-//     if (consoleEngine) setCommandConsoleEngine(consoleEngine);
-//     if (settings) setSettings(settings);
-// }
+
 
 void UI::ProjectManager::openLightEditorWindow(
    FileData& data,

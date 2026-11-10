@@ -21,7 +21,8 @@ namespace UI {
         ~EditorWindow() override = default;
 
         void initUI() override;
-        void setDefaultPath(const QString& path);
+        void setDefaultProjectPath(const QString& path);
+        void setDefaultScriptPath(const QString& path);
         void addTabSlot(const FileData& data) const;
         void deleteTabSlot(const qint64 id) const;
         void renameTabSlot(FileData& data) const;

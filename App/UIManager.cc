@@ -18,7 +18,7 @@ UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
     // TODO all settings
 
     auto *manager = createStartWindow();
-    manager->createStartWindow(collectProjectData());
+    manager->createStartWindow(collectProjectData(), fs_.projectsPath());
 }
 
 
@@ -52,7 +52,7 @@ UI::ProjectManager* UIManager::createStartWindow() {
 UI::ProjectManager* UIManager::createEditorProjectManager(QWindow* windowRender,
                                                           QLineEdit* consoleEngine) {
     auto* manager = new UI::ProjectManager();
-    manager->createEditorWindow(windowRender, consoleEngine,&settingsSystem_);
+    manager->createEditorWindow(windowRender, consoleEngine,&settingsSystem_, fs_.projectsPath(), fs_.scriptsPath());
     projectManagers_.push_back(manager);
     initSignals(*manager);
     return manager;
@@ -89,7 +89,7 @@ void UIManager::openInTarget(UI::ProjectManager* currentManager,
     }
 
     if (!target->editor()) {
-        target->createEditorWindow(new RenderEngine(), new CustomConsole(), &settingsSystem_);
+        target->createEditorWindow(new RenderEngine(), new CustomConsole(), &settingsSystem_, fs_.projectsPath(), fs_.scriptsPath());
     }
 
     UI::FileData fd;
@@ -178,8 +178,11 @@ void UIManager::createFile(const QString& fileName,
 void UIManager::renameFile(UI::FileData& data) {
     if (data.name.isEmpty()) return;
 
-    if (fs_.renameProject(data.id, data.name) != UI::FileSystem::FsResult::Ok) {
-        for (auto* m : projectManagers_) m->refreshFilesRequested(collectProjectData());
+    if (fs_.renameProject(data.id, data.name) == UI::FileSystem::FsResult::Ok) {
+        for (auto* m : projectManagers_) {
+            m->refreshFilesRequested(collectProjectData());
+            m->renameTabSlot(data);
+        }
         return;
     }
 }
@@ -229,7 +232,7 @@ void UIManager::setActiveTab(UI::ProjectManager* manager, qint64 fileId) const {
 
 void UIManager::goToStartWindow(UI::ProjectManager* manager)  {
     if (!manager) return;
-    manager->openStartWindow(collectProjectData());
+    manager->openStartWindow(collectProjectData(), fs_.projectsPath());
 }
 
 

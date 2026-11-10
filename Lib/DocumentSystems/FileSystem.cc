@@ -559,84 +559,137 @@ UI::FileSystem::FsResult UI::FileSystem::getProjectPath(
 }
 
 UI::FileSystem::FsResult UI::FileSystem::getProjectIdByPath(
-    const QString& fullPath, qint64& outId) const {
-    if (!isInitialized()) {
-        return FsResult::IoError;
-    }
+    const QString& fullPath, qint64& outId) const
+{
+    if (!isInitialized()) return FsResult::IoError;
+
     auto* self = const_cast<FileSystem*>(this);
-    const FsResult syncResult = self->synchronizeInternal();
-    if (syncResult != FsResult::Ok) {
-        return syncResult;
-    }
+    FsResult sync = self->synchronizeInternal();
+    if (sync != FsResult::Ok) return sync;
 
     const QString normalized = normalizePath(fullPath);
-    if (pathKey(QFileInfo(normalized).absolutePath()) != pathKey(projectsDir_)) {
-        return FsResult::NotFound;
-    }
+    const QFileInfo info(normalized);
+    if (!isOurPaintFile(normalized)) return FsResult::NotFound;
+
+    qint64 pathId = -1;
+    sync = self->findOrCreatePathEntry(info.absolutePath(), pathId);
+    if (sync != FsResult::Ok) return sync;
 
     QSqlQuery query(database_);
     query.prepare(QStringLiteral(
-        "SELECT Projects.id FROM Projects "
-        "INNER JOIN Paths ON Paths.id = Projects.path_id "
-        "WHERE Paths.path = :path AND Projects.name = :name"));
-    query.bindValue(QStringLiteral(":path"), projectsDir_);
-    query.bindValue(QStringLiteral(":name"),
-                    QFileInfo(normalized).completeBaseName());
-
-    if (!query.exec()) {
-        return FsResult::IoError;
-    }
-    if (!query.next()) {
-        return FsResult::NotFound;
-    }
+        "SELECT id FROM Projects WHERE path_id = :path_id AND name = :name"));
+    query.bindValue(QStringLiteral(":path_id"), pathId);
+    query.bindValue(QStringLiteral(":name"), info.completeBaseName());
+    if (!query.exec()) return FsResult::IoError;
+    if (!query.next()) return FsResult::NotFound;
     outId = query.value(0).toLongLong();
     return FsResult::Ok;
 }
 
-UI::FileSystem::FsResult UI::FileSystem::insertProject(
-    const QString& baseName, qint64& outId) {
-    const qint64 pathId = defaultPathId();
-    if (pathId < 0) {
-        return FsResult::IoError;
-    }
-
+UI::FileSystem::FsResult UI::FileSystem::insertProjectAtPath(
+    qint64 pathId, const QString& baseName, qint64& outId)
+{
     QSqlQuery insert(database_);
     insert.prepare(QStringLiteral(
         "INSERT INTO Projects(name, path_id) VALUES(:name, :path_id)"));
     insert.bindValue(QStringLiteral(":name"), baseName);
     insert.bindValue(QStringLiteral(":path_id"), pathId);
-
     if (!insert.exec()) {
         return insert.lastError().text().contains(
                    QStringLiteral("UNIQUE"), Qt::CaseInsensitive)
                    ? FsResult::AlreadyExists
                    : FsResult::IoError;
     }
-
     outId = insert.lastInsertId().toLongLong();
     return FsResult::Ok;
 }
 
+UI::FileSystem::FsResult UI::FileSystem::insertProject(
+    const QString& baseName, qint64& outId)
+{
+    const qint64 pathId = defaultPathId();
+    if (pathId < 0) return FsResult::IoError;
+    return insertProjectAtPath(pathId, baseName, outId);
+}
+
+
+UI::FileSystem::FsResult UI::FileSystem::findOrCreatePathEntry(
+    const QString& directory, qint64& outPathId)
+{
+    const QString normalized = normalizePath(directory);
+
+    {
+        QSqlQuery find(database_);
+        find.prepare(QStringLiteral("SELECT id FROM Paths WHERE path = :path LIMIT 1"));
+        find.bindValue(QStringLiteral(":path"), normalized);
+        if (!find.exec()) return FsResult::IoError;
+        if (find.next()) {
+            outPathId = find.value(0).toLongLong();
+            return FsResult::Ok;
+        }
+    }
+
+    {
+        QSqlQuery all(database_);
+        if (!all.exec(QStringLiteral("SELECT id, path FROM Paths"))) {
+            return FsResult::IoError;
+        }
+        while (all.next()) {
+            if (pathKey(all.value(1).toString()) == pathKey(normalized)) {
+                outPathId = all.value(0).toLongLong();
+                return FsResult::Ok;
+            }
+        }
+    }
+
+    QSqlQuery insert(database_);
+    insert.prepare(QStringLiteral("INSERT INTO Paths(path) VALUES(:path)"));
+    insert.bindValue(QStringLiteral(":path"), normalized);
+    if (!insert.exec()) return FsResult::IoError;
+    outPathId = insert.lastInsertId().toLongLong();
+    return FsResult::Ok;
+}
+
 UI::FileSystem::FsResult UI::FileSystem::createProject(
-    const QString& name, qint64& outId) {
-    if (!isInitialized()) {
-        return FsResult::IoError;
-    }
+    const QString& nameOrPath, qint64& outId)
+{
+    if (!isInitialized()) return FsResult::IoError;
     FsResult result = synchronizeInternal();
-    if (result != FsResult::Ok) {
-        return result;
-    }
+    if (result != FsResult::Ok) return result;
 
     QString baseName;
-    result = validateProjectName(name, baseName);
-    if (result != FsResult::Ok) {
-        return result;
+    qint64 pathId = -1;
+
+    const bool looksLikePath =
+        nameOrPath.contains(QLatin1Char('/')) ||
+        nameOrPath.contains(QLatin1Char('\\'));
+
+    if (looksLikePath) {
+        const QString normalized = normalizePath(nameOrPath);
+        const QFileInfo info(normalized);
+
+        const QString suffix = info.suffix();
+        if (!suffix.isEmpty() &&
+            suffix.compare(QStringLiteral("ourp"), Qt::CaseInsensitive) != 0) {
+            return FsResult::InvalidArgument;
+        }
+
+        result = validateProjectName(info.completeBaseName(), baseName);
+        if (result != FsResult::Ok) return result;
+
+        result = findOrCreatePathEntry(info.absolutePath(), pathId);
+        if (result != FsResult::Ok) return result;
+    } else {
+        result = validateProjectName(nameOrPath, baseName);
+        if (result != FsResult::Ok) return result;
+
+        pathId = defaultPathId();
+        if (pathId < 0) return FsResult::IoError;
     }
 
-    const qint64 pathId = defaultPathId();
-    if (pathId < 0) {
-        return FsResult::IoError;
-    }
+    PathData pd;
+    result = getPath(pathId, pd);
+    if (result != FsResult::Ok) return result;
 
     {
         QSqlQuery check(database_);
@@ -645,30 +698,22 @@ UI::FileSystem::FsResult UI::FileSystem::createProject(
             "WHERE path_id = :path_id AND name = :name LIMIT 1"));
         check.bindValue(QStringLiteral(":path_id"), pathId);
         check.bindValue(QStringLiteral(":name"), baseName);
-        if (!check.exec()) {
-            return FsResult::IoError;
-        }
-        if (check.next()) {
-            return FsResult::AlreadyExists;
-        }
+        if (!check.exec()) return FsResult::IoError;
+        if (check.next()) return FsResult::AlreadyExists;
     }
 
-    const QString fullPath = fullPathFor(projectsDir_, baseName);
-    if (QFileInfo::exists(fullPath)) {
-        return FsResult::AlreadyExists;
-    }
+    if (!QDir().mkpath(pd.path)) return FsResult::IoError;
+
+    const QString fullPath = fullPathFor(pd.path, baseName);
+    if (QFileInfo::exists(fullPath)) return FsResult::AlreadyExists;
 
     {
         QSaveFile file(fullPath);
-        if (!file.open(QIODevice::WriteOnly)) {
-            return FsResult::IoError;
-        }
-        if (!file.commit()) {
-            return FsResult::IoError;
-        }
+        if (!file.open(QIODevice::WriteOnly)) return FsResult::IoError;
+        if (!file.commit()) return FsResult::IoError;
     }
 
-    result = insertProject(baseName, outId);
+    result = insertProjectAtPath(pathId, baseName, outId);
     if (result != FsResult::Ok) {
         QFile::remove(fullPath);
         return result;
@@ -677,67 +722,54 @@ UI::FileSystem::FsResult UI::FileSystem::createProject(
 }
 
 UI::FileSystem::FsResult UI::FileSystem::registerProject(
-    const QString& fullPath, qint64& outId) {
-    if (!isInitialized()) {
-        return FsResult::IoError;
-    }
+    const QString& fullPath, qint64& outId)
+{
+    if (!isInitialized()) return FsResult::IoError;
     FsResult result = synchronizeInternal();
-    if (result != FsResult::Ok) {
-        return result;
-    }
+    if (result != FsResult::Ok) return result;
 
     const QString normalized = normalizePath(fullPath);
     const QFileInfo info(normalized);
-    if (!info.exists() || !info.isFile()) {
-        return FsResult::NotFound;
-    }
-    if (!isOurPaintFile(normalized) ||
-        pathKey(info.absolutePath()) != pathKey(projectsDir_)) {
-        return FsResult::InvalidArgument;
-    }
+    if (!info.exists() || !info.isFile()) return FsResult::NotFound;
+    if (!isOurPaintFile(normalized))    return FsResult::InvalidArgument;
+
+    qint64 pathId = -1;
+    result = findOrCreatePathEntry(info.absolutePath(), pathId);
+    if (result != FsResult::Ok) return result;
 
     const QString baseName = info.completeBaseName();
 
-    QSqlQuery find(database_);
-    find.prepare(QStringLiteral(
-        "SELECT id FROM Projects WHERE path_id = :path_id AND name = :name"));
-    find.bindValue(QStringLiteral(":path_id"), defaultPathId());
-    find.bindValue(QStringLiteral(":name"), baseName);
-    if (!find.exec()) {
-        return FsResult::IoError;
-    }
-    if (find.next()) {
-        outId = find.value(0).toLongLong();
-        return FsResult::AlreadyExists;
+    {
+        QSqlQuery find(database_);
+        find.prepare(QStringLiteral(
+            "SELECT id FROM Projects WHERE path_id = :path_id AND name = :name"));
+        find.bindValue(QStringLiteral(":path_id"), pathId);
+        find.bindValue(QStringLiteral(":name"), baseName);
+        if (!find.exec()) return FsResult::IoError;
+        if (find.next()) {
+            outId = find.value(0).toLongLong();
+            return FsResult::AlreadyExists;
+        }
     }
 
-    return insertProject(baseName, outId);
+    return insertProjectAtPath(pathId, baseName, outId);
 }
 
 UI::FileSystem::FsResult UI::FileSystem::renameProject(
-    qint64 projectId, const QString& newName) {
-    if (!isInitialized()) {
-        return FsResult::IoError;
-    }
+    qint64 projectId, const QString& newName)
+{
+    if (!isInitialized()) return FsResult::IoError;
     FsResult result = synchronizeInternal();
-    if (result != FsResult::Ok) {
-        return result;
-    }
+    if (result != FsResult::Ok) return result;
 
     QString newBaseName;
     result = validateProjectName(newName, newBaseName);
-    if (result != FsResult::Ok) {
-        return result;
-    }
+    if (result != FsResult::Ok) return result;
 
     ProjectData project;
     result = getProjectInternal(projectId, project);
-    if (result != FsResult::Ok) {
-        return result;
-    }
-    if (project.name == newBaseName) {
-        return FsResult::Ok;
-    }
+    if (result != FsResult::Ok) return result;
+    if (project.name == newBaseName) return FsResult::Ok;
 
     {
         QSqlQuery check(database_);
@@ -747,21 +779,15 @@ UI::FileSystem::FsResult UI::FileSystem::renameProject(
         check.bindValue(QStringLiteral(":path_id"), project.pathId);
         check.bindValue(QStringLiteral(":name"), newBaseName);
         check.bindValue(QStringLiteral(":id"), projectId);
-        if (!check.exec()) {
-            return FsResult::IoError;
-        }
-        if (check.next()) {
-            return FsResult::AlreadyExists;
-        }
+        if (!check.exec()) return FsResult::IoError;
+        if (check.next()) return FsResult::AlreadyExists;
     }
 
-    const QString newPath = fullPathFor(projectsDir_, newBaseName);
-    if (QFileInfo::exists(newPath)) {
-        return FsResult::AlreadyExists;
-    }
-    if (!QFile::rename(project.path, newPath)) {
-        return FsResult::IoError;
-    }
+    const QString currentDir = QFileInfo(project.path).absolutePath();
+    const QString newPath    = fullPathFor(currentDir, newBaseName);
+    if (QFileInfo::exists(newPath)) return FsResult::AlreadyExists;
+
+    if (!QFile::rename(project.path, newPath)) return FsResult::IoError;
 
     if (!database_.transaction()) {
         QFile::rename(newPath, project.path);

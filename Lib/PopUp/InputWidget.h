@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+class QCheckBox;
 class QHBoxLayout;
 class QLabel;
 class QLineEdit;
@@ -14,10 +15,14 @@ namespace UI {
     class InputWidget : public QWidget {
         Q_OBJECT
 
+    private:
+        QCheckBox* checkBox_{nullptr};
     public:
         explicit InputWidget(const QString& promptText, QWidget* parent = nullptr);
 
         void setDefaultText(const QString& text) const;
+        virtual void setCheckBoxQuestion(const QString& text);
+        virtual bool isCheckBoxChecked() const;
 
     signals:
         void inputEnteredTriggered(const QString& text);

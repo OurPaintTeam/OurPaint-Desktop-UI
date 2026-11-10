@@ -26,7 +26,8 @@ namespace UI {
         explicit EditorPage(QWidget* parent = nullptr);
         ~EditorPage() override = default;
 
-        void setDefaultPath(const QString& path);
+        void setDefaultProjectPath(const QString& path);
+        void setDefaultScriptPath(const QString& path);
 
     signals:
         void createFileTriggered(const QString& path,bool newWindow);
@@ -97,7 +98,8 @@ namespace UI {
         QPushButton* messengerButton_{nullptr};
         QPushButton* infoButton_{nullptr};
 
-        QString defaultPath_;
+        QString defaultProjectPath_;
+        QString defaultScriptPath_;
     };
 } // namespace UI
 

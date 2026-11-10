@@ -113,6 +113,7 @@ void UI::FilesListWidget::setFiles(const QVector<ProjectData>& files) {
         allFiles_.append(project);
         filesLayout_->insertWidget(filesLayout_->count() - 1, project);
     }
+    update();
 }
 
 

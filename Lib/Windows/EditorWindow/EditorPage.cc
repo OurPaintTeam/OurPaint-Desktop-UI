@@ -2,8 +2,10 @@
 
 #include <QEvent>
 #include <QFileDialog>
+#include <qguiapplication.h>
 #include <QIcon>
 #include <QPushButton>
+#include <QScreen>
 #include <QStackedWidget>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -35,8 +37,12 @@ UI::EditorPage::EditorPage(QWidget* parent)
 }
 
 
-void UI::EditorPage::setDefaultPath(const QString& path) {
-    defaultPath_ = path;
+void UI::EditorPage::setDefaultProjectPath(const QString& path) {
+    defaultProjectPath_ = path;
+}
+
+void UI::EditorPage::setDefaultScriptPath(const QString& path) {
+    defaultScriptPath_ = path;
 }
 
 
@@ -172,9 +178,6 @@ void UI::EditorPage::assembleLayout() const {
     //tabBar_->hide();
 }
 
-void UI::EditorPage::createFileSlot() {
-    tabBar_->createTabSlot();
-}
 
 
 void UI::EditorPage::updatePageSlot() const {
@@ -211,41 +214,112 @@ void UI::EditorPage::openMessengerPanel() const {
 
 
 void UI::EditorPage::onOpenScriptSlot() {
-    auto* prompt = new PathInputWidget("Script Path:", this,true);
-    const auto rect = this->rect();
-    const auto size = prompt->sizeHint();
+    auto* prompt = new PathInputWidget(tr("Script Path:"), this, UI::PathMode::Txt);
+    prompt->setDefaultText(defaultScriptPath_);
 
-    prompt->setDefaultText(defaultPath_);
-    prompt->move(rect.center().x() - size.width() / 2,
-                 rect.center().y() - size.height() / 2);
+    prompt->setAttribute(Qt::WA_DeleteOnClose, true);
+
+    const QSize  size      = prompt->sizeHint();
+    const QPoint globalPos = QCursor::pos();
+
+    QScreen* screen = QGuiApplication::screenAt(globalPos);
+    if (!screen) screen = QGuiApplication::primaryScreen();
+    const QRect avail = screen->availableGeometry();
+
+    int x = globalPos.x();
+    int y = globalPos.y();
+    if (x + size.width()  > avail.right())  x = avail.right()  - size.width();
+    if (y + size.height() > avail.bottom()) y = avail.bottom() - size.height();
+    if (x < avail.left()) x = avail.left();
+    if (y < avail.top())  y = avail.top();
+
+    prompt->move(x, y);
     prompt->show();
+    prompt->raise();
+    prompt->activateWindow();
 
-    connect(prompt, &InputWidget::inputEnteredTriggered, this, [this, prompt](const QString& text) {
-        if (text.isEmpty()) {
-            return;
-        }
-
-        prompt->deleteLater();
-        emit scriptTriggered(text);
-    });
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this, prompt](const QString& text) {
+                prompt->deleteLater();
+                if (text.isEmpty()) return;
+                emit scriptTriggered(text);
+            });
 }
 
 
 void UI::EditorPage::openFileSlot() {
-    const auto filePath = QFileDialog::getOpenFileName(
-        this,
-        tr("Open File"),
-        defaultPath_,
-        tr("Files (*.ourp);;All Files (*)")
-    );
+    auto* prompt = new PathInputWidget(tr("File Path:"), this, UI::PathMode::Ourp);
+    prompt->setDefaultText(defaultProjectPath_);
+    prompt->setCheckBoxQuestion(tr("Open in new window"));
 
-    if (filePath.isEmpty()) {
-        return;
-    }
+    prompt->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    emit openFileTriggered(filePath,false);
+    const QSize  size      = prompt->sizeHint();
+    const QPoint globalPos = QCursor::pos();
+
+    QScreen* screen = QGuiApplication::screenAt(globalPos);
+    if (!screen) screen = QGuiApplication::primaryScreen();
+    const QRect avail = screen->availableGeometry();
+
+    int x = globalPos.x();
+    int y = globalPos.y();
+    if (x + size.width()  > avail.right())  x = avail.right()  - size.width();
+    if (y + size.height() > avail.bottom()) y = avail.bottom() - size.height();
+    if (x < avail.left()) x = avail.left();
+    if (y < avail.top())  y = avail.top();
+
+    prompt->move(x, y);
+    prompt->show();
+    prompt->raise();
+    prompt->activateWindow();
+
+
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this, prompt](const QString& text) {
+                const bool newWindow = prompt->isCheckBoxChecked();
+                prompt->close();
+                if (text.isEmpty()) return;
+                emit openFileTriggered(text, newWindow);
+            });
 }
 
+
+
+void UI::EditorPage::createFileSlot() {
+    auto* prompt = new PathInputWidget(tr("File Name:"), this, UI::PathMode::Folder);
+    prompt->setDefaultText(defaultProjectPath_);
+    prompt->setCheckBoxQuestion(tr("Open in new window"));
+
+    prompt->setAttribute(Qt::WA_DeleteOnClose, true);
+
+    const QSize  size      = prompt->sizeHint();
+    const QPoint globalPos = QCursor::pos();
+
+    QScreen* screen = QGuiApplication::screenAt(globalPos);
+    if (!screen) screen = QGuiApplication::primaryScreen();
+    const QRect avail = screen->availableGeometry();
+
+    int x = globalPos.x();
+    int y = globalPos.y();
+    if (x + size.width()  > avail.right())  x = avail.right()  - size.width();
+    if (y + size.height() > avail.bottom()) y = avail.bottom() - size.height();
+    if (x < avail.left()) x = avail.left();
+    if (y < avail.top())  y = avail.top();
+
+    prompt->move(x, y);
+    prompt->show();
+    prompt->raise();
+    prompt->activateWindow();
+
+
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this, prompt](const QString& text) {
+                const bool newWindow = prompt->isCheckBoxChecked();
+                prompt->close();
+                if (text.isEmpty()) return;
+                emit createFileTriggered(text, newWindow);
+            });
+}
 
 void UI::EditorPage::onAddTabSlot(const FileData& data) const {
     tabBar_->addTabSlot(data);
@@ -267,7 +341,7 @@ void UI::EditorPage::changeEvent(QEvent* e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
-    QWidget::changeEvent(e);
+    BaseEditorPage::changeEvent(e);
 }
 
 void UI::EditorPage::translate() const {
@@ -275,7 +349,7 @@ void UI::EditorPage::translate() const {
         infoButton_->setToolTip(UI::EditorPage::tr("Information menu"));
     }
     if (messengerButton_) {
-        messengerButton_->setObjectName(UI::EditorPage::tr("Messanger"));
+        messengerButton_->setToolTip(tr("Messenger"));
     }
 }
 

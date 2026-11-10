@@ -32,8 +32,9 @@ namespace UI {
     public:
 
         ProjectManager();
-        void createStartWindow(const QVector<ProjectData>& data) ;
-        void createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem* settingsSystem) ;
+        void createStartWindow(const QVector<ProjectData>& data, const QString& defaultPath) ;
+        void createEditorWindow(QWindow *windowRender, QLineEdit *consoleEngine, SettingsSystem *settingsSystem, const QString& defaultPath, const
+                                QString& scriptPath) ;
         void refreshFilesRequested(const QVector<ProjectData>& files);
         void setActiveToolEditorWindow(ToolsType tool) const;
         void setActiveToolEditorWindow(PrimitiveType tool) const;
@@ -49,11 +50,13 @@ namespace UI {
         void setActiveTab(const qint64 id);
 
         void setFilesList(const QVector<ProjectData>& files);
+        void setDefaultProjectPath(const QString& path);
+        void setScriptPath(const QString& path);
         void addNotification(const qint64 id, const QString& text) const;
         void addNotification(const QString& text) const;
 
         // StartWindow is created (if needed) and ProjectWindow is removed.
-        void openStartWindow(const QVector<ProjectData>& data);
+        void openStartWindow(const QVector<ProjectData>& data, const QString& defaultPath);
         // ProjectWindow is created (or recreated), StartWindow is removed.
         void reOpenNewEditorWindow();
         //void openNewWindow(QWindow *windowRender = nullptr, QLineEdit *consoleEngine = nullptr,  SettingsSystem* settings = nullptr);

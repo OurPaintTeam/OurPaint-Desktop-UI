@@ -1,5 +1,6 @@
 #include "InputWidget.h"
 
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -78,6 +79,23 @@ UI::InputWidget::InputWidget(const QString& promptText, QWidget* parent)
             this, &QWidget::close);
 
     adjustSize();
+}
+
+
+void UI::InputWidget::setCheckBoxQuestion(const QString& text) {
+    if (!checkBox_) {
+        checkBox_ = new QCheckBox(this);
+        checkBox_->setObjectName("InputWidgetCheckBox");
+
+        mainLayout_->insertWidget(2, checkBox_);
+    }
+    checkBox_->setText(text);
+    checkBox_->show();
+    adjustSize();
+}
+
+bool UI::InputWidget::isCheckBoxChecked() const {
+    return checkBox_ && checkBox_->isChecked();
 }
 
 

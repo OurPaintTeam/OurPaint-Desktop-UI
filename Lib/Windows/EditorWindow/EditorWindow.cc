@@ -49,9 +49,15 @@ this, &EditorWindow::closeTabTriggered);
 }
 
 
-void UI::EditorWindow::setDefaultPath(const QString& path) {
+void UI::EditorWindow::setDefaultProjectPath(const QString& path) {
     if (editorPage_) {
-        editorPage_->setDefaultPath(path);
+        editorPage_->setDefaultProjectPath(path);
+    }
+}
+
+void UI::EditorWindow::setDefaultScriptPath(const QString& path) {
+    if (editorPage_) {
+        editorPage_->setDefaultScriptPath(path);
     }
 }
 

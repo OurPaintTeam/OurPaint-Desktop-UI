@@ -8,7 +8,9 @@
 #include "TopBarStart.h"
 
 #include <QFileDialog>
+#include <qguiapplication.h>
 #include <QHBoxLayout>
+#include <QScreen>
 
 #include "PathInputWidget.h"
 
@@ -43,40 +45,75 @@ void UI::StartPage::setDefaultFilesPath(const QString& path){
 
 
 void UI::StartPage::onOpenFileSlot() {
-    const auto folderPath = QFileDialog::getExistingDirectory(
-        this,
-        tr("Open File"),
-        defaultFilesPath_,
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-    );
+    auto* prompt = new PathInputWidget(tr("File path:"), this, UI::PathMode::Ourp);
+    prompt->setDefaultText(defaultFilesPath_);
 
-    if (folderPath.isEmpty()) {
-        return;
-    }
+    const QSize size = prompt->sizeHint();
+    const QPoint centerGlobal = mapToGlobal(rect().center());
+    const QPoint target(centerGlobal.x() - size.width()  / 2,
+                        centerGlobal.y() - size.height() / 2);
 
-    emit openFileTriggered(folderPath,false);
+    QScreen* screen = QGuiApplication::screenAt(centerGlobal);
+    if (!screen) screen = QGuiApplication::primaryScreen();
+    const QRect avail = screen->availableGeometry();
+
+    int x = target.x();
+    int y = target.y();
+    if (x + size.width()  > avail.right())  x = avail.right()  - size.width();
+    if (y + size.height() > avail.bottom()) y = avail.bottom() - size.height();
+    if (x < avail.left()) x = avail.left();
+    if (y < avail.top())  y = avail.top();
+
+    prompt->move(x, y);
+
+
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this, prompt](const QString& text) {
+                const bool newWindow = false;
+                if (text.isEmpty()) return;
+                emit openFileTriggered(text, newWindow);
+            });
+
+    prompt->show();
+    prompt->raise();
+    prompt->activateWindow();
 }
 
 
 void UI::StartPage::onCreateFileSlot() {
-    auto* prompt = new PathInputWidget(tr("File path:"), this);
-    const auto rect = this->rect();
-    const auto size = prompt->sizeHint();
-
-    prompt->move(rect.center().x() - size.width() / 2,
-                 rect.center().y() - size.height() / 2);
-
+    auto* prompt = new PathInputWidget(tr("Folder Path:"), this, UI::PathMode::Folder);
     prompt->setDefaultText(defaultFilesPath_);
+
+    const QSize size = prompt->sizeHint();
+
+    const QPoint centerGlobal = mapToGlobal(rect().center());
+    const QPoint target(centerGlobal.x() - size.width()  / 2,
+                        centerGlobal.y() - size.height() / 2);
+
+    QScreen* screen = QGuiApplication::screenAt(centerGlobal);
+    if (!screen) screen = QGuiApplication::primaryScreen();
+    const QRect avail = screen->availableGeometry();
+
+    int x = target.x();
+    int y = target.y();
+    if (x + size.width()  > avail.right())  x = avail.right()  - size.width();
+    if (y + size.height() > avail.bottom()) y = avail.bottom() - size.height();
+    if (x < avail.left()) x = avail.left();
+    if (y < avail.top())  y = avail.top();
+
+    prompt->move(x, y);
+
+
+    connect(prompt, &InputWidget::inputEnteredTriggered, this,
+            [this, prompt](const QString& text) {
+                const bool newWindow = false;
+                if (text.isEmpty()) return;
+                emit createFileTriggered(text, newWindow);
+            });
+
     prompt->show();
-
-    connect(prompt, &InputWidget::inputEnteredTriggered, this, [this,prompt](const QString& text) {
-        if (text.isEmpty()) {
-            return;
-        }
-        prompt->deleteLater();
-
-        emit createFileTriggered(text,false);
-    });
+    prompt->raise();
+    prompt->activateWindow();
 }
 
 

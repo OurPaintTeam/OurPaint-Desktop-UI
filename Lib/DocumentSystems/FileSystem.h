@@ -72,6 +72,8 @@ private:
 
     FsResult synchronizeInternal();
     FsResult insertProject(const QString& baseName, qint64& outId);
+    FsResult insertProjectAtPath(qint64 pathId, const QString& baseName, qint64& outId);
+    FsResult findOrCreatePathEntry(const QString& directory, qint64& outPathId);
     FsResult getProjectInternal(qint64 projectId, ProjectData& outProject) ;
     FsResult validateProjectName(const QString& name, QString& outBaseName) const;
     FsResult migrateLegacyNames();
