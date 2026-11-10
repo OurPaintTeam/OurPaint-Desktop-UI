@@ -27,10 +27,9 @@ namespace UI {
         void setFiles(const QVector<ProjectData>& files);
 
     signals:
-        void renameFileTriggered(FileData& fileData);
-        void deleteFileTriggered(qint64 fileId);
+        void renameFileTriggered(FileData& data);
+        void deleteFileTriggered(const qint64 id);
         void pressFileTriggered(qint64 fileId);
-
         void pressCreateButtonTriggered();
         void pressOpenButtonTriggered();
 

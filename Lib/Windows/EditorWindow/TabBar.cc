@@ -31,53 +31,8 @@ UI::TabBar::TabBar(QWidget *parent)
   setAttribute(Qt::WA_StyledBackground, true);
 
   tabMenu_ = new TabMenu(this);
-    connect(tabMenu_, &TabMenu::deleteTabTriggered, this, [this]() {
-     if (contextTab_) {
-       if (removeTab(contextTab_)) {
-         removeTabTriggered(contextTab_->getFileId());
-       }
-     }
-   });
-
-    connect(tabMenu_, &TabMenu::renameTabTriggered, this, [this]() {
-        if (contextTab_) {
-            contextTab_->startRename();
-      }
-    });
-
-    connect(tabMenu_, &TabMenu::closeTabTriggered, this, [this]() {
-      if (contextTab_) {
-        removeTab(contextTab_);
-      }
-    });
-
-    connect(tabMenu_, &TabMenu::closeAllTabsTriggered, this, [this]() {
-      while (!tabs_.isEmpty()) {
-        removeTab(tabs_.first());
-      }
-    });
-
-    connect(tabMenu_, &TabMenu::closeAllRightTabsTriggered, this, [this]() {
-        if (!contextTab_) {return;}
-
-        const int index = tabs_.indexOf(contextTab_);
-        if (index == -1){ return;}
-
-        for (int i = tabs_.size() - 1; i > index; --i) {
-            removeTab(tabs_[i]);
-        }
-    });
-
-    connect(tabMenu_, &TabMenu::closeAllLeftTabsTriggered, this, [this]() {
-      if (!contextTab_){ return;}
-
-      const int index = tabs_.indexOf(contextTab_);
-      if (index == -1) {return;}
-
-      for (int i = index - 1; i >= 0; --i) {
-          removeTab(tabs_[i]);
-      }
-  });
+    connect(tabMenu_, &UI::TabMenu::tabMenuTriggered,
+        this,     &TabBar::onTabMenuAction);
   tabBar_->setObjectName(QStringLiteral("TabBarWidget"));
   tabBar_->setAttribute(Qt::WA_StyledBackground, true);
   tabBar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -124,12 +79,73 @@ UI::TabBar::TabBar(QWidget *parent)
     translate();
 }
 
+void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
+{
+    switch (type) {
+        case UI::tabMenuType::deleteTab: {
+            if (!contextTab_) return;
+            if (removeTab(contextTab_)) {
+                removeTabTriggered(contextTab_->getFileId());
+            }
+            break;
+        }
+
+        case UI::tabMenuType::renameTab: {
+            if (contextTab_) {
+                contextTab_->startRename();
+            }
+            break;
+        }
+
+        case UI::tabMenuType::closeTab: {
+            if (contextTab_) {
+                removeTab(contextTab_);
+            }
+            break;
+        }
+
+        case UI::tabMenuType::closeAllTabs: {
+            while (!tabs_.isEmpty()) {
+                removeTab(tabs_.first());
+            }
+            break;
+        }
+
+        case UI::tabMenuType::closeAllRightTabs: {
+            if (!contextTab_) return;
+            const int index = tabs_.indexOf(contextTab_);
+            if (index == -1) return;
+            for (int i = tabs_.size() - 1; i > index; --i) {
+                removeTab(tabs_[i]);
+            }
+            break;
+        }
+
+        case UI::tabMenuType::closeAllLeftTabs: {
+            if (!contextTab_) return;
+            const int index = tabs_.indexOf(contextTab_);
+            if (index == -1) return;
+            for (int i = index - 1; i >= 0; --i) {
+                removeTab(tabs_[i]);
+            }
+            break;
+        }
+
+        case UI::tabMenuType::closeOtherTabs: {
+            if (!contextTab_) return;
+            const int index = tabs_.indexOf(contextTab_);
+            if (index == -1) return;
+            for (int i = tabs_.size() - 1; i >= 0; --i) {
+                if (i != index) {
+                    removeTab(tabs_[i]);
+                }
+            }
+            break;
+        }
+    }
+}
+
 void UI::TabBar::addTabSlot(const FileData& data) {
-  // for (const auto &t : tabs_) {
-  //   if (t->getName() == name) {
-  //     return;
-  //   }
-  // }
 
   auto *tab = new UI::TabWidget(tabBar_,data);
   tabs_.append(tab);
@@ -194,7 +210,7 @@ bool UI::TabBar::removeTab(TabWidget *tab) {
   }
 
   // 4. delete tab safely
-  tab->deleteLater(); // тут вылетает сегментатион фаулт
+  tab->deleteLater();
 
   // 5. choose new active tab
   if (wasActive) {
@@ -217,7 +233,7 @@ bool UI::TabBar::removeTab(TabWidget *tab) {
       emit allTabsCloseTriggered();
     }
   }
-
+    emit closeTabTriggered(tab->getFileId());
   return true;
 }
 

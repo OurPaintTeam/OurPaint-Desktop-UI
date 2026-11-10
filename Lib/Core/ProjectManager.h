@@ -9,6 +9,7 @@
 #include "SettingsSystem.h"
 #include "Utils.h"
 
+
 class QLineEdit;
 class QWindow;
 class QOpenGLWindow;
@@ -61,6 +62,7 @@ namespace UI {
         bool editor();
 
         void addTabSlot(const FileData& data);
+        ~ProjectManager();
         void deleteTabSlot(const qint64 id);
         void renameTabSlot(FileData& data);
 
@@ -75,23 +77,20 @@ namespace UI {
         void constraintTriggered(const qint64 id, ConstraintType type);
         void toolsTriggered(const qint64 id, ToolsType type);
 
-        void saveFullProjectTriggered();
-        void openFileThisWindowTriggered(const QString& path);
-        void openFileThisWindowByIDTriggered(qint64 id);
-        void createFileThisWindowTriggered(const QString& path);
-        void openNewWindowOpenFileTriggered(const QString& path);
-        void openNewWindowCreateFileTriggered(const QString& path);
-        void openLightEditorTriggered(const qint64 id);
+        void createFileTriggered(const QString& path,bool newWindow);
+        void openFileTriggered(const QString& path,bool newWindow);
+        void openFileByIDTriggered(qint64 id,bool newWindow);
+
         void renameFileTriggered(FileData& data);
-        void deleteFileTriggered(const qint64 id);
-        void openFileTriggered(const QString& filePath);
-        void createFileTriggered(const QString& path);
-        void renameTabTriggered(UI::FileData& data);
-        void removeTabTriggered(const qint64 id);
-        void closeTabTriggered(const qint64 id);
-        void setActiveTabTriggered(const qint64 id);
+        void removeFileTriggered(const qint64 id);
+        void closeFileTriggered(const qint64 id);
+        void setActiveFileTriggered(const qint64 id);
+
+        void openLightEditorTriggered(const qint64 id);
         void returnLightEditorWindowTriggered(const qint64 id);
         void closeLightEditorWindowTriggered(const qint64 id);
+
+        void saveFullProjectTriggered();
         void scriptTriggered(const QString& text);
         void goToStartWindowTriggered();
 

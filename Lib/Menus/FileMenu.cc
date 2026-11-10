@@ -16,10 +16,18 @@ UI::FileMenu::FileMenu(QWidget *parent)
     setObjectName(QStringLiteral("ProjectMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
 
-    connect(createFile_, &QAction::triggered, this, &FileMenu::createFileTriggered);
-    connect(openFile_, &QAction::triggered, this, &FileMenu::openFileTriggered);
-    connect(exportFile_, &QAction::triggered, this, &FileMenu::exportFileTriggered);
-    connect(script_, &QAction::triggered, this, &FileMenu::scriptTriggered);
+    connect(createFile_, &QAction::triggered, this, [this] {
+        emit projectTriggered(UI::projectMenuType::createFile);
+    });
+    connect(openFile_, &QAction::triggered, this, [this] {
+        emit projectTriggered(UI::projectMenuType::openFile);
+    });
+    connect(exportFile_, &QAction::triggered, this, [this] {
+        emit projectTriggered(UI::projectMenuType::exportFile);
+    });
+    connect(script_, &QAction::triggered, this, [this] {
+        emit projectTriggered(UI::projectMenuType::scriptFile);
+    });
 
     translate();
 }

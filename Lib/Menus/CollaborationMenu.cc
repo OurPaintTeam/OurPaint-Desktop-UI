@@ -3,6 +3,7 @@
 #include <QEvent>
 
 
+
 UI::CollaborationMenu::CollaborationMenu(QWidget *parent)
     : UI::CustomMenu(parent) {
     setObjectName("collaborationMenu");
@@ -14,8 +15,12 @@ UI::CollaborationMenu::CollaborationMenu(QWidget *parent)
     setObjectName(QStringLiteral("CollaborationMenu"));
     setAttribute(Qt::WA_StyledBackground, true);
 
-    connect(open_, &QAction::triggered, this, &CollaborationMenu::openTriggered);
-    connect(close_, &QAction::triggered, this, &CollaborationMenu::closeTriggered);
+    connect(open_, &QAction::triggered, this, [this] {
+        emit collabTriggered(UI::collab::open);
+    });
+    connect(close_, &QAction::triggered, this, [this] {
+        emit collabTriggered(UI::collab::close);
+    });
 
     translate();
 }

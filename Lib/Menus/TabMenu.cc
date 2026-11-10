@@ -2,6 +2,8 @@
 
 #include <QEvent>
 
+#include "MenuTypes.h"
+
 
 UI::TabMenu::TabMenu(QWidget *parent)
     : UI::CustomMenu(parent) {
@@ -14,25 +16,32 @@ UI::TabMenu::TabMenu(QWidget *parent)
 
     addSeparator();
 
+    closeOtherTabs_ = addAction("");
     closeAllLeftTabs_ = addAction("");
     closeAllRightTabs_ = addAction("");
     closeAllTabs_ = addAction("");
 
-    connect(deleteTab_, &QAction::triggered,
-            this, &UI::TabMenu::deleteTabTriggered);
-
-    connect(renameTab_, &QAction::triggered,
-            this, &UI::TabMenu::renameTabTriggered);
-
-    connect(closeTab_, &QAction::triggered,
-            this, &UI::TabMenu::closeTabTriggered);
-
-    connect(closeAllTabs_, &QAction::triggered,
-            this, &UI::TabMenu::closeAllTabsTriggered);
-    connect(closeAllLeftTabs_, &QAction::triggered,
-            this, &UI::TabMenu::closeAllLeftTabsTriggered);
-    connect(closeAllRightTabs_, &QAction::triggered,
-            this, &UI::TabMenu::closeAllRightTabsTriggered);
+    connect(deleteTab_, &QAction::triggered, this, [this] {
+    emit tabMenuTriggered(UI::tabMenuType::deleteTab);
+});
+    connect(renameTab_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::renameTab);
+    });
+    connect(closeTab_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::closeTab);
+    });
+    connect(closeAllTabs_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::closeAllTabs);
+    });
+    connect(closeAllLeftTabs_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::closeAllLeftTabs);
+    });
+    connect(closeAllRightTabs_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::closeAllRightTabs);
+    });
+    connect(closeOtherTabs_, &QAction::triggered, this, [this] {
+        emit tabMenuTriggered(UI::tabMenuType::closeOtherTabs);
+    });
 
     translate();
 }
@@ -56,5 +65,8 @@ void UI::TabMenu::translate() const {
     }
     if (closeAllTabs_) {
         closeAllTabs_->setText(UI::TabMenu::tr("Close all tabs"));
+    }
+    if (closeOtherTabs_) {
+        closeAllTabs_->setText(UI::TabMenu::tr("Close other tabs"));
     }
 }

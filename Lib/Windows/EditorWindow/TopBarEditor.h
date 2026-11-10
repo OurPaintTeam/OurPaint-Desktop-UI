@@ -1,6 +1,8 @@
 #ifndef OURPAINT_DESKTOP_UI_TOPBARPROJECT_H
 #define OURPAINT_DESKTOP_UI_TOPBARPROJECT_H
 
+#include "MenuTypes.h"
+#include "Utils.h"
 #include "../BaseEditorTopBar.h"
 
 class QPushButton;
@@ -36,26 +38,11 @@ namespace UI {
         void setPanelsButtonsEnabled(bool enabled) const;
 
     signals:
-        /// Project
-        void createFileTriggered();
-        void openFileTriggered();
-        void exportFileTriggered();
-        void scriptTriggered();
+        void projectTriggered(UI::projectMenuType p);
+        void collaborationTriggered(UI::collab с);
+        void versionTriggered(UI::version v);
 
-        /// Collaboration
-        void collaborationOpenTriggered();
-        void collaborationCloseTriggered();
-
-        /// Version Control
-        void versionInitTriggered();
-        void versionCreateTriggered();
-        void versionPushTriggered();
-        void versionPullTriggered();
-        void versionCommitTriggered();
-
-        /// Settings
         void settingsChanged();
-
     protected:
         void changeEvent(QEvent *e) override;
 

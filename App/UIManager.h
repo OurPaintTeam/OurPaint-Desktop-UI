@@ -30,11 +30,23 @@ class QTranslator;
         void refreshFiles(UI::ProjectManager *manager) ;
         void initSignals(UI::ProjectManager& manager);
 
-        void openFileInCurrentWindow(UI::ProjectManager* manager, qint64 fileId) ;
-        void openFileByPathInCurrentWindow(UI::ProjectManager* manager, const QString& path) ;
-        void openFileByPathInNewWindow(const QString& path);
-        void createFileInCurrentWindow(UI::ProjectManager* manager, const QString& fileName) ;
-        void createFileInNewWindow(const QString& fileName);
+        void openFile(qint64 fileId,
+                      UI::ProjectManager* currentManager,
+                      bool newWindow);
+
+        void openFileByPath(const QString& path,
+                            UI::ProjectManager* currentManager,
+                            bool newWindow);
+
+        void createFile(const QString& fileName,
+                        UI::ProjectManager* currentManager,
+                        bool newWindow);
+
+        void openInTarget(UI::ProjectManager* currentManager,
+                     const UI::FileSystem::ProjectData& data,
+                     bool newWindow,
+                     const QString& actionPrefix);
+
         void renameFile(UI::FileData& data) ;
         void deleteFile(UI::ProjectManager* manager, qint64 fileId) ;
         void openLightEditor(UI::ProjectManager *manager, UI::FileData& data);

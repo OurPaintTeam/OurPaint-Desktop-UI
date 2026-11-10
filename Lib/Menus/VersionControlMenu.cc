@@ -17,11 +17,22 @@ UI::VersionControlMenu::VersionControlMenu(QWidget *parent)
     pull_ = addAction("");
     commit_ = addAction("");
 
-    connect(init_, &QAction::triggered, this, &VersionControlMenu::initTriggered);
-    connect(create_, &QAction::triggered, this, &VersionControlMenu::createTriggered);
-    connect(push_, &QAction::triggered, this, &VersionControlMenu::pushTriggered);
-    connect(pull_, &QAction::triggered, this, &VersionControlMenu::pullTriggered);
-    connect(commit_, &QAction::triggered, this, &VersionControlMenu::commitTriggered);
+    connect(init_,   &QAction::triggered, this, [this] {
+        emit versionTriggered(UI::version::init);
+    });
+    connect(create_, &QAction::triggered, this, [this] {
+        emit versionTriggered(UI::version::create);
+    });
+    connect(push_,   &QAction::triggered, this, [this] {
+        emit versionTriggered(UI::version::push);
+    });
+    connect(pull_,   &QAction::triggered, this, [this] {
+        emit versionTriggered(UI::version::pull);
+    });
+    connect(commit_, &QAction::triggered, this, [this] {
+        emit versionTriggered(UI::version::commit);
+    });
+
     translate();
 }
 

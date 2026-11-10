@@ -231,6 +231,21 @@ void UI::ProjectManager::addTabSlot(const FileData& data) {
     }
 }
 
+UI::ProjectManager::~ProjectManager() {
+    closeLightEditorWindows();
+
+    if (editorWindow_) {
+        editorWindow_->close();
+        editorWindow_->deleteLater();
+    }
+
+    if (startWindow_) {
+        startWindow_->close();
+        startWindow_->deleteLater();
+    }
+}
+
+
 void UI::ProjectManager::deleteTabSlot(const qint64 id) {
 
 
@@ -278,23 +293,24 @@ void UI::ProjectManager::closeEvent(QCloseEvent *event) {
 void UI::ProjectManager::connectStartWindowSignals() {
     if (!startWindow_) return;
 
-    connect(startWindow_, &StartWindow::openFileThisWindowByIDTriggered,
-            this, &ProjectManager::openFileThisWindowByIDTriggered);
-    connect(startWindow_, &StartWindow::openFileThisWindowTriggered,
-            this, &ProjectManager::openFileThisWindowTriggered);
-    connect(startWindow_, &StartWindow::createFileThisWindowTriggered,
-            this, &ProjectManager::createFileThisWindowTriggered);
+    connect(startWindow_, &StartWindow::openFileByIDTriggered,
+            this, &ProjectManager::openFileByIDTriggered);
+    connect(startWindow_, &StartWindow::openFileTriggered,
+            this, &ProjectManager::openFileTriggered);
+    connect(startWindow_, &StartWindow::createFileTriggered,
+            this, &ProjectManager::createFileTriggered);
     connect(startWindow_, &StartWindow::renameFileTriggered,
             this, &ProjectManager::renameFileTriggered);
     connect(startWindow_, &StartWindow::deleteFileTriggered,
-            this, &ProjectManager::deleteFileTriggered);
+            this, &ProjectManager::removeFileTriggered);
 }
 
 void UI::ProjectManager::connectEditorWindowSignals() {
     if (!editorWindow_) return;
 
-    connect(editorWindow_, &EditorWindow::windowClosedTriggered,
+    connect(editorWindow_, &EditorWindow::closeApplicationTriggered,
             this, &ProjectManager::handleEditorWindowClosed);
+
     connect(editorWindow_, &EditorWindow::sentCommandTriggered,
             this, &ProjectManager::sentCommandTriggered);
     connect(editorWindow_, &EditorWindow::primitiveTriggered,
@@ -303,32 +319,33 @@ void UI::ProjectManager::connectEditorWindowSignals() {
             this, &ProjectManager::constraintTriggered);
     connect(editorWindow_, &EditorWindow::toolsTriggered,
             this, &ProjectManager::toolsTriggered);
+
     connect(editorWindow_, &EditorWindow::goToStartWindowTriggered,
             this, &ProjectManager::goToStartWindowTriggered);
-    connect(editorWindow_, &EditorWindow::openFileThisWindowTriggered,
-            this, &ProjectManager::openFileThisWindowTriggered);
-    connect(editorWindow_, &EditorWindow::createFileThisWindowTriggered,
-            this, &ProjectManager::createFileThisWindowTriggered);
-    connect(editorWindow_, &EditorWindow::openNewWindowOpenFileTriggered,
-            this, &ProjectManager::openNewWindowOpenFileTriggered);
-    connect(editorWindow_, &EditorWindow::openNewWindowCreateFileTriggered,
-            this, &ProjectManager::openNewWindowCreateFileTriggered);
+
     connect(editorWindow_, &EditorWindow::openFileTriggered,
             this, &ProjectManager::openFileTriggered);
     connect(editorWindow_, &EditorWindow::createFileTriggered,
             this, &ProjectManager::createFileTriggered);
+
+
+
+
     connect(editorWindow_, &EditorWindow::renameTabTriggered,
-            this, &ProjectManager::renameTabTriggered);
+            this, &ProjectManager::renameFileTriggered);
     connect(editorWindow_, &EditorWindow::removeTabTriggered,
-            this, &ProjectManager::removeTabTriggered);
+            this, &ProjectManager::removeFileTriggered);
+    connect(editorWindow_, &EditorWindow::closeTabTriggered,
+    this, &ProjectManager::closeFileTriggered);
+    connect(editorWindow_, &EditorWindow::setActiveTabTriggered,
+        this, &ProjectManager::setActiveFileTriggered);
+
     connect(editorWindow_, &EditorWindow::openLightEditorWindowTriggered,
             this, &ProjectManager::checkOpenedNewWindow);
-    connect(editorWindow_, &EditorWindow::setActiveTabTriggered,
-            this, &ProjectManager::setActiveTabTriggered);
+
     connect(editorWindow_, &EditorWindow::onOpenScriptTriggered,
             this, &ProjectManager::scriptTriggered);
-    connect(editorWindow_, &EditorWindow::closeTabTriggered,
-        this, &ProjectManager::closeTabTriggered);
+
 
     connect(editorWindow_, &EditorWindow::closeApplicationTriggered,
             this, [this]() {

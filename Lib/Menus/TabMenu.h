@@ -1,6 +1,7 @@
 #ifndef OURPAINT_TABMENU_H
 #define OURPAINT_TABMENU_H
 #include "CustomMenu.h"
+#include "MenuTypes.h"
 
 namespace UI {
     class TabMenu final : public UI::CustomMenu {
@@ -10,12 +11,7 @@ namespace UI {
         explicit TabMenu(QWidget *parent = nullptr);
 
     signals:
-        void deleteTabTriggered();
-        void renameTabTriggered();
-        void closeTabTriggered();
-        void closeAllTabsTriggered();
-        void closeAllRightTabsTriggered();
-        void closeAllLeftTabsTriggered();
+        void tabMenuTriggered(UI::tabMenuType type);
 
     protected:
         void translate() const override;
@@ -27,6 +23,7 @@ namespace UI {
         QAction *closeAllLeftTabs_{nullptr};
         QAction *closeAllRightTabs_{nullptr};
         QAction *closeAllTabs_{nullptr};
+        QAction *closeOtherTabs_{nullptr};
     };
 } // namespace UI
 

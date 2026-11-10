@@ -22,34 +22,30 @@ void UI::EditorWindow::initUI() {
 
     connect(editorPage_, &EditorPage::goToStartWindowTriggered,
             this, &EditorWindow::goToStartWindowTriggered);
-    connect(editorPage_, &EditorPage::openFileThisWindowTriggered,
-            this, &EditorWindow::openFileThisWindowTriggered);
-    connect(editorPage_, &EditorPage::createFileThisWindowTriggered,
-            this, &EditorWindow::createFileThisWindowTriggered);
-    connect(editorPage_, &EditorPage::openNewWindowOpenFileTriggered,
-            this, &EditorWindow::openNewWindowOpenFileTriggered);
-    connect(editorPage_, &EditorPage::openNewWindowCreateFileTriggered,
-            this, &EditorWindow::openNewWindowCreateFileTriggered);
+
     connect(editorPage_, &EditorPage::openFileTriggered,
             this, &EditorWindow::openFileTriggered);
     connect(editorPage_, &EditorPage::createFileTriggered,
             this, &EditorWindow::createFileTriggered);
+
     connect(editorPage_, &EditorPage::renameTabTriggered,
             this, &EditorWindow::renameTabTriggered);
     connect(editorPage_, &EditorPage::setActiveTabTriggered,
            this, &EditorWindow::setActiveTabTriggered);
     connect(editorPage_, &EditorPage::removeTabTriggered,
             this, &EditorWindow::removeTabTriggered);
+    connect(editorPage_, &EditorPage::closeTabTriggered,
+this, &EditorWindow::closeTabTriggered);
+
     connect(editorPage_, &EditorPage::openLightEditorWindowTriggered,
-            this, &EditorWindow::openLightEditorWindowTriggered);
-    connect(editorPage_, &EditorPage::closeApplicationTriggered,
-            this, &EditorWindow::closeApplicationTriggered);
+        this, &EditorWindow::openLightEditorWindowTriggered);
   connect(editorPage_, &EditorPage::settingsChanged,
         this, &EditorWindow::settingsChanged);
     connect(editorPage_, &EditorPage::scriptTriggered,
       this, &EditorWindow::onOpenScriptTriggered);
-    connect(editorPage_, &EditorPage::closeTabTriggered,
-  this, &EditorWindow::closeTabTriggered);
+
+    connect(editorPage_, &EditorPage::closeApplicationTriggered,
+            this, &EditorWindow::closeApplicationTriggered);
 }
 
 
@@ -83,7 +79,7 @@ void UI::EditorWindow::renameTabSlot(FileData& data) const {
 
 
 void UI::EditorWindow::closeEvent(QCloseEvent* event) {
-    emit windowClosedTriggered();
+    emit closeApplicationTriggered();
     BaseEditorWindow::closeEvent(event);
 }
 

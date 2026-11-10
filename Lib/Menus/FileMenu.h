@@ -3,6 +3,8 @@
 
 
 #include "CustomMenu.h"
+#include "MenuTypes.h"
+#include "Utils.h"
 
 namespace UI {
     class FileMenu final : public CustomMenu {
@@ -11,11 +13,8 @@ namespace UI {
     public:
         explicit FileMenu(QWidget *parent = nullptr);
 
-    signals:
-        void createFileTriggered();
-        void openFileTriggered();
-        void exportFileTriggered();
-        void scriptTriggered();
+        signals:
+            void projectTriggered(UI::projectMenuType p);
 
     protected:
         void translate() const override;

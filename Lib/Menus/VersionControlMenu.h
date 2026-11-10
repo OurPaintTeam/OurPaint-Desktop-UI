@@ -2,6 +2,7 @@
 #define OURPAINT_DESKTOP_UI_VERSIONCONTROLMENU_H
 
 #include "CustomMenu.h"
+#include "MenuTypes.h"
 
 namespace UI {
     class VersionControlMenu final : public CustomMenu {
@@ -11,11 +12,7 @@ namespace UI {
         explicit VersionControlMenu(QWidget *parent = nullptr);
 
     signals:
-        void initTriggered();
-        void createTriggered();
-        void pushTriggered();
-        void pullTriggered();
-        void commitTriggered();
+        void versionTriggered(UI::version v);
 
     protected:
         void translate() const override;

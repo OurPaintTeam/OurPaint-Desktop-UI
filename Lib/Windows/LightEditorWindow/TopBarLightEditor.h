@@ -22,6 +22,7 @@ namespace UI {
         void setRightTool(SideTool *tool);
         void setConsole(QWidget *console);
         void setDisplayName(const QString& name);
+
         signals:
             void returnLightEditorWindowTriggered();
 

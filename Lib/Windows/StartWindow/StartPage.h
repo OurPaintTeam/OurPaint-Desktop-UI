@@ -29,9 +29,9 @@ namespace UI {
         void onOpenFileSlot();
         void onCreateFileSlot();
     signals:
-        void pressFileTriggered(const qint64 id);
-        void openFileInThisWindowTriggered(const QString& path);
-        void createFileInThisWindowTriggered(const QString& path);
+        void openFileByIDTriggered(qint64 id, bool newWindow);
+        void openFileTriggered(const QString& path, bool newWindow);
+        void createFileTriggered(const QString& path, bool newWindow);
         void renameFileTriggered(FileData& data);
         void deleteFileTriggered(const qint64 id);
 

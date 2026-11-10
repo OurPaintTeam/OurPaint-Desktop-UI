@@ -57,7 +57,7 @@ UI::TabWidget::TabWidget(QWidget *parent, FileData  data)
     });
 
     edit_->hide();
-    edit_->setText(data.name);
+    edit_->setText(fileData_.name);
     edit_->setFrame(false);
     edit_->setObjectName("TabLineEdit");
 
@@ -69,6 +69,7 @@ UI::TabWidget::TabWidget(QWidget *parent, FileData  data)
     connect(edit_, &RenameTabLineEdit::focusLost, this, &TabWidget::cancelRename);
 
     nameButton_->installEventFilter(this);
+    nameButton_->setText(fileData_.name);
     setObjectName(QStringLiteral("TabWidgetActive"));
     translate();
 }

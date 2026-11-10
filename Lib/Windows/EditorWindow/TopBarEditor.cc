@@ -102,17 +102,8 @@ void UI::TopBarEditor::createProjectButtons() {
     projectButton_->setDraw(true);
     addLeftWidget(projectButton_);
 
-    connect(projectMenu_, &FileMenu::createFileTriggered,
-            this, &TopBarEditor::createFileTriggered);
-
-    connect(projectMenu_, &FileMenu::openFileTriggered,
-            this, &TopBarEditor::openFileTriggered);
-
-    connect(projectMenu_, &FileMenu::exportFileTriggered,
-            this, &TopBarEditor::exportFileTriggered);
-
-    connect(projectMenu_, &FileMenu::scriptTriggered,
-            this, &TopBarEditor::scriptTriggered);
+    connect(versionControlMenu_, &VersionControlMenu::versionTriggered,
+            this,               &TopBarEditor::versionTriggered);
 
 
     collaborationMenu_ = new CollaborationMenu(this);
@@ -120,11 +111,8 @@ void UI::TopBarEditor::createProjectButtons() {
     collabButton_->setDraw(true);
     addLeftWidget(collabButton_);
     collabButton_->setVisible(false);
-    connect(collaborationMenu_, &UI::CollaborationMenu::openTriggered,
-            this, &TopBarEditor::collaborationOpenTriggered);
-
-    connect(collaborationMenu_, &UI::CollaborationMenu::closeTriggered,
-            this, &TopBarEditor::collaborationCloseTriggered);
+    connect(collaborationMenu_, &CollaborationMenu::collabTriggered,
+            this,               &TopBarEditor::collaborationTriggered);
 
 
     versionControlMenu_ = new VersionControlMenu(this);
@@ -134,20 +122,8 @@ void UI::TopBarEditor::createProjectButtons() {
 
     addLeftWidget(verButton_);
     verButton_->setVisible(false);
-    connect(versionControlMenu_, &UI::VersionControlMenu::initTriggered,
-            this, &TopBarEditor::versionInitTriggered);
-
-    connect(versionControlMenu_, &UI::VersionControlMenu::createTriggered,
-            this, &TopBarEditor::versionCreateTriggered);
-
-    connect(versionControlMenu_, &UI::VersionControlMenu::pushTriggered,
-            this, &TopBarEditor::versionPushTriggered);
-
-    connect(versionControlMenu_, &UI::VersionControlMenu::pullTriggered,
-            this, &TopBarEditor::versionPullTriggered);
-
-    connect(versionControlMenu_, &UI::VersionControlMenu::commitTriggered,
-            this, &TopBarEditor::versionCommitTriggered);
+    connect(versionControlMenu_, &VersionControlMenu::versionTriggered,
+            this,               &TopBarEditor::versionTriggered);
 
 
     helpButton_ = new QPushButton(this);

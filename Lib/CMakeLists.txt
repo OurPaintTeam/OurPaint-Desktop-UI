@@ -70,6 +70,7 @@ set(MENUS
         Menus/LineMenu.h
         Menus/TabMenu.cc
         Menus/TabMenu.h
+        Menus/MenuTypes.h
 )
 
 set(DRAG

@@ -2,6 +2,8 @@
 #define OURPAINT_DESKTOP_UI_COLLABORATIONMENU_H
 
 #include "CustomMenu.h"
+#include "MenuTypes.h"
+
 
 namespace UI {
     class CollaborationMenu final : public CustomMenu {
@@ -11,8 +13,7 @@ namespace UI {
         explicit CollaborationMenu(QWidget *parent = nullptr);
 
     signals:
-        void openTriggered();
-        void closeTriggered();
+        void collabTriggered(UI::collab с);
 
     protected:
         void translate() const override;

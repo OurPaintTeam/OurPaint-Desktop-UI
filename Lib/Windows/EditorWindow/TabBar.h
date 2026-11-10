@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QPointer>
 
+#include "MenuTypes.h"
 #include "Utils.h"
 
 class QHBoxLayout;
@@ -22,6 +23,7 @@ class TabWidget;
 
     public:
         explicit TabBar(QWidget* parent = nullptr);
+        void onTabMenuAction(UI::tabMenuType type);
         [[nodiscard]] bool isEmptyTab() const;
     signals:
         void renameTabTriggered(UI::FileData& data);

@@ -31,12 +31,12 @@ void UI::StartWindow::initUI() {
     startPage_ = new StartPage(contentWidget_);
     rootLayout_->addWidget(startPage_);
 
-    connect(startPage_, &StartPage::pressFileTriggered,
-        this, &StartWindow::openFileThisWindowByIDTriggered);
-    connect(startPage_, &StartPage::openFileInThisWindowTriggered,
-            this, &StartWindow::openFileThisWindowTriggered);
-    connect(startPage_, &StartPage::createFileInThisWindowTriggered,
-            this, &StartWindow::createFileThisWindowTriggered);
+    connect(startPage_, &StartPage::openFileByIDTriggered,
+        this, &StartWindow::openFileByIDTriggered);
+    connect(startPage_, &StartPage::openFileTriggered,
+            this, &StartWindow::openFileTriggered);
+    connect(startPage_, &StartPage::createFileTriggered,
+            this, &StartWindow::createFileTriggered);
     connect(startPage_, &StartPage::renameFileTriggered,
             this, &StartWindow::renameFileTriggered);
     connect(startPage_, &StartPage::deleteFileTriggered,

@@ -2,13 +2,14 @@
 #define OURPAINT_UTILS_H
 #include <QString>
 
-namespace UI{
+namespace UI {
     struct FileData {
         qint64 id = -1;
         QString name;
     };
 
-    struct ProjectData  {
+
+    struct ProjectData {
         qint64 id = -1;
         QString name;
         QString path;

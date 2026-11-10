@@ -18,8 +18,11 @@ UI::StartPage::StartPage(QWidget* parent)
     setObjectName("StartPage");
     initUI();
     translate();
-    connect(filesListWidget_, &FilesListWidget::pressFileTriggered, this,
-            &StartPage::pressFileTriggered);
+
+    connect(filesListWidget_, &FilesListWidget::pressFileTriggered, this, [this](qint64 id) {
+    emit openFileByIDTriggered(id,false);
+    });
+
     connect(filesListWidget_, &FilesListWidget::renameFileTriggered, this, &StartPage::renameFileTriggered);
     connect(filesListWidget_, &FilesListWidget::deleteFileTriggered, this, &StartPage::deleteFileTriggered);
 
@@ -51,7 +54,7 @@ void UI::StartPage::onOpenFileSlot() {
         return;
     }
 
-    emit openFileInThisWindowTriggered(folderPath);
+    emit openFileTriggered(folderPath,false);
 }
 
 
@@ -72,7 +75,7 @@ void UI::StartPage::onCreateFileSlot() {
         }
         prompt->deleteLater();
 
-        emit createFileInThisWindowTriggered(text);
+        emit createFileTriggered(text,false);
     });
 }
 

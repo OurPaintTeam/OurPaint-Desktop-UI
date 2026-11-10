@@ -3,6 +3,7 @@
 
 #include <QString>
 
+#include "MenuTypes.h"
 #include "Utils.h"
 #include "../BaseEditorPage.h"
 
@@ -27,38 +28,28 @@ namespace UI {
 
         void setDefaultPath(const QString& path);
 
-
     signals:
-        void openFileThisWindowTriggered(const QString& projectPath);
-        void createFileThisWindowTriggered(const QString& projectPath);
-        void openNewWindowOpenFileTriggered(const QString& projectPath);
-        void openNewWindowCreateFileTriggered(const QString& projectPath);
-        void openFileTriggered(const QString& filePath);
+        void createFileTriggered(const QString& path,bool newWindow);
+        void openFileTriggered(const QString& path,bool newWindow);
 
-        void crateFileTriggered(const QString& fileName);
         void setActiveTabTriggered(const qint64 id);
         void removeTabTriggered(const qint64 id);
         void renameTabTriggered(FileData& data);
-        void openLightEditorWindowTriggered(const qint64 id);
-        void tabMovedToAnotherWindowTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
 
+        void openLightEditorWindowTriggered(const qint64 id);
+
         void goToStartWindowTriggered();
-        void createFileTriggered(const QString& fileName);
         void closeApplicationTriggered();
+
         void exportFileTriggered();
         void scriptTriggered(const QString& path);
 
-        void collaborationOpenTriggered();
-        void collaborationCloseTriggered();
-
-        void versionInitTriggered();
-        void versionCreateTriggered();
-        void versionPushTriggered();
-        void versionPullTriggered();
-        void versionCommitTriggered();
+        void collaborationTriggered(UI::collab с);
+        void versionTriggered(UI::version v);
 
         void settingsChanged();
+
     protected:
         void changeEvent(QEvent *e) override;
         void setSettings(SettingsSystem* settings) const override;
@@ -66,6 +57,7 @@ namespace UI {
     private:
         void initUI() override;
         void setupConnections();
+        void onProjectAction(UI::projectMenuType p);
 
         void createTopBar();
         void createSideColumns();

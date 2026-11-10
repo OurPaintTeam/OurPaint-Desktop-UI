@@ -27,23 +27,23 @@ namespace UI {
         void renameTabSlot(FileData& data) const;
 
     signals:
-        void windowClosedTriggered();
+        void closeApplicationTriggered();
+
         void goToStartWindowTriggered();
-        void setActiveTabTriggered(const qint64 id);
-        void openFileThisWindowTriggered(const QString& path);
-        void createFileThisWindowTriggered(const QString& path);
-        void openNewWindowOpenFileTriggered(const QString& path);
-        void openNewWindowCreateFileTriggered(const QString& path);
-        void openFileTriggered(const QString& filePath);
-        void createFileTriggered(const QString& fileName);
+
+        void createFileTriggered(const QString& path,bool newWindow);
+        void openFileTriggered(const QString& path,bool newWindow);
+
         void renameTabTriggered(FileData& data);
         void removeTabTriggered(const qint64 id);
-        void openLightEditorWindowTriggered(const qint64 id);
-        void onOpenScriptTriggered(const QString& path);
-        void closeApplicationTriggered();
+        void setActiveTabTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
 
-      void settingsChanged();
+        void openLightEditorWindowTriggered(const qint64 id);
+        void onOpenScriptTriggered(const QString& path);
+
+         void settingsChanged();
+
     protected:
         void closeEvent(QCloseEvent* event) override;
         void applyLanguage(UI::SettingsSystem::Language lang);

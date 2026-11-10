@@ -18,7 +18,7 @@
 #include "ToolBar.h"
 #include "ToolsType.h"
 #include "TopBarEditor.h"
-#include "Utils.h"
+
 
 namespace {
     constexpr int MARGIN = 0;
@@ -59,7 +59,9 @@ void UI::EditorPage::setupConnections() {
         setActiveID(id);
         emit setActiveTabTriggered(id);
     });
-    connect(tabBar_, &TabBar::createTabTriggered, this, &EditorPage::createFileTriggered);
+    connect(tabBar_, &TabBar::createTabTriggered, this, [this](const QString& name) {
+    emit createFileTriggered(name,false);
+    });
     connect(tabBar_, &TabBar::allTabsCloseTriggered, this, &EditorPage::updatePageSlot);
     connect(tabBar_, &TabBar::renameTabTriggered, this, &EditorPage::renameTabTriggered);
     connect(tabBar_, &TabBar::removeTabTriggered, this, &EditorPage::removeTabTriggered);
@@ -75,31 +77,29 @@ void UI::EditorPage::setupConnections() {
     connect(infoButton_, &QPushButton::clicked, this, &EditorPage::openInformationPanel);
     connect(messengerButton_, &QPushButton::clicked, this, &EditorPage::openMessengerPanel);
 
-    connect(topBar_, &TopBarEditor::createFileTriggered, this, &EditorPage::createFileSlot);
-    connect(topBar_, &TopBarEditor::openFileTriggered, this, &EditorPage::openFileSlot);
-    connect(topBar_, &TopBarEditor::exportFileTriggered, this, &EditorPage::exportFileTriggered);
-    connect(topBar_, &TopBarEditor::scriptTriggered, this, &EditorPage::onOpenScriptSlot);
+    connect(topBar_, &TopBarEditor::projectTriggered,
+            this,    &EditorPage::onProjectAction);
 
-    connect(topBar_, &TopBarEditor::collaborationOpenTriggered,
-            this, &EditorPage::collaborationOpenTriggered);
-    connect(topBar_, &TopBarEditor::collaborationCloseTriggered,
-            this, &EditorPage::collaborationCloseTriggered);
+    connect(topBar_, &TopBarEditor::collaborationTriggered,
+            this, &EditorPage::collaborationTriggered);
+    connect(topBar_, &TopBarEditor::versionTriggered,
+            this, &EditorPage::versionTriggered);
 
-    connect(topBar_, &TopBarEditor::versionInitTriggered,
-            this, &EditorPage::versionInitTriggered);
-    connect(topBar_, &TopBarEditor::versionCreateTriggered,
-            this, &EditorPage::versionCreateTriggered);
-    connect(topBar_, &TopBarEditor::versionPushTriggered,
-            this, &EditorPage::versionPushTriggered);
-    connect(topBar_, &TopBarEditor::versionPullTriggered,
-            this, &EditorPage::versionPullTriggered);
-    connect(topBar_, &TopBarEditor::versionCommitTriggered,
-            this, &EditorPage::versionCommitTriggered);
 
   connect(topBar_, &TopBarEditor::settingsChanged,
         this, &EditorPage::settingsChanged);
 }
 
+
+void UI::EditorPage::onProjectAction(UI::projectMenuType p)
+{
+    switch (p) {
+        case UI::projectMenuType::createFile: createFileSlot();        break;
+        case UI::projectMenuType::openFile:   openFileSlot();          break;
+        case UI::projectMenuType::exportFile: emit exportFileTriggered(); break;
+        case UI::projectMenuType::scriptFile: onOpenScriptSlot();      break;
+    }
+}
 
 void UI::EditorPage::createTopBar() {
     topBar_ = new TopBarEditor(this);
@@ -243,7 +243,7 @@ void UI::EditorPage::openFileSlot() {
         return;
     }
 
-    emit openFileTriggered(filePath);
+    emit openFileTriggered(filePath,false);
 }
 
 
