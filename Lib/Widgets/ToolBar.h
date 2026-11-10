@@ -101,7 +101,7 @@ namespace UI {
         QWidget *secondLaneWidget_{nullptr};
         QHBoxLayout *secondLayout_{nullptr};
 
-        ContainerWidget *toolsContainer_{nullptr};
+      //  ContainerWidget *toolsContainer_{nullptr};
         SlotWidget *figuresSlot_{nullptr};
         ContainerWidget *figuresContainer_{nullptr};
 

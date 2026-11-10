@@ -42,7 +42,7 @@ UI::ToolBar::ToolBar(QWidget *parent)
       firstLayout_(new QHBoxLayout(firstLaneWidget_)),
       secondLaneWidget_(new QWidget(this)),
       secondLayout_(new QHBoxLayout(secondLaneWidget_)),
-      toolsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
+    //  toolsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
       figuresSlot_(new SlotWidget({ContainerType::Tools}, Qt::Horizontal)),
       figuresContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)),
       reqsContainer_(new ContainerWidget(ContainerType::Tools, Qt::Horizontal)) {
@@ -64,7 +64,7 @@ UI::ToolBar::ToolBar(QWidget *parent)
 void UI::ToolBar::showAllElements() {
     reqsContainer_->show();
     figuresContainer_->show();
-    toolsContainer_->show();
+//toolsContainer_->show();
     show();
 }
 
@@ -72,7 +72,7 @@ void UI::ToolBar::showAllElements() {
 void UI::ToolBar::hideAllElements() {
     reqsContainer_->hide();
     figuresContainer_->hide();
-    toolsContainer_->hide();
+   // toolsContainer_->hide();
     hide();
 }
 
@@ -144,7 +144,7 @@ void UI::ToolBar::initFiguresLane() {
     firstLayout_->addWidget(figuresSlot_);
     firstLayout_->addSpacing(spacing);
 
-    figuresSlot_->insert(toolsContainer_);
+   // figuresSlot_->insert(toolsContainer_);
     figuresSlot_->insert(figuresContainer_);
 
     stack_->addWidget(firstLaneWidget_);
