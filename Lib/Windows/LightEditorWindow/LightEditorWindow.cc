@@ -5,7 +5,7 @@
 #include "LightEditorPage.h"
 
 
-UI::LightEditorWindow::LightEditorWindow(FileData& data, QWidget* parent)
+UI::LightEditorWindow::LightEditorWindow(const FileData& data, QWidget* parent)
     : BaseEditorWindow(parent), fileData_(data){
     initUI();
 }

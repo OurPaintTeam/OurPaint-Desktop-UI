@@ -96,6 +96,8 @@ set(WINDOWS
         Windows/BaseEditorPage.h
         Windows/BasePage.cc
         Windows/BasePage.h
+        Windows/MainWindow.cc
+        Windows/MainWindow.h
 )
 
 set(UI_START

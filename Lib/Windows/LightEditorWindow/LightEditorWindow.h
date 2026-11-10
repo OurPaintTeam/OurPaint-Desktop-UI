@@ -16,7 +16,7 @@ namespace UI {
         Q_OBJECT
 
     public:
-        explicit LightEditorWindow(FileData& data, QWidget* parent = nullptr);
+        explicit LightEditorWindow(const FileData& data, QWidget* parent = nullptr);
         ~LightEditorWindow() override = default;
 
         void initUI() override;
@@ -29,7 +29,7 @@ namespace UI {
         void closeEvent(QCloseEvent* event) override;
 
     private:
-        FileData& fileData_;
+        FileData fileData_;
         LightEditorPage* lightEditorPage_{nullptr};
     };
 } // namespace UI
