@@ -8,7 +8,7 @@
 #include "Utils.h"
 
 
-UI::FilesListWidget::FilesListWidget(QWidget* parent)
+UI::FilesListWidget::FilesListWidget(QWidget *parent)
     : QWidget(parent),
       rootLayoutPtr_(new QVBoxLayout(this)),
       openPanelPtr_(new QWidget(this)),
@@ -97,14 +97,14 @@ UI::FilesListWidget::FilesListWidget(QWidget* parent)
 
 
 void UI::FilesListWidget::setFiles(const QVector<ProjectData>& files) {
-    for (auto* project: allFiles_) {
+    for (auto *project: allFiles_) {
         filesLayout_->removeWidget(project);
         project->deleteLater();
     }
     allFiles_.clear();
 
-    for (const auto& file : files) {
-        auto* project = new FileButton(file, scrollContent_);
+    for (const auto& file: files) {
+        auto *project = new FileButton(file, scrollContent_);
 
         connect(project, &FileButton::pressFileTriggered, this, &FilesListWidget::pressFileTriggered);
         connect(project, &FileButton::deleteFileTriggered, this, &FilesListWidget::deleteFileTriggered);
@@ -118,22 +118,21 @@ void UI::FilesListWidget::setFiles(const QVector<ProjectData>& files) {
 
 
 void UI::FilesListWidget::filterProjectsSlot(const QString& text) {
-    for (auto* const project: allFiles_) {
+    for (auto* const project : allFiles_) {
         filesLayout_->removeWidget(project);
-        project->hide();
     }
 
     if (text.isEmpty()) {
-        for (auto* const project: allFiles_) {
-            filesLayout_->addWidget(project);
+        for (auto* const project : allFiles_) {
+            filesLayout_->insertWidget(filesLayout_->count() - 1, project);
             project->show();
         }
         return;
     }
 
-    auto sortedProjects = allFiles_;
     auto lowerText = text.toLower();
 
+    auto sortedProjects = allFiles_;
     std::sort(sortedProjects.begin(), sortedProjects.end(),
               [lowerText](const FileButton* a, const FileButton* b) {
                   const auto nameA = a->getName().toLower();
@@ -142,15 +141,14 @@ void UI::FilesListWidget::filterProjectsSlot(const QString& text) {
                   const bool aStartsWith = nameA.startsWith(lowerText);
                   const bool bStartsWith = nameB.startsWith(lowerText);
 
-                  if (aStartsWith && !bStartsWith) { return true; }
-                  if (!aStartsWith && bStartsWith) { return false; }
+                  if (aStartsWith && !bStartsWith) return true;
+                  if (!aStartsWith && bStartsWith) return false;
 
                   const qsizetype posA = nameA.indexOf(lowerText);
+                  const qsizetype posB = nameB.indexOf(lowerText);
 
-                  if (const qsizetype posB = nameB.indexOf(lowerText); posA != -1 && posB != -1) {
-                      if (posA != posB) {
-                          return posA < posB;
-                      }
+                  if (posA != -1 && posB != -1) {
+                      if (posA != posB) return posA < posB;
                   } else if (posA != -1) {
                       return true;
                   } else if (posB != -1) {
@@ -160,28 +158,25 @@ void UI::FilesListWidget::filterProjectsSlot(const QString& text) {
                   return nameA < nameB;
               });
 
-    for (auto* const project: sortedProjects) {
-        if (project->getName().toLower().contains(lowerText)) {
-            filesLayout_->addWidget(project);
-            project->show();
-        }
-    }
+    for (auto* const project : sortedProjects) {
+        filesLayout_->insertWidget(filesLayout_->count() - 1, project);
 
-    for (auto* const project: allFiles_) {
-        if (!project->getName().toLower().contains(lowerText)) {
-            filesLayout_->addWidget(project);
+        if (project->getName().toLower().contains(lowerText)) {
             project->show();
+        } else {
+            project->hide();
         }
     }
 }
 
 
-void UI::FilesListWidget::changeEvent(QEvent* e) {
+void UI::FilesListWidget::changeEvent(QEvent *e) {
     if (e && e->type() == QEvent::LanguageChange) {
         translate();
     }
     QWidget::changeEvent(e);
 }
+
 
 void UI::FilesListWidget::translate() const {
     if (createButtonPtr_) {

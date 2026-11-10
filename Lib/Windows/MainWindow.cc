@@ -53,9 +53,11 @@ void UI::MainWindow::initUI() {
     connect(editorPageWidget_, &BaseEditorPage::constraintTriggered, this, &BaseEditorWindow::constraintTriggered);
     connect(editorPageWidget_, &BaseEditorPage::toolsTriggered, this, &BaseEditorWindow::toolsTriggered);
 
-    initNotificationManager();
 }
 
+void UI::MainWindow::setNotificationsEnabled(const bool enable) {
+   includeNotificationManager(enable);
+}
 
 void UI::MainWindow::setFilesList(const QVector<ProjectData>& files) const {
     if (startPage_) startPage_->setFilesList(files);

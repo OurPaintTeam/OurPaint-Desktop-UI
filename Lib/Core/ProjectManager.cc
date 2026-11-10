@@ -10,14 +10,21 @@
 #include <QOpenGLWindow>
 #include <QWindow>
 
+#include "MainWindow.h"
+
 
 UI::ProjectManager::ProjectManager(const EditorContext& context, QObject *parent)
     : QObject(parent)
       , context_(context) {
     ensureMainWindow();
-    mainWindow_->show();
-    mainWindow_->raise();
-    mainWindow_->activateWindow();
+
+    if (mainWindow_) {
+        loadSettings();
+
+        mainWindow_->show();
+        mainWindow_->raise();
+        mainWindow_->activateWindow();
+    }
 }
 
 
@@ -58,6 +65,14 @@ void UI::ProjectManager::ensureMainWindow() {
     mainWindow_->setDefaultFilesPath(context_.defaultProjectPath);
     mainWindow_->setDefaultProjectPath(context_.defaultProjectPath);
     mainWindow_->setDefaultScriptPath(context_.defaultScriptPath);
+}
+
+
+void UI::ProjectManager::loadSettings() {
+    if (context_.settings) {
+        const bool notif = context_.settings->isNotificationsEnabled();
+        mainWindow_->setNotificationsEnabled(notif);
+    }
 }
 
 
@@ -195,6 +210,12 @@ void UI::ProjectManager::connectMainWindowSignals() {
             this, &ProjectManager::scriptTriggered);
     connect(mainWindow_, &MainWindow::settingsChanged,
             this, &ProjectManager::settingsChanged);
+
+    connect(mainWindow_, &MainWindow::settingsChanged, this, [this]() {
+        if (context_.settings)
+            mainWindow_->setNotificationsEnabled(context_.settings->isNotificationsEnabled());
+        emit settingsChanged();
+    });
 }
 
 

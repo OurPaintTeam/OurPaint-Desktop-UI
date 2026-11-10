@@ -93,6 +93,7 @@ namespace UI {
         void handleEditorWindowClosed();
 
         void ensureMainWindow();
+        void loadSettings();
         void connectMainWindowSignals();
         void closeLightEditorWindows();
 

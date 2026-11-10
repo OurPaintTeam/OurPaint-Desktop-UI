@@ -76,6 +76,4 @@ void UI::BaseEditorWindow::initEditor(BaseEditorPage *editorPage) {
             this, &BaseEditorWindow::constraintTriggered);
     connect(editorPage_, &BaseEditorPage::toolsTriggered,
             this, &BaseEditorWindow::toolsTriggered);
-
-    initNotificationManager();
 }

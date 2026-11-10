@@ -19,6 +19,7 @@ namespace UI {
         ~MainWindow() override = default;
 
         void initUI() override;
+        void setNotificationsEnabled(bool enable);
         void setFilesList(const QVector<ProjectData>& files) const;
         void setDefaultFilesPath(const QString& path) const;
         void setDefaultProjectPath(const QString& path);

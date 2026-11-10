@@ -1,7 +1,7 @@
 #ifndef OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
 #define OURPAINT_DESKTOP_UI_SETTINGSWIDGET_H
 
-#include <QWidget>
+#include <QFrame>
 
 class QCheckBox;
 class QCloseEvent;
@@ -46,6 +46,7 @@ namespace UI {
         QLabel*      gridStepLabel_{nullptr};
         QLineEdit*   gridStepEdit_{nullptr};
         QSlider*     gridStepSlider_{nullptr};
+        QLabel* titleLabel_{nullptr};
 
         QCheckBox*   snapCheck_{nullptr};
         QLabel*      snapStepLabel_{nullptr};
@@ -55,6 +56,7 @@ namespace UI {
         QLabel*      languageLabel_{nullptr};
         QComboBox*   languageCombo_{nullptr};
 
+        QCheckBox* notificationsCheck_{nullptr};
         // applyButton_ удалён
     };
 

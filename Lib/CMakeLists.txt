@@ -32,8 +32,8 @@ set(WIDGETS
         Widgets/SettingsWidget.h
         Widgets/TopBar.cc
         Widgets/TopBar.h
-        Widgets/NotificationContainer.cc
-        Widgets/NotificationContainer.h
+        Widgets/NotificationManager.cc
+        Widgets/NotificationManager.h
         Widgets/NotificationWidget.cc
         Widgets/NotificationWidget.h
         Widgets/PainterWidget.cc

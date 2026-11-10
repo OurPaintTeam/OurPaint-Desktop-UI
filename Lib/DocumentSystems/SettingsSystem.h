@@ -64,6 +64,9 @@ namespace UI {
         double snapStep() const;
         void setSnapStep(double step);
 
+        bool isNotificationsEnabled() const;
+        void setNotificationsEnabled(bool enabled);
+
         Language language() const;
         void setLanguage(Language language);
 
@@ -80,6 +83,7 @@ namespace UI {
 
         SketchSettings sketchSettingsLocked() const;
         Language languageLocked() const;
+
     };
 
 } // namespace UI

@@ -100,3 +100,12 @@ font-weight: bold;
     border: none;
     background-color: transparent;
 }
+
+
+#SettingsTitle
+{
+    color: #D8D8F6;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 4px;
+}

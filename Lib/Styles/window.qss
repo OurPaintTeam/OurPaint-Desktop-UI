@@ -225,19 +225,6 @@ background: transparent;
 
 
 
-/* ЭТО СТИЛЬ ДЛЯ ФОНА ВСЕГО КОНТЕЙНЕРА УВЕДОМЛЕНИЙ */
-#ScrollNotification {
- background: rgba(40, 40, 48, 180); /* полупрозрачный */
-    border-radius: 12px;
-    border: none;
-}
-
-/* === ЭТО СТИЛЬ ДЛЯ ФОНА ВСЕГО КОНТЕЙНЕРА УВЕДОМЛЕНИЙ === */
-#NotificationContainerWidget {
- background: rgba(40, 40, 48, 180); /* полупрозрачный */
-    border-radius: 12px;
-}
-
 /* === Само уведомление === */
 #NotificationWidget {
     background-color: #3f3e46; /* как панели */

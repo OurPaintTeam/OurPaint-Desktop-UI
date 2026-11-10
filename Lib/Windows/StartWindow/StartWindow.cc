@@ -42,7 +42,6 @@ void UI::StartWindow::initUI() {
     connect(startPage_, &StartPage::deleteFileTriggered,
             this, &StartWindow::deleteFileTriggered);
 
-    initNotificationManager();
 }
 
 
