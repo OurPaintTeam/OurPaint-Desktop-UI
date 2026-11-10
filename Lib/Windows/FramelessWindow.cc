@@ -26,6 +26,22 @@ namespace {
 
 
     enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round = 2, RoundSmall = 3 };
+
+
+    UI::TopBar* findVisibleTopBar(QWidget *window) {
+        if (!window) {
+            return nullptr;
+        }
+
+        const auto topBars = window->findChildren<UI::TopBar*>();
+        for (auto *topBar: topBars) {
+            if (topBar && topBar->isVisible() && topBar->window() == window) {
+                return topBar;
+            }
+        }
+
+        return nullptr;
+    }
 } // namespace
 
 #endif
@@ -250,7 +266,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void *message
             const qreal dpr = windowHandle()->devicePixelRatio();
             const QPoint posInWindow(qRound(pt.x / dpr), qRound(pt.y / dpr));
 
-            if (auto *tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findVisibleTopBar(this)) {
                 const auto hit = tb->hitTestTopBar(posInWindow);
                 switch (hit) {
                     case UI::TopBar::TopBarHit::Maximize:
@@ -270,7 +286,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void *message
         }
         case WM_NCLBUTTONUP: {
             if (msg->wParam == HTMAXBUTTON) {
-                if (auto *tb = findChild<UI::TopBar*>()) {
+                if (auto *tb = findVisibleTopBar(this)) {
                     if (auto *maxBtn = tb->maximizeButton()) {
                         maxBtn->click();
                     }
@@ -282,7 +298,7 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void *message
         }
 
         case WM_NCMOUSEMOVE: {
-            if (auto *tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findVisibleTopBar(this)) {
                 tb->setMaximizeButtonHovered(msg->wParam == HTMAXBUTTON);
             }
 
@@ -296,14 +312,14 @@ bool UI::FramelessWindow::nativeEvent(const QByteArray& eventType, void *message
         }
 
         case WM_NCMOUSELEAVE: {
-            if (auto *tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findVisibleTopBar(this)) {
                 tb->setMaximizeButtonHovered(false);
             }
             break;
         }
 
         case WM_MOUSEMOVE: {
-            if (auto *tb = findChild<UI::TopBar*>()) {
+            if (auto *tb = findVisibleTopBar(this)) {
                 tb->setMaximizeButtonHovered(false);
             }
             break;
@@ -337,7 +353,7 @@ void UI::FramelessWindow::changeEvent(QEvent *event) {
 
     if (event->type() == QEvent::WindowStateChange) {
 #ifdef Q_OS_WIN
-        if (auto *tb = findChild<UI::TopBar*>()) {
+        if (auto *tb = findVisibleTopBar(this)) {
             tb->updateMaximizeIcon(isMaximized());
         }
 #endif
@@ -375,7 +391,7 @@ QString UI::FramelessWindow::loadStyles(const QStringList& files) {
 void UI::FramelessWindow::showEvent(QShowEvent *event) {
 #ifdef Q_OS_WIN
     applyNativeWindowStyles();
-    if (auto *tb = findChild<UI::TopBar*>()) {
+    if (auto *tb = findVisibleTopBar(this)) {
         tb->updateMaximizeIcon(isMaximized());
     }
 #endif

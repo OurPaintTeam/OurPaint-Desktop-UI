@@ -46,7 +46,7 @@ void UI::MainWindow::initUI() {
             &MainWindow::openLightEditorWindowTriggered);
     connect(editorPageWidget_, &EditorPage::settingsChanged, this, &MainWindow::settingsChanged);
     connect(editorPageWidget_, &EditorPage::scriptTriggered, this, &MainWindow::onOpenScriptTriggered);
-    connect(editorPageWidget_, &EditorPage::closeApplicationTriggered, this, &MainWindow::closeApplicationTriggered);
+    connect(editorPageWidget_, &EditorPage::closeApplicationTriggered, this, &MainWindow::closeApplicationSlot);
 
     connect(editorPageWidget_, &BaseEditorPage::sentCommandTriggered, this, &BaseEditorWindow::sentCommandTriggered);
     connect(editorPageWidget_, &BaseEditorPage::primitiveTriggered, this, &BaseEditorWindow::primitiveTriggered);
@@ -113,4 +113,10 @@ UI::EditorPage* UI::MainWindow::editorPage() const { return editorPageWidget_; }
 void UI::MainWindow::closeEvent(QCloseEvent *event) {
     emit closeApplicationTriggered();
     if (event) event->accept();
+}
+
+
+void UI::MainWindow::closeApplicationSlot() {
+    emit closeApplicationTriggered();
+    close();
 }

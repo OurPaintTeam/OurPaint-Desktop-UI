@@ -23,13 +23,13 @@ namespace UI {
         void setDefaultFilesPath(const QString& path) const;
         void setDefaultProjectPath(const QString& path);
         void setDefaultScriptPath(const QString& path);
-        void setDefaultProjectPath(const QString& path) const;
-        void setDefaultScriptPath(const QString& path) const;
         void addTabSlot(const FileData& data) const;
         void deleteTabSlot(qint64 id) const;
         void renameTabSlot(FileData& data) const;
         void showStartPage();
         void showEditorPage();
+
+        void closeApplicationSlot();
 
         QStackedWidget* stack() const;
         StartPage* startPage() const;
