@@ -36,7 +36,6 @@ enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round =
 #include <QFile>
 #include <QMouseEvent>
 #include <QScreen>
-#include <QTranslator>
 #include <QWindow>
 
 bool UI::FramelessWindow::eventFilter(QObject* watched, QEvent* event) {

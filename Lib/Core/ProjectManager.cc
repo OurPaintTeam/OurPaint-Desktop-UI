@@ -421,6 +421,7 @@ void UI::ProjectManager::handleEditorWindowClosed() {
         editorWindow_->deleteLater();
         editorWindow_ = nullptr;
     }
+    emit saveFullProjectTriggered();
 }
 
 UI::LightEditorWindow* UI::ProjectManager::findTabWindow(

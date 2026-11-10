@@ -67,6 +67,6 @@ void UI::TabMenu::translate() const {
         closeAllTabs_->setText(UI::TabMenu::tr("Close all tabs"));
     }
     if (closeOtherTabs_) {
-        closeAllTabs_->setText(UI::TabMenu::tr("Close other tabs"));
+        closeOtherTabs_->setText(UI::TabMenu::tr("Close other tabs"));
     }
 }

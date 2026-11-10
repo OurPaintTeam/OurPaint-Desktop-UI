@@ -1,6 +1,7 @@
 #include "UIManager.h"
 
 #include <clocale>
+#include <iostream>
 #include <QDebug>
 #include <QFileInfo>
 #include <QTranslator>
@@ -280,41 +281,38 @@ void UIManager::scriptSlot(UI::ProjectManager* manager, const QString& path) {
 
 
 void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
-    auto tryLoad = [this](const QString& path) -> bool {
-        auto* tr = new QTranslator(this);
-        if (!tr->load(path)) {
-            delete tr;
-            return false;
-        }
-        // Новый уже загружен → ставим
-        qApp->installTranslator(tr);
-        if (translator_) {
-            qApp->removeTranslator(translator_);
-            delete translator_;
-        }
-        translator_ = tr;
-        qDebug() << "[UIManager] Change translation:" << path;
-        return true;
-    };
-
-    const QString primary =
-        lang == UI::SettingsSystem::Language::Russian    ? QStringLiteral(":/translations/app_ru.qm") :
-        lang == UI::SettingsSystem::Language::Belarusian ? QStringLiteral(":/translations/app_by.qm") :
-                                                           QStringLiteral(":/translations/app_eng.qm");
-
-    if (!tryLoad(primary)) {
-        qWarning() << "[UIManager] Failed to load:" << primary;
-        if (lang != UI::SettingsSystem::Language::English) {
-            qWarning() << "[UIManager] Falling back to English";
-            tryLoad(QStringLiteral(":/translations/app_eng.qm"));
-        }
+    if (translator_) {
+        qApp->removeTranslator(translator_);
+        delete translator_;
+        translator_ = nullptr;
     }
 
     currentLanguage_ = lang;
+
+    if (lang == UI::SettingsSystem::Language::English) {
+        qDebug() << "[UIManager] Language set to English (base)";
+        return;
+    }
+
+    const QString path =
+        (lang == UI::SettingsSystem::Language::Russian)
+            ? QStringLiteral(":/translations/app_ru.qm")
+            : QStringLiteral(":/translations/app_by.qm");
+
+    auto* tr = new QTranslator(this);
+    if (tr->load(path)) {
+        qApp->installTranslator(tr);
+        translator_ = tr;
+        qDebug() << "[UIManager] Change translation:" << path;
+    } else {
+        qWarning() << "[UIManager] Failed to load:" << path;
+        delete tr;
+    }
 }
 
 void UIManager::closeTab(const qint64 fileId) {
-
+    UI::FileSystem::ProjectData data;
+    const auto res = fs_.getProject(fileId, data);
 }
 
 void UIManager::initSignals(UI::ProjectManager& manager) {
@@ -421,6 +419,11 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
             [this, &manager]() {
                 settingsChangedSlot(&manager);
             });
+
+    connect(&manager, &UI::ProjectManager::saveFullProjectTriggered, this,
+        [this, &manager]() {
+            std::cout << "Saving full project..." << std::endl;
+        });
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] {
