@@ -10,6 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets OpenGL Svg Sql)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets OpenGL Svg Sql Network)
 qt_standard_project_setup()
 
 set(CORE
@@ -196,6 +197,7 @@ target_link_libraries(ourpaint_ui PUBLIC
         Qt6::OpenGL
         Qt6::Sql
         Qt6::Svg
+        Qt6::Network
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -209,3 +211,4 @@ if (WIN32)
 
     target_link_libraries(ourpaint_ui PUBLIC dwmapi)
 endif()
+
