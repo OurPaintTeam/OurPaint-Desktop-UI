@@ -1,10 +1,11 @@
 [Desktop Entry]
-Version=1.0
+Version=1.5
 Type=Application
 Name=OurPaint
 Comment=A simple paint application
-Exec=OurPaintApp %F
+Exec=/home/tim/OurPaint/OurPaintApp %F
 Icon=ourpaint
 Terminal=false
 Categories=Graphics;Qt;
+MimeType=application/x-ourp-project;
 StartupWMClass=OurPaintApp

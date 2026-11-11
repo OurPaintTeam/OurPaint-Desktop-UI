@@ -18,6 +18,8 @@ class UIManager final : public QObject {
 public:
     UIManager();
     ~UIManager() override = default;
+    void openFilesFromCommandLine(const QStringList& paths);
+
 
 private:
     QVector<UI::ProjectManager*> projectManagers_;

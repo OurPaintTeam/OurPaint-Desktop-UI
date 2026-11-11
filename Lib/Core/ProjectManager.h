@@ -24,12 +24,9 @@ namespace UI {
 
     struct EditorContext {
         FileSystem *fileSystem{nullptr};
-        SettingsSystem *settingsSystem{nullptr};
+        SettingsSystem *settings{nullptr};
         QWindow *renderEngine{nullptr};
         QLineEdit *consoleEngine{nullptr};
-        SettingsSystem *settings{nullptr};
-        QString defaultProjectPath;
-        QString defaultScriptPath;
     };
 
 

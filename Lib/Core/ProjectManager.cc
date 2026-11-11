@@ -60,11 +60,11 @@ void UI::ProjectManager::ensureMainWindow() {
 
     if (context_.renderEngine) mainWindow_->setQWindowRender(context_.renderEngine);
     if (context_.consoleEngine) mainWindow_->setCommandConsoleEngine(context_.consoleEngine);
-    if (context_.settingsSystem) mainWindow_->setSettings(context_.settingsSystem);
+    if (context_.settings) mainWindow_->setSettings(context_.settings);
 
-    mainWindow_->setDefaultFilesPath(context_.defaultProjectPath);
-    mainWindow_->setDefaultProjectPath(context_.defaultProjectPath);
-    mainWindow_->setDefaultScriptPath(context_.defaultScriptPath);
+    mainWindow_->setDefaultFilesPath(context_.fileSystem->projectsPath());
+    mainWindow_->setDefaultProjectPath(context_.fileSystem->projectsPath());
+    mainWindow_->setDefaultScriptPath(context_.fileSystem->scriptsPath());
 }
 
 
@@ -108,7 +108,7 @@ void UI::ProjectManager::showStartWindow(const QVector<ProjectData>& data) {
 
     closeLightEditorWindows();
     mainWindow_->setFilesList(data);
-    mainWindow_->setDefaultFilesPath(context_.defaultProjectPath);
+    mainWindow_->setDefaultFilesPath(context_.fileSystem->projectsPath());
     mainWindow_->showStartPage();
 
     if (!mainWindow_->isVisible()) mainWindow_->show();

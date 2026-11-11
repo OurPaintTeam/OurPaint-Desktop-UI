@@ -53,6 +53,10 @@ void UI::MainWindow::initUI() {
     connect(editorPageWidget_, &BaseEditorPage::constraintTriggered, this, &BaseEditorWindow::constraintTriggered);
     connect(editorPageWidget_, &BaseEditorPage::toolsTriggered, this, &BaseEditorWindow::toolsTriggered);
 
+    connect(this, &UI::FramelessWindow::ourpFileDropped, this,
+        [this](const QString& path) {
+            emit openFileTriggered(path, false);
+        });
 }
 
 void UI::MainWindow::setNotificationsEnabled(const bool enable) {

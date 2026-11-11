@@ -5,30 +5,40 @@
 
 class QPoint;
 class QMouseEvent;
+class QDragEnterEvent;
+class QDragMoveEvent;
+class QDropEvent;
+class QString;
 
 namespace UI {
 
-inline qreal DPR;
+    inline qreal DPR;
 
-// Base window without system frame
-class FramelessWindow : public QMainWindow {
-    Q_OBJECT
+    class FramelessWindow : public QMainWindow {
+        Q_OBJECT
 
-protected:
-    bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
-    void resizeEvent(QResizeEvent* event) override;
+    signals:
+        void ourpFileDropped(const QString& path);
 
-    void changeEvent(QEvent* event) override;
-    void showEvent(QShowEvent* event) override;
-    bool event(QEvent* event) override;
-    bool eventFilter(QObject* watched, QEvent* event) override;
-    void paintEvent(QPaintEvent* e) override;
+    protected:
+        bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;
+        void resizeEvent(QResizeEvent* event) override;
 
-public:
-    explicit FramelessWindow(QWidget* parent = nullptr);
-    ~FramelessWindow() override = default;
+        void changeEvent(QEvent* event) override;
+        void showEvent(QShowEvent* event) override;
+        bool event(QEvent* event) override;
+        bool eventFilter(QObject* watched, QEvent* event) override;
+        void paintEvent(QPaintEvent* e) override;
 
-    virtual void initUI() = 0;
+        void dragEnterEvent(QDragEnterEvent* event) override;
+        void dragMoveEvent(QDragMoveEvent* event) override;
+        void dropEvent(QDropEvent* event) override;
+
+    public:
+        explicit FramelessWindow(QWidget* parent = nullptr);
+        ~FramelessWindow() override = default;
+
+        virtual void initUI() = 0;
 
 private:
 #ifdef Q_OS_WIN

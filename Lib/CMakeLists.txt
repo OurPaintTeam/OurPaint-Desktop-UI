@@ -195,10 +195,11 @@ target_link_libraries(ourpaint_ui PUBLIC
         Qt6::Widgets
         Qt6::OpenGL
         Qt6::Sql
+        Qt6::Svg
 )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_libraries(ourpaint_ui PUBLIC Qt6::Svg)
+    target_link_libraries(ourpaint_ui PUBLIC )
 endif()
 
 if (WIN32)

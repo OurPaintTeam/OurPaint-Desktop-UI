@@ -7,6 +7,12 @@
 #include <QPushButton>
 #include <QTimer>
 
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QFileInfo>
+#include <QUrl>
+
 #include "TopBar.h"
 
 #ifdef Q_OS_WIN
@@ -132,6 +138,8 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     }
 
     initFonts();
+
+    setAcceptDrops(true);
 
     setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
     resize(START_WIDTH, START_HEIGHT);
@@ -438,3 +446,58 @@ bool UI::FramelessWindow::event(QEvent *event) {
 
 
 void UI::FramelessWindow::paintEvent(QPaintEvent *e) { QMainWindow::paintEvent(e); }
+
+
+namespace {
+    bool isOurpPath(const QString& path) {
+        return QFileInfo(path).suffix().compare("ourp", Qt::CaseInsensitive) == 0;
+    }
+}
+
+void UI::FramelessWindow::dragEnterEvent(QDragEnterEvent* event) {
+    if (!event->mimeData()->hasUrls())
+        return;
+
+    for (const QUrl& url : event->mimeData()->urls()) {
+        if (url.isLocalFile() && isOurpPath(url.toLocalFile())) {
+            event->acceptProposedAction();
+            return;
+        }
+    }
+}
+
+void UI::FramelessWindow::dragMoveEvent(QDragMoveEvent* event) {
+    if (!event->mimeData()->hasUrls())
+        return;
+
+    for (const QUrl& url : event->mimeData()->urls()) {
+        if (url.isLocalFile() && isOurpPath(url.toLocalFile())) {
+            event->acceptProposedAction();
+            return;
+        }
+    }
+}
+
+void UI::FramelessWindow::dropEvent(QDropEvent* event) {
+    if (!event->mimeData()->hasUrls())
+        return;
+
+    event->acceptProposedAction();
+
+    QStringList paths;
+    paths.reserve(event->mimeData()->urls().size());
+
+    for (const QUrl& url : event->mimeData()->urls()) {
+        if (!url.isLocalFile())
+            continue;
+        const QString path = url.toLocalFile();
+        if (isOurpPath(path))
+            paths.append(path);
+    }
+
+    if (paths.isEmpty())
+        return;
+
+    for (const QString& path : paths)
+        emit ourpFileDropped(path);
+}

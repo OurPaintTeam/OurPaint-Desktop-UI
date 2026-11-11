@@ -67,8 +67,7 @@ UI::TabBar::TabBar(QWidget *parent)
                                                    true);
   scrollArea_->verticalScrollBar()->setAttribute(Qt::WA_StyledBackground, true);
 
-  QScroller::grabGesture(scrollArea_->viewport(),
-                         QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(scrollArea_->viewport(), QScroller::TouchGesture);
 
   mainLayout_->addWidget(scrollArea_);
 

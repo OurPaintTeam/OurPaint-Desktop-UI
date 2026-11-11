@@ -2,6 +2,7 @@
 
 #include <clocale>
 #include <iostream>
+#include <QApplication>
 #include <qcoreapplication.h>
 #include <QDebug>
 #include <QFileInfo>
@@ -31,12 +32,9 @@ UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
 UI::EditorContext UIManager::createEditorContext() const {
     UI::EditorContext ctx;
     ctx.fileSystem = const_cast<UI::FileSystem*>(&fs_);
-    ctx.settingsSystem = const_cast<UI::SettingsSystem*>(&settingsSystem_);
     ctx.settings = const_cast<UI::SettingsSystem*>(&settingsSystem_);
     ctx.renderEngine = new RenderEngine();
     ctx.consoleEngine = new CustomConsole();
-    ctx.defaultProjectPath = fs_.projectsPath();
-    ctx.defaultScriptPath = fs_.scriptsPath();
     return ctx;
 }
 
@@ -44,7 +42,7 @@ UI::EditorContext UIManager::createEditorContext() const {
 UI::EditorContext UIManager::createLightEditorContext() const {
     UI::EditorContext ctx;
     ctx.fileSystem = const_cast<UI::FileSystem*>(&fs_);
-    ctx.settingsSystem = const_cast<UI::SettingsSystem*>(&settingsSystem_);
+    ctx.settings = const_cast<UI::SettingsSystem*>(&settingsSystem_);
     ctx.settings = const_cast<UI::SettingsSystem*>(&settingsSystem_);
     ctx.renderEngine = new RenderEngine();
     ctx.consoleEngine = new CustomConsole();
@@ -70,6 +68,26 @@ void UIManager::deleteSlot(UI::ProjectManager *manager) {
 
 // files
 
+void UIManager::openFilesFromCommandLine(const QStringList& paths) {
+    if (paths.isEmpty())
+        return;
+
+    if (projectManagers_.isEmpty()) {
+        qWarning() << "[UIManager] No ProjectManager available for"
+                   << paths.size() << "file(s)";
+        return;
+    }
+
+    UI::ProjectManager* target = projectManagers_.first();
+    if (auto* active = qobject_cast<UI::ProjectManager*>(QApplication::activeWindow()))
+        target = active;
+
+    for (const QString& path : paths) {
+        if (path.trimmed().isEmpty())
+            continue;
+        openFileByPath(path, target, /*newWindow=*/false);
+    }
+}
 
 void UIManager::openFile(qint64 fileId, UI::ProjectManager *currentManager, bool newWindow) {
     UI::FileSystem::ProjectData data;
