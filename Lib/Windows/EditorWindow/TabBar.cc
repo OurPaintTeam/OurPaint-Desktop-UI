@@ -83,7 +83,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
     switch (type) {
         case UI::tabMenuType::deleteTab: {
             if (!contextTab_) return;
-            if (removeTab(contextTab_)) {
+            if (removeTab(contextTab_,false)) {
                 removeTabTriggered(contextTab_->getFileId());
             }
             break;
@@ -98,14 +98,14 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
 
         case UI::tabMenuType::closeTab: {
             if (contextTab_) {
-                removeTab(contextTab_);
+                removeTab(contextTab_,true);
             }
             break;
         }
 
         case UI::tabMenuType::closeAllTabs: {
             while (!tabs_.isEmpty()) {
-                removeTab(tabs_.first());
+                removeTab(tabs_.first(),true);
             }
             break;
         }
@@ -115,7 +115,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
             const int index = tabs_.indexOf(contextTab_);
             if (index == -1) return;
             for (int i = tabs_.size() - 1; i > index; --i) {
-                removeTab(tabs_[i]);
+                removeTab(tabs_[i],true);
             }
             break;
         }
@@ -125,7 +125,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
             const int index = tabs_.indexOf(contextTab_);
             if (index == -1) return;
             for (int i = index - 1; i >= 0; --i) {
-                removeTab(tabs_[i]);
+                removeTab(tabs_[i],true);
             }
             break;
         }
@@ -136,7 +136,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type)
             if (index == -1) return;
             for (int i = tabs_.size() - 1; i >= 0; --i) {
                 if (i != index) {
-                    removeTab(tabs_[i]);
+                    removeTab(tabs_[i],true);
                 }
             }
             break;
@@ -156,12 +156,14 @@ void UI::TabBar::addTabSlot(const FileData& data) {
         &UI::TabBar::renameTabTriggered);
   connect(tab, &UI::TabWidget::clickedTriggered, this,
           &TabBar::setActiveTabSlot);
-  connect(tab, &UI::TabWidget::closeRequestedTriggered, this,
-          &TabBar::removeTab);
+    connect(tab, &UI::TabWidget::closeRequestedTriggered, this,
+        [this](TabWidget *tab) {
+          removeTab(tab,true);
+        });
   connect(tab, &UI::TabWidget::draggedOutTriggered, this,
           [this](TabWidget *draggedTab) {
             emit openLightEditorWindowTriggered(draggedTab->getFileId());
-            removeTab(draggedTab);
+            removeTab(draggedTab,false);
           });
   connect(tab, &UI::TabWidget::rightClickedTriggered, this,
           &UI::TabBar::openTabMenuSlot);
@@ -183,13 +185,13 @@ void UI::TabBar::renameTab(FileData& data) {
 void UI::TabBar::deleteTabSlot( const qint64 id) {
   for (auto *tab : tabs_) {
     if (tab->getFileId() == id) {
-      removeTab(tab);
+      removeTab(tab,false);
       return;
     }
   }
 }
 
-bool UI::TabBar::removeTab(TabWidget *tab) {
+bool UI::TabBar::removeTab(TabWidget *tab,bool close) {
   if (!tab) {
     return false;
   }
@@ -232,14 +234,19 @@ bool UI::TabBar::removeTab(TabWidget *tab) {
       emit allTabsCloseTriggered();
     }
   }
+    if (!close) {
+        emit removeTabTriggered(tab->getFileId());
+    }else {
     emit closeTabTriggered(tab->getFileId());
+}
   return true;
 }
 
 UI::TabWidget *UI::TabBar::closeTabSlot(const qint64 id) {
   for (auto *tab : tabs_) {
     if (tab->getFileId() == id) {
-      removeTab(tab);
+
+      removeTab(tab,true);
       return tab;
     }
   }

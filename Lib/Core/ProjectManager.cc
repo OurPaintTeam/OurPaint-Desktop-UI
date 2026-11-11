@@ -189,10 +189,29 @@ void UI::ProjectManager::connectMainWindowSignals() {
             this, &ProjectManager::openFileTriggered);
     connect(mainWindow_, &MainWindow::createFileTriggered,
             this, &ProjectManager::createFileTriggered);
-    connect(mainWindow_, &MainWindow::renameFileTriggered,
-            this, &ProjectManager::renameFileTriggered);
-    connect(mainWindow_, &MainWindow::deleteFileTriggered,
-            this, &ProjectManager::removeFileTriggered);
+    connect(mainWindow_, &MainWindow::renameFileTriggered, this, [this](UI::FileData& data) {
+        emit renameFileTriggered(data);
+
+        if (context_.fileSystem) {
+            QVector<ProjectData> list;
+            for (const auto& p : context_.fileSystem->projects()) {
+                list.append({p.id, p.name, p.path});
+            }
+            mainWindow_->setFilesList(list);
+        }
+    });
+
+    connect(mainWindow_, &MainWindow::deleteFileTriggered, this, [this](qint64 id) {
+        emit removeFileTriggered(id);
+
+        if (context_.fileSystem) {
+            QVector<ProjectData> list;
+            for (const auto& p : context_.fileSystem->projects()) {
+                list.append({p.id, p.name, p.path});
+            }
+            mainWindow_->setFilesList(list);
+        }
+    });
 
     connect(mainWindow_, &MainWindow::goToStartWindowTriggered,
             this, &ProjectManager::returnToStartWindow);

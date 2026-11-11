@@ -68,7 +68,7 @@ class TabWidget;
         QPointer<TabWidget> contextTab_;
 
         void createPlusButton();
-      bool removeTab(TabWidget* tab);
+      bool removeTab(TabWidget* tab,bool close);
     };
 } // namespace UI
 
