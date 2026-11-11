@@ -88,6 +88,10 @@ void UI::MainWindow::addTabSlot(const FileData& data) const {
 }
 
 
+void UI::MainWindow::closeTabSlot(const qint64 id) const {
+    if (editorPageWidget_) editorPageWidget_->onCloseTabSlot(id);
+}
+
 void UI::MainWindow::deleteTabSlot(const qint64 id) const {
     if (editorPageWidget_) editorPageWidget_->onDeleteTabSlot(id);
 }

@@ -327,6 +327,12 @@ void UI::EditorPage::onAddTabSlot(const FileData& data) const {
 }
 
 
+void UI::EditorPage::onCloseTabSlot(const qint64 id) const {
+    tabBar_->closeTabSlot(id);
+    updatePageSlot();
+}
+
+
 void UI::EditorPage::onDeleteTabSlot(const qint64 id) const {
     tabBar_->deleteTabSlot(id);
     updatePageSlot();

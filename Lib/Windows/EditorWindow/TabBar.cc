@@ -182,7 +182,7 @@ void UI::TabBar::renameTab(FileData& data) {
   }
 }
 
-void UI::TabBar::deleteTabSlot( const qint64 id) {
+void UI::TabBar::deleteTabSlot(const qint64 id) {
   for (auto *tab : tabs_) {
     if (tab->getFileId() == id) {
       removeTab(tab,false);

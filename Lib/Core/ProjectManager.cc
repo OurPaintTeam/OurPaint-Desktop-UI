@@ -256,6 +256,17 @@ void UI::ProjectManager::closeLightEditorWindows() {
 }
 
 
+void UI::ProjectManager::closeTabSlot(const qint64 id) {
+    if (mainWindow_) mainWindow_->closeTabSlot(id);
+
+    if (auto *tabWindow = findLightEditorWindow(id)) {
+        lightEditorWindows_.removeOne(tabWindow);
+        tabWindow->close();
+        tabWindow->deleteLater();
+    }
+}
+
+
 void UI::ProjectManager::deleteTabSlot(const qint64 id) {
     if (mainWindow_) mainWindow_->deleteTabSlot(id);
 

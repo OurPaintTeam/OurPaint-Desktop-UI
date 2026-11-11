@@ -78,6 +78,7 @@ namespace UI {
 
     public slots:
         void onAddTabSlot(const FileData& data) const;
+        void onCloseTabSlot(qint64 id) const;
         void onDeleteTabSlot(const qint64 id) const;
         void onRenameTabSlot(FileData& data) const;
 

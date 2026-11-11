@@ -25,6 +25,7 @@ namespace UI {
         void setDefaultProjectPath(const QString& path);
         void setDefaultScriptPath(const QString& path);
         void addTabSlot(const FileData& data) const;
+        void closeTabSlot(qint64 id) const;
         void deleteTabSlot(qint64 id) const;
         void renameTabSlot(FileData& data) const;
         void showStartPage();

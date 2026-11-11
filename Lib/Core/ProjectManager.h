@@ -93,6 +93,7 @@ namespace UI {
         void loadSettings();
         void connectMainWindowSignals();
         void closeLightEditorWindows();
+        void closeTabSlot(qint64 id);
 
         LightEditorWindow* findLightEditorWindow(const qint64 id) const;
         BaseWindow* activeWindow() const;
