@@ -140,7 +140,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
     connect(toolBar_, &ToolBar::primitiveTriggered,
             this, [this](PrimitiveType type) {
-                if (activeID_!=-1) {
+                if (activeID_==-1) {
                     return;
                 }
 
@@ -150,7 +150,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
     connect(toolBar_, &ToolBar::constraintTriggered,
             this, [this](ConstraintType type) {
-                if (activeID_!=-1) {
+                if (activeID_==-1) {
                     return;
                 }
 
@@ -160,7 +160,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
     connect(toolBar_, &ToolBar::toolsTriggered,
             this, [this](ToolsType type) {
-                if (activeID_!=-1) {
+                if (activeID_==-1) {
                     return;
                 }
 
