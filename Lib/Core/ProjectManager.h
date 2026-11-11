@@ -45,6 +45,7 @@ namespace UI {
         void deleteTabSlot(const qint64 id);
         void renameTabSlot(FileData& data);
         void setActiveTab(const qint64 id);
+        void closeTabSlot(qint64 id);
 
         //  EditorWindow
         void setActiveToolEditorWindow(ToolsType tool) const;
@@ -93,7 +94,6 @@ namespace UI {
         void loadSettings();
         void connectMainWindowSignals();
         void closeLightEditorWindows();
-        void closeTabSlot(qint64 id);
 
         LightEditorWindow* findLightEditorWindow(const qint64 id) const;
         BaseWindow* activeWindow() const;
