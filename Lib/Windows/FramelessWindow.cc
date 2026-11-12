@@ -15,6 +15,12 @@
 
 #include "TopBar.h"
 
+namespace {
+    constexpr qint16 START_WIDTH = 960;
+    constexpr qint16 START_HEIGHT = 540;
+    constexpr qint16 MIN_WIDTH = 950;
+    constexpr qint16 MIN_HEIGHT = 500;
+}
 #ifdef Q_OS_WIN
 
 #include <dwmapi.h>
@@ -25,10 +31,7 @@ namespace {
     constexpr DWORD kDwmWindowCornerPreference = 33;
     constexpr DWORD kDwmBorderColor = 34;
     constexpr DWORD kDwmCaptionColor = 35;
-    constexpr qint16 START_WIDTH = 960;
-    constexpr qint16 START_HEIGHT = 540;
-    constexpr qint16 MIN_WIDTH = 950;
-    constexpr qint16 MIN_HEIGHT = 500;
+
 
 
     enum class WindowCornerPreference : DWORD { Default = 0, DoNotRound = 1, Round = 2, RoundSmall = 3 };
@@ -408,8 +411,6 @@ void UI::FramelessWindow::showEvent(QShowEvent *event) {
 
 
 void UI::FramelessWindow::initFonts() {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     int id1 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Regular.ttf");
     int id2 = QFontDatabase::addApplicationFont(":/Styles/font/static/Inter-Medium.ttf");
