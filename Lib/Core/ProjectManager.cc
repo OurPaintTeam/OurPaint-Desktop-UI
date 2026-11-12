@@ -41,17 +41,7 @@ void UI::ProjectManager::addTabSlot(FileData& data) {
     ensureMainWindow();
     if (mainWindow_) {
         mainWindow_->addTabSlot(data);
-        if (!mainWindow_->isVisible()) mainWindow_->show();
-        if (mainWindow_->isMinimized()) mainWindow_->showNormal();
-        mainWindow_->raise();
-        mainWindow_->activateWindow();
-    }
-}
 
-void UI::ProjectManager::showEditorWindow(FileData& data) {
-    ensureMainWindow();
-    if (mainWindow_) {
-        mainWindow_->addTabSlot(data);
         mainWindow_->showEditorPage();
 
         loadSettings();
@@ -60,6 +50,10 @@ void UI::ProjectManager::showEditorWindow(FileData& data) {
         mainWindow_->raise();
         mainWindow_->activateWindow();
     }
+}
+
+void UI::ProjectManager::showEditorWindow(FileData& data) {
+    addTabSlot(data);
 }
 
 void UI::ProjectManager::showLightEditorWindow(const FileData& data) {
