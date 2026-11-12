@@ -231,6 +231,16 @@ void UI::ProjectManager::setActiveTab(const qint64 id) {
     if (mainWindow_) mainWindow_->setActiveID(id);
 }
 
+qint64 UI::ProjectManager::getActiveTabId() const {
+    if (mainWindow_) {
+        return mainWindow_->getActiveTabId();
+    }
+    if (lightEditorWindow_) {
+        return lightEditorWindow_->id();
+    }
+    return -1;
+}
+
 void UI::ProjectManager::addNotification(const qint64 id, const QString& text) const {
     if (lightEditorWindow_ && lightEditorWindow_->id() == id) {
         lightEditorWindow_->addNotification(text);

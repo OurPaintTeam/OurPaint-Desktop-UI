@@ -41,6 +41,7 @@ namespace UI {
         bool isLightEditor() const;
 
         void setActiveTab(const qint64 id);
+        qint64 getActiveTabId() const;
         void closeTabSlot(const qint64 id);
         void deleteTabSlot(const qint64 id);
         void renameTabSlot(FileData& data);
