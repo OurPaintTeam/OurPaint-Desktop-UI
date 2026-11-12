@@ -54,6 +54,7 @@ namespace UI {
         void openLightEditorWindowTriggered(qint64 id);
         void onOpenScriptTriggered(const QString& path);
         void settingsChanged();
+        void saveTriggered();
 
     protected:
         void closeEvent(QCloseEvent* event) override;

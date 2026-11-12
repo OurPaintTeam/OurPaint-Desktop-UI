@@ -14,6 +14,7 @@
 #include <QUrl>
 
 #include "TopBar.h"
+#include <QShortcut>
 
 namespace {
     constexpr qint16 START_WIDTH = 960;
@@ -145,6 +146,9 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     initFonts();
 
     setAcceptDrops(true);
+
+    auto* saveShortcut = new QShortcut(QKeySequence::Save, this);
+    connect(saveShortcut, &QShortcut::activated, this, &FramelessWindow::saveRequested);
 
     setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
     resize(START_WIDTH, START_HEIGHT);

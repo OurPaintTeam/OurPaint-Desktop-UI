@@ -19,6 +19,7 @@ namespace UI {
 
     signals:
         void ourpFileDropped(const QString& path);
+        void saveRequested();
 
     protected:
         bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override;

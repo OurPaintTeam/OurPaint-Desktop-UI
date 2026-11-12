@@ -352,8 +352,11 @@ void UIManager::initBaseSignals(UI::ProjectManager& manager) {
                 handleTabMove(fileId, sourceWindowPtr, targetWindowPtr);
             });
 
-    connect(&manager, &UI::ProjectManager::saveFullProjectTriggered, this,
+    connect(&manager, &UI::ProjectManager::saveTriggered, this,
             []() { std::cout << "Saving full project..." << std::endl; });
+
+    connect(&manager, &UI::ProjectManager::closeEditorTriggered, this,
+           []() { std::cout << "Saving full project..." << std::endl; });
 
     connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
             [this, &manager](qint64 fileId, const QString& command) { sentCommandFromConsole(&manager, fileId, command); });
@@ -401,6 +404,9 @@ void UIManager::initLightManager(UI::ProjectManager& manager) {
 
     connect(&manager, &UI::ProjectManager::settingsChanged, this,
             [this, &manager]() { settingsChangedSlot(&manager); });
+
+    connect(&manager, &UI::ProjectManager::saveTriggered, this,
+    [this, &manager]() { });
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] { deleteSlot(&manager); });

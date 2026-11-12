@@ -86,6 +86,7 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
     if (context_.consoleEngine) lightEditorWindow_->setCommandConsoleEngine(context_.consoleEngine);
     if (context_.settings) lightEditorWindow_->setSettings(context_.settings);
 
+    connect(lightEditorWindow_, &LightEditorWindow::saveTriggered, this, &ProjectManager::saveTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::sentCommandTriggered, this, &ProjectManager::sentCommandTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::primitiveTriggered, this, &ProjectManager::primitiveTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::constraintTriggered, this, &ProjectManager::constraintTriggered);
@@ -159,7 +160,8 @@ void UI::ProjectManager::loadSettings() const {
 void UI::ProjectManager::connectMainWindowSignals() {
     if (!mainWindow_) return;
 
-    connect(mainWindow_, &MainWindow::closeApplicationTriggered, this, &ProjectManager::handleEditorWindowClosed);
+    connect(mainWindow_, &MainWindow::saveTriggered, this, &ProjectManager::saveTriggered);
+    connect(mainWindow_, &MainWindow::closeApplicationTriggered, this, &ProjectManager::closeEditorTriggered);
     connect(mainWindow_, &BaseEditorWindow::sentCommandTriggered, this, &ProjectManager::sentCommandTriggered);
     connect(mainWindow_, &BaseEditorWindow::primitiveTriggered, this, &ProjectManager::primitiveTriggered);
     connect(mainWindow_, &BaseEditorWindow::constraintTriggered, this, &ProjectManager::constraintTriggered);
@@ -208,10 +210,6 @@ void UI::ProjectManager::connectMainWindowSignals() {
         }
         emit settingsChanged();
     });
-}
-
-void UI::ProjectManager::handleEditorWindowClosed() {
-    emit saveFullProjectTriggered();
 }
 
 void UI::ProjectManager::closeTabSlot(const qint64 id) {

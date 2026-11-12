@@ -19,6 +19,10 @@ void UI::LightEditorWindow::initUI() {
         emit returnTabTriggered(fileData_.id);
     });
     connect(lightEditorPage_, &LightEditorPage::settingsChanged, this, &LightEditorWindow::settingsChanged);
+
+    connect(this, &UI::FramelessWindow::saveRequested, this, [this]() {
+        emit saveTriggered();
+    });
 }
 
 void UI::LightEditorWindow::setSettings(SettingsSystem *settings) {

@@ -73,7 +73,8 @@ namespace UI {
         void scriptTriggered(const QString& text);
 
         void settingsChanged();
-        void saveFullProjectTriggered();
+        void saveTriggered();
+        void closeEditorTriggered();
 
         void lightEditorRequested(const qint64 id);
         void returnTabToEditorRequested(qint64 id);
@@ -87,7 +88,6 @@ namespace UI {
 
         void showStartWindow(const QVector<ProjectData>& data);
         void returnToStartWindow();
-        void handleEditorWindowClosed();
 
         EditorContext context_;
 

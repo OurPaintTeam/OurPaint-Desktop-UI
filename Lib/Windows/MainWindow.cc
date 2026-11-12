@@ -48,6 +48,9 @@ void UI::MainWindow::initUI() {
     connect(editorPageWidget_, &EditorPage::scriptTriggered, this, &MainWindow::onOpenScriptTriggered);
     connect(editorPageWidget_, &EditorPage::closeApplicationTriggered, this, &MainWindow::closeApplicationSlot);
     connect(editorPageWidget_, &EditorPage::tabMovedToAnotherWindow, this, &MainWindow::tabMovedToAnotherWindow);
+    connect(this, &UI::FramelessWindow::saveRequested, this, [this]() {
+    emit saveTriggered();
+    });
 
     connect(editorPageWidget_, &BaseEditorPage::sentCommandTriggered, this, &BaseEditorWindow::sentCommandTriggered);
     connect(editorPageWidget_, &BaseEditorPage::primitiveTriggered, this, &BaseEditorWindow::primitiveTriggered);

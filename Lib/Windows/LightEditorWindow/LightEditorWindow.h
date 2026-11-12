@@ -27,6 +27,7 @@ namespace UI {
         signals:
             void returnTabTriggered(qint64 fileId);
             void settingsChanged();
+            void saveTriggered();
     protected:
         void closeEvent(QCloseEvent* event) override;
 
