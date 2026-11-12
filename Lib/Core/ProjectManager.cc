@@ -17,11 +17,17 @@ UI::ProjectManager::ProjectManager(const EditorContext& context, QObject* parent
 
 UI::ProjectManager::~ProjectManager() {
     if (mainWindow_) {
+        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
+        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
+
         mainWindow_->deleteLater();
         mainWindow_ = nullptr;
     }
 
     if (lightEditorWindow_) {
+        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
+        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
+
         lightEditorWindow_->deleteLater();
         lightEditorWindow_ = nullptr;
     }
