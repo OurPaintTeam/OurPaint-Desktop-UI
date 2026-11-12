@@ -94,19 +94,26 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
        });
 
     connect(lightEditorWindow_, &LightEditorWindow::returnTabTriggered, this, [this](const qint64 id) {
-        emit returnTabToEditorRequested(id);
-        lightEditorWindow_->close();
-    });
+           QObject::disconnect(lightEditorWindow_, &QObject::destroyed, this, nullptr);
+
+           emit returnTabToEditorRequested(id);
+
+           lightEditorWindow_->hide();
+           lightEditorWindow_->close();
+
+           lightEditorWindow_ = nullptr;
+           context_.renderEngine = nullptr;
+           context_.consoleEngine = nullptr;
+           deleteLater();
+       });
 
     connect(lightEditorWindow_, &QObject::destroyed, this, [this]() {
-        emit closeLightEditorWindowTriggered(lightEditorWindow_->id());
-        lightEditorWindow_ = nullptr;
-
-        context_.renderEngine = nullptr;
-        context_.consoleEngine = nullptr;
-
-        deleteLater();
-    });
+            emit closeLightEditorWindowTriggered(lightEditorWindow_->id());
+            lightEditorWindow_ = nullptr;
+            context_.renderEngine = nullptr;
+            context_.consoleEngine = nullptr;
+            deleteLater();
+        });
 
     lightEditorWindow_->move(QCursor::pos());
 }
