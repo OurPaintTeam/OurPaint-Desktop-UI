@@ -84,6 +84,14 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
     connect(lightEditorWindow_, &LightEditorWindow::primitiveTriggered, this, &ProjectManager::primitiveTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::constraintTriggered, this, &ProjectManager::constraintTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::toolsTriggered, this, &ProjectManager::toolsTriggered);
+    connect(lightEditorWindow_, &LightEditorWindow::settingsChanged, this, [this]() {
+           if (context_.settings) {
+               const bool notif = context_.settings->isNotificationsEnabled();
+               mainWindow_->setNotificationsEnabled(notif);
+               if (lightEditorWindow_) lightEditorWindow_->setNotificationsEnabled(notif);
+           }
+           emit settingsChanged();
+       });
 
     connect(lightEditorWindow_, &LightEditorWindow::returnTabTriggered, this, [this](const qint64 id) {
         emit returnTabToEditorRequested(id);

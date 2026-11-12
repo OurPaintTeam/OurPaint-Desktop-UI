@@ -20,12 +20,13 @@ namespace UI {
         ~LightEditorWindow() override = default;
 
         void initUI() override;
+        void setSettings(SettingsSystem *settings);
         void setNotificationsEnabled(bool enable);
         qint64 id() const;
         void setName(const QString& name);
         signals:
             void returnTabTriggered(qint64 fileId);
-
+            void settingsChanged();
     protected:
         void closeEvent(QCloseEvent* event) override;
 

@@ -3,12 +3,14 @@
 
 #include <QLabel>
 #include <QString>
+#include <QPushButton>
 
 #include "BaseEditorTopBar.h"
 
 namespace UI {
     class SideTool;
-
+    class SettingsSystem;
+    class SettingsWidget;
 
     // Top bar for detached Tab
     class TopBarLightEditor final : public BaseEditorTopBar {
@@ -22,9 +24,11 @@ namespace UI {
         void setRightTool(SideTool *tool);
         void setConsole(QWidget *console);
         void setDisplayName(const QString& name);
+        void setSettings(SettingsSystem *settings);
 
         signals:
             void returnLightEditorWindowTriggered();
+            void settingsChanged();
 
     protected:
         void changeEvent(QEvent *e) override;
@@ -32,9 +36,13 @@ namespace UI {
     private:
         QLabel *title_{nullptr};
         QPushButton *returnBtn_{nullptr};
+        QPushButton *btnSettings_{nullptr};
+        SettingsWidget *settingsWidget_{nullptr};
+        SettingsSystem *settingsSystem_{nullptr};
         QString displayName_;
 
         void createLightEditorWidgets();
+        void setupSettings();
         void updateTitle() const;
         void translate() const;
     };

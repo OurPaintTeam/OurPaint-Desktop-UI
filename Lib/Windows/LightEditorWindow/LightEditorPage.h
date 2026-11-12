@@ -16,10 +16,12 @@ namespace UI {
     public:
         explicit LightEditorPage(QWidget* parent = nullptr, FileData fileData=FileData{});
         void setName(const QString& name);
+        void setSettings(SettingsSystem *settings);
         ~LightEditorPage() override = default;
 
         signals:
             void returnLightEditorWindowTriggered();
+             void settingsChanged();
     private:
         void initUI() override;
 

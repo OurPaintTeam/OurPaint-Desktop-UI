@@ -18,6 +18,13 @@ void UI::LightEditorWindow::initUI() {
     connect(lightEditorPage_, &LightEditorPage::returnLightEditorWindowTriggered, this, [this] {
         emit returnTabTriggered(fileData_.id);
     });
+    connect(lightEditorPage_, &LightEditorPage::settingsChanged, this, &LightEditorWindow::settingsChanged);
+}
+
+void UI::LightEditorWindow::setSettings(SettingsSystem *settings) {
+    if (settings) {
+        lightEditorPage_->setSettings(settings);
+    }
 }
 
 void UI::LightEditorWindow::setNotificationsEnabled(const bool enable) {

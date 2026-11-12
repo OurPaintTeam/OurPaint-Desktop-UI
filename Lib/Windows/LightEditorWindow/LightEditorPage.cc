@@ -19,6 +19,12 @@ void UI::LightEditorPage::setName(const QString& name) {
     fileData_.name=name;
 }
 
+void UI::LightEditorPage::setSettings(SettingsSystem *settings) {
+    if (settings) {
+        topBar_->setSettings(settings);
+    }
+}
+
 void UI::LightEditorPage::initUI() {
     initBaseEditorPage();
 
@@ -42,7 +48,8 @@ void UI::LightEditorPage::initUI() {
     connect(topBar_,&TopBarLightEditor::returnLightEditorWindowTriggered,this,[this] {
         emit returnLightEditorWindowTriggered();
     });
-
+    connect(topBar_, &TopBarLightEditor::settingsChanged, this, &LightEditorPage::settingsChanged);
     leftTool_->hide();
     rightTool_->hide();
+    topBar_->setConsoleButtonEnabled(false);
 }
