@@ -22,7 +22,8 @@ namespace UI {
 UI::TabBar::TabBar(QWidget *parent)
     : QWidget(parent), tabBar_(new QWidget(this)),
       tabLayout_(new QHBoxLayout(tabBar_)), mainLayout_(new QHBoxLayout(this)),
-      scrollArea_(new QScrollArea(this)) {
+      scrollArea_(new QScrollArea(this)),
+    ownerWindow_(window()){
     setObjectName(QStringLiteral("TabBar"));
 
     setAcceptDrops(true);
@@ -144,6 +145,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type) {
 
 void UI::TabBar::addTabSlot(const FileData& data) {
     auto *tab = new UI::TabWidget(tabBar_, data);
+    tab->setOwnerWindow(ownerWindow_);
     tabs_.append(tab);
 
     const auto plusIndex = tabLayout_->indexOf(plusButton_);
@@ -160,7 +162,6 @@ void UI::TabBar::addTabSlot(const FileData& data) {
     connect(tab, &UI::TabWidget::draggedOutTriggered, this,
             [this](TabWidget *draggedTab) {
                 emit openLightEditorWindowTriggered(draggedTab->getFileId());
-                emit closeTabTriggered(draggedTab->getFileId());
             });
 
     connect(tab, &UI::TabWidget::rightClickedTriggered, this, &UI::TabBar::openTabMenuSlot);
@@ -183,6 +184,9 @@ void UI::TabBar::renameTab(FileData& data) {
     }
 }
 
+qint64 UI::TabBar::getActiveTabId() const {
+    return activeTab_->getFileId();
+}
 
 void UI::TabBar::deleteTabSlot(const qint64 id) {
     for (auto *tab: tabs_) {
@@ -272,70 +276,39 @@ void UI::TabBar::openTabMenuSlot(TabWidget *tab, const QPoint& localPos) {
 
 
 void UI::TabBar::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasFormat("application/x-tabwidget")) {
+    if (event->mimeData()->hasFormat("application/x-tab-id")) {
         event->acceptProposedAction();
     }
 }
 
-
 void UI::TabBar::dragMoveEvent(QDragMoveEvent *event) {
-    if (event->mimeData()->hasFormat("application/x-tabwidget")) {
+    if (event->mimeData()->hasFormat("application/x-tab-id")) {
         event->acceptProposedAction();
     }
 }
 
 
 void UI::TabBar::dropEvent(QDropEvent *event) {
-    if (!event->mimeData()->hasFormat("application/x-tabwidget")) {
+    if (!event->mimeData()->hasFormat("application/x-tab-id")) return;
+
+    qint64 fileId = event->mimeData()->data("application/x-tab-id").toLongLong();
+    quintptr sourceWindowPtr = event->mimeData()->data("application/x-window-id").toULongLong();
+
+    quintptr targetWindowPtr = reinterpret_cast<quintptr>(ownerWindow_);
+
+    if (sourceWindowPtr != targetWindowPtr) {
+        emit tabMovedToAnotherWindow(fileId, targetWindowPtr);
+        event->acceptProposedAction();
         return;
     }
 
-    const auto data = event->mimeData()->data("application/x-tabwidget");
-    auto *tab = reinterpret_cast<TabWidget*>(data.toULongLong());
+    TabWidget* tab = nullptr;
+    for (auto* t : tabs_) {
+        if (t->getFileId() == fileId) { tab = t; break; }
+    }
+    if (!tab) return;
 
     const auto localPos = tabBar_->mapFrom(this, event->position().toPoint());
-
-    quintptr sourceWindowId = 0;
-    if (event->mimeData()->hasFormat("application/x-window-id")) {
-        sourceWindowId = event->mimeData()->data("application/x-window-id").toULongLong();
-    }
-
-    auto targetWindowId = reinterpret_cast<quintptr>(this->window());
-    if (sourceWindowId != targetWindowId) {
-        return;
-    }
-
-    if (const auto plusGeometry = plusButton_->geometry();
-        localPos.x() > plusGeometry.center().x()) {
-        tabLayout_->removeWidget(tab);
-        tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
-    } else {
-        int insertIndex = -1;
-
-        for (int index = 0; index < tabLayout_->count(); ++index) {
-            const auto *const widget = tabLayout_->itemAt(index)->widget();
-            if (widget == nullptr || widget == plusButton_) {
-                continue;
-            }
-
-            if (const auto geometry = widget->geometry();
-                localPos.x() < geometry.center().x()) {
-                insertIndex = index;
-                break;
-            }
-        }
-
-        tabLayout_->removeWidget(tab);
-
-        if (insertIndex != -1) {
-            tabLayout_->insertWidget(insertIndex, tab);
-        } else {
-            tabLayout_->insertWidget(tabLayout_->indexOf(plusButton_), tab);
-        }
-    }
-    setActiveTabSlot(tab);
-
-    event->acceptProposedAction();
 }
 
 

@@ -45,6 +45,9 @@ void UI::EditorPage::setDefaultScriptPath(const QString& path) {
     defaultScriptPath_ = path;
 }
 
+qint64  UI::EditorPage::getActiveTabId() const {
+    return tabBar_->getActiveTabId();
+}
 
 void UI::EditorPage::initUI() {
     initBaseEditorPage();
@@ -72,6 +75,7 @@ void UI::EditorPage::setupConnections() {
     connect(tabBar_, &TabBar::renameTabTriggered, this, &EditorPage::renameTabTriggered);
     connect(tabBar_, &TabBar::removeTabTriggered, this, &EditorPage::removeTabTriggered);
     connect(tabBar_, &TabBar::closeTabTriggered, this, &EditorPage::closeTabTriggered);
+    connect(tabBar_, &TabBar::tabMovedToAnotherWindow, this, &EditorPage::tabMovedToAnotherWindow);
 
     connect(navigationPage_, &NavigationWidget::closeApplicationTriggered, this,
             &EditorPage::closeApplicationTriggered);

@@ -130,7 +130,9 @@ UI::FramelessWindow::FramelessWindow(QWidget *parent) : QMainWindow(parent) {
     setWindowIcon(QIcon(":/Assets/logo/logo2.ico"));
 
     const auto style = loadStyles({
-        ":/Styles/app.qss", ":/Styles/buttons.qss", ":/Styles/menu.qss", ":/Styles/tooltip.qss", ":/Styles/window.qss",
+        ":/Styles/app.qss", ":/Styles/buttons.qss",
+        ":/Styles/menu.qss", ":/Styles/tooltip.qss",
+        ":/Styles/window.qss",
         ":/Styles/text.qss", ":/Styles/scroll.qss"
     });
 

@@ -33,9 +33,11 @@ namespace UI {
         void openLightEditorWindowTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
         void allTabsCloseTriggered();
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
 
     public slots:
         void renameTab(UI::FileData& data);
+        qint64 getActiveTabId() const;
         void deleteTabSlot(const qint64 id);
         UI::TabWidget* closeTabSlot(const qint64 id);
         void addTabSlot(const FileData& data);
@@ -64,6 +66,7 @@ namespace UI {
         TabWidget *activeTab_{nullptr};
         TabMenu *tabMenu_{nullptr};
         QPointer<TabWidget> contextTab_;
+        QWidget* ownerWindow_{nullptr};
 
         void createPlusButton();
 

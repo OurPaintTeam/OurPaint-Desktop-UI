@@ -12,7 +12,6 @@
 
 class QLineEdit;
 class QWindow;
-class QOpenGLWindow;
 class QCloseEvent;
 
 namespace UI {
@@ -21,46 +20,41 @@ namespace UI {
     class MainWindow;
     class LightEditorWindow;
 
-
     struct EditorContext {
-        FileSystem *fileSystem{nullptr};
-        SettingsSystem *settings{nullptr};
-        QWindow *renderEngine{nullptr};
-        QLineEdit *consoleEngine{nullptr};
+        FileSystem* fileSystem{nullptr};
+        SettingsSystem* settings{nullptr};
+        QWindow* renderEngine{nullptr};
+        QLineEdit* consoleEngine{nullptr};
     };
-
 
     class ProjectManager final : public QObject {
         Q_OBJECT
 
     public:
-        explicit ProjectManager(const EditorContext& context, QObject *parent = nullptr);
+        explicit ProjectManager(const EditorContext& context, QObject* parent = nullptr);
         ~ProjectManager() override;
 
-        void addTabInEditor(const FileData& data);
-        void openLightEditor(const EditorContext& context, const FileData& data);
+        void showStartWindow();
+        void showEditorWindow(FileData& data);
+        void showLightEditorWindow(const FileData& data);
+        bool isLightEditor() const;
+
+        void setActiveTab(const qint64 id);
+        void closeTabSlot(const qint64 id);
+        void deleteTabSlot(const qint64 id);
+        void renameTabSlot(FileData& data);
 
         void addNotification(const qint64 id, const QString& text) const;
         void addNotification(const QString& text) const;
-        void deleteTabSlot(const qint64 id);
-        void renameTabSlot(FileData& data);
-        void setActiveTab(const qint64 id);
-        void closeTabSlot(qint64 id);
 
-        //  EditorWindow
-        void setActiveToolEditorWindow(ToolsType tool) const;
-        void setActiveToolEditorWindow(PrimitiveType tool) const;
-        void setActiveToolEditorWindow(ConstraintType tool);
-        void setHintConstraintToolsEditorWindow(const QVector<ConstraintType>& vecTools);
-        void takeOffHintConstraintToolsEditorWindow();
+        void setActiveTool(ToolsType tool) const;
+        void setActiveTool(PrimitiveType tool) const;
+        void setActiveTool(ConstraintType tool) const;
+        void setHintConstraintTools(const QVector<ConstraintType>& vecTools) const;
+        void takeOffHintConstraintTools() const;
 
-        // LightEditorWindow
-        void setActiveToolLightEditorWindow(qint64 id, ConstraintType tool);
-        void takeOffHintConstraintToolsLightEditorWindow(qint64 id);
-        void setHintConstraintToolsLightEditorWindow(qint64 id, const QVector<ConstraintType>& vecTools);
-        void setActiveToolLightEditorWindow(qint64 id, ToolsType tool);
-        void setActiveToolLightEditorWindow(qint64 id, PrimitiveType tool);
-
+        BaseWindow* activeWindow() const;
+        QWidget* windowWidget() const;
     signals:
         void createFileTriggered(const QString& path, bool newWindow);
         void openFileTriggered(const QString& path, bool newWindow);
@@ -69,6 +63,7 @@ namespace UI {
         void removeFileTriggered(const qint64 id);
         void closeFileTriggered(const qint64 id);
         void setActiveFileTriggered(const qint64 id);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
 
         void sentCommandTriggered(const qint64 id, const QString command);
         void primitiveTriggered(const qint64 id, PrimitiveType type);
@@ -79,29 +74,25 @@ namespace UI {
         void settingsChanged();
         void saveFullProjectTriggered();
 
-        void lightEditorReturned(const qint64 id);
         void lightEditorRequested(const qint64 id);
-
-    protected:
-        void closeEvent(QCloseEvent *event);
+        void returnTabToEditorRequested(qint64 id);
+        void closeLightEditorWindowTriggered(const qint64 id);
 
     private:
+        void ensureMainWindow();
+        void ensureLightEditorWindow(const FileData& data);
+        void loadSettings() const;
+        void connectMainWindowSignals();
+
         void showStartWindow(const QVector<ProjectData>& data);
         void returnToStartWindow();
         void handleEditorWindowClosed();
 
-        void ensureMainWindow();
-        void loadSettings();
-        void connectMainWindowSignals();
-        void closeLightEditorWindows();
-
-        LightEditorWindow* findLightEditorWindow(const qint64 id) const;
-        BaseWindow* activeWindow() const;
-
         EditorContext context_;
 
-        MainWindow *mainWindow_{nullptr};
-        QVector<LightEditorWindow*> lightEditorWindows_{};
+        MainWindow* mainWindow_{nullptr};
+        LightEditorWindow* lightEditorWindow_{nullptr};
     };
-} // namespace UI
+}
+
 #endif

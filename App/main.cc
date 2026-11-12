@@ -6,9 +6,13 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QSettings>
-#include <QThread>                       
+#include <QThread>
+#include <QFile>
 
+#ifdef Q_OS_WIN
 #include "RegWin.h"
+#endif
+
 #include "UIManager.h"
 
 namespace {
@@ -40,11 +44,13 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setOrganizationName("OurPaint");
     QCoreApplication::setApplicationName("OurPaint");
 
+#ifdef Q_OS_WIN
     QSettings appSettings;
     if (!appSettings.value("fileAssociationRegistered", false).toBool()) {
         registerFileAssociation();
         appSettings.setValue("fileAssociationRegistered", true);
     }
+#endif
 
     QCommandLineParser parser;
     parser.addHelpOption();
@@ -70,7 +76,6 @@ int main(int argc, char* argv[]) {
     bool isServer = server.listen(kServerName);
 
     if (!isServer) {
-
         for (int i = 0; i < 10 && !isServer; ++i) {
             if (trySendToRunningInstance(filePaths, 200))
                 return 0;
@@ -87,17 +92,17 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    auto* uiManager = new UIManager();
+    UIManager uiManager;
 
     if (isServer) {
-        QObject::connect(&server, &QLocalServer::newConnection, [&server, uiManager]() {
+        QObject::connect(&server, &QLocalServer::newConnection, [&server, &uiManager]() {
             while (QLocalSocket* client = server.nextPendingConnection()) {
-                QObject::connect(client, &QLocalSocket::readyRead, [client, uiManager]() {
+                QObject::connect(client, &QLocalSocket::readyRead, [client, &uiManager]() {
                     QDataStream stream(client);
                     QStringList received;
                     stream >> received;
                     if (!received.isEmpty())
-                        uiManager->openFilesFromCommandLine(received);
+                        uiManager.openFilesFromCommandLine(received);
                     client->deleteLater();
                 });
             }
@@ -105,7 +110,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (!filePaths.isEmpty())
-        uiManager->openFilesFromCommandLine(filePaths);
+        uiManager.openFilesFromCommandLine(filePaths);
 
     return QApplication::exec();
 }

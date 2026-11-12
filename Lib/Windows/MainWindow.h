@@ -30,6 +30,7 @@ namespace UI {
         void renameTabSlot(FileData& data) const;
         void showStartPage();
         void showEditorPage();
+        qint64 getActiveTabId() const;
 
         void closeApplicationSlot();
 
@@ -43,6 +44,7 @@ namespace UI {
         void openFileByIDTriggered(qint64 id, bool newWindow);
         void openFileTriggered(const QString& path, bool newWindow);
         void createFileTriggered(const QString& path, bool newWindow);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
         void renameFileTriggered(FileData& data);
         void deleteFileTriggered(qint64 id);
         void renameTabTriggered(FileData& data);

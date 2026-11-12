@@ -28,6 +28,7 @@ namespace UI {
 
         void setDefaultProjectPath(const QString& path);
         void setDefaultScriptPath(const QString& path);
+        qint64 getActiveTabId() const;
 
     signals:
         void createFileTriggered(const QString& path,bool newWindow);
@@ -37,6 +38,7 @@ namespace UI {
         void removeTabTriggered(const qint64 id);
         void renameTabTriggered(FileData& data);
         void closeTabTriggered(const qint64 id);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
 
         void openLightEditorWindowTriggered(const qint64 id);
 
@@ -50,6 +52,7 @@ namespace UI {
         void versionTriggered(UI::version v);
 
         void settingsChanged();
+
 
     protected:
         void changeEvent(QEvent *e) override;

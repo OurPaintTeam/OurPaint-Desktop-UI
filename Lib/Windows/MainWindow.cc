@@ -47,6 +47,7 @@ void UI::MainWindow::initUI() {
     connect(editorPageWidget_, &EditorPage::settingsChanged, this, &MainWindow::settingsChanged);
     connect(editorPageWidget_, &EditorPage::scriptTriggered, this, &MainWindow::onOpenScriptTriggered);
     connect(editorPageWidget_, &EditorPage::closeApplicationTriggered, this, &MainWindow::closeApplicationSlot);
+    connect(editorPageWidget_, &EditorPage::tabMovedToAnotherWindow, this, &MainWindow::tabMovedToAnotherWindow);
 
     connect(editorPageWidget_, &BaseEditorPage::sentCommandTriggered, this, &BaseEditorWindow::sentCommandTriggered);
     connect(editorPageWidget_, &BaseEditorPage::primitiveTriggered, this, &BaseEditorWindow::primitiveTriggered);
@@ -114,6 +115,10 @@ void UI::MainWindow::showEditorPage() {
     if (stack_ && editorPageWidget_) stack_->setCurrentWidget(editorPageWidget_);
 }
 
+
+qint64 UI::MainWindow::getActiveTabId() const {
+    return editorPageWidget_->getActiveTabId();
+}
 
 QStackedWidget* UI::MainWindow::stack() const { return stack_; }
 UI::StartPage* UI::MainWindow::startPage() const { return startPage_; }

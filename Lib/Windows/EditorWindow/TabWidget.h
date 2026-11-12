@@ -25,6 +25,7 @@ namespace UI {
         void startRename();
         void setName(const QString& name);
         qint64 getFileId() const;
+        void setOwnerWindow(QWidget* win);
 
     signals:
         void clickedTriggered(UI::TabWidget* tab);
@@ -43,6 +44,7 @@ namespace UI {
         QToolButton* closeButton_{nullptr};
         QHBoxLayout* layout_{nullptr};
         QPoint dragStartPos_;
+        QWidget* ownerWindow_{nullptr};
 
         FileData fileData_;
        RenameTabLineEdit* edit_{nullptr};

@@ -116,25 +116,18 @@ void UI::TabWidget::mousePressEvent(QMouseEvent *e) {
 
 
 void UI::TabWidget::mouseMoveEvent(QMouseEvent *e) {
-    if (!(e->buttons() & Qt::LeftButton)) {
-        return;
-    }
-
-    if ((e->pos() - dragStartPos_).manhattanLength()
-        < QApplication::startDragDistance()) {
-        return;
-    }
+    if (!(e->buttons() & Qt::LeftButton)) return;
+    if ((e->pos() - dragStartPos_).manhattanLength() < QApplication::startDragDistance()) return;
 
     auto drag = std::make_unique<QDrag>(this);
     auto mime = std::make_unique<QMimeData>();
 
-    mime->setData(K_TAB_MIME_TYPE, QByteArray::number(reinterpret_cast<quintptr>(this)));
-    mime->setData("application/x-window-id",
-                  QByteArray::number(reinterpret_cast<quintptr>(window())));
+    mime->setData("application/x-tab-id", QByteArray::number(fileData_.id));
+    mime->setData("application/x-window-id", QByteArray::number(reinterpret_cast<quintptr>(ownerWindow_)));
+
     drag->setMimeData(mime.release());
 
-    if (const auto action = drag->exec(Qt::MoveAction);
-        action == Qt::IgnoreAction) {
+    if (const auto action = drag->exec(Qt::MoveAction); action == Qt::IgnoreAction) {
         emit draggedOutTriggered(this);
     }
 }
@@ -164,6 +157,11 @@ void UI::TabWidget::applyActiveStyle() {
 
 qint64 UI::TabWidget::getFileId() const {
     return fileData_.id;
+}
+
+
+void UI::TabWidget::setOwnerWindow(QWidget *win) {
+    ownerWindow_ = win;
 }
 
 

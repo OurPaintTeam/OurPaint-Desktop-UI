@@ -20,6 +20,9 @@ void UI::LightEditorWindow::initUI() {
     });
 }
 
+void UI::LightEditorWindow::setNotificationsEnabled(const bool enable) {
+    includeNotificationManager(enable);
+}
 
 void UI::LightEditorWindow::setName(const QString& name) {
     setWindowTitle(name);

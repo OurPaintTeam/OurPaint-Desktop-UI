@@ -20,6 +20,7 @@ namespace UI {
         ~LightEditorWindow() override = default;
 
         void initUI() override;
+        void setNotificationsEnabled(bool enable);
         qint64 id() const;
         void setName(const QString& name);
         signals:

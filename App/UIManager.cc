@@ -3,7 +3,7 @@
 #include <clocale>
 #include <iostream>
 #include <QApplication>
-#include <qcoreapplication.h>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QFileInfo>
 #include <QTranslator>
@@ -14,7 +14,6 @@
 #include "ToolsType.h"
 #include "Utils.h"
 
-
 UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
     setlocale(LC_ALL, "");
 
@@ -22,12 +21,9 @@ UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
     applyLanguage(currentLanguage_);
 
     auto ctx = createEditorContext();
-    createManager(ctx);
+    auto m = createBaseManager(ctx);
+    m->showStartWindow();
 }
-
-
-// Context
-
 
 UI::EditorContext UIManager::createEditorContext() const {
     UI::EditorContext ctx;
@@ -38,54 +34,44 @@ UI::EditorContext UIManager::createEditorContext() const {
     return ctx;
 }
 
-
 UI::EditorContext UIManager::createLightEditorContext() const {
-    UI::EditorContext ctx;
-    ctx.fileSystem = const_cast<UI::FileSystem*>(&fs_);
-    ctx.settings = const_cast<UI::SettingsSystem*>(&settingsSystem_);
-    ctx.settings = const_cast<UI::SettingsSystem*>(&settingsSystem_);
-    ctx.renderEngine = new RenderEngine();
-    ctx.consoleEngine = new CustomConsole();
-    return ctx;
+    return createEditorContext();
 }
 
-
-// creaters
-
-
-UI::ProjectManager* UIManager::createManager(const UI::EditorContext& context) {
+UI::ProjectManager* UIManager::createBaseManager(const UI::EditorContext& context) {
     auto *manager = new UI::ProjectManager(context, this);
     projectManagers_.push_back(manager);
-    initSignals(*manager);
+    initBaseSignals(*manager);
     return manager;
 }
 
+UI::ProjectManager* UIManager::createLightManager(const UI::EditorContext& context) {
+    auto *manager = new UI::ProjectManager(context, this);
+    projectManagers_.push_back(manager);
+    initLightManager(*manager);
+    return manager;
+}
 
 void UIManager::deleteSlot(UI::ProjectManager *manager) {
     projectManagers_.removeOne(manager);
 }
 
-
-// files
-
 void UIManager::openFilesFromCommandLine(const QStringList& paths) {
-    if (paths.isEmpty())
-        return;
+    if (paths.isEmpty()) return;
 
-    if (projectManagers_.isEmpty()) {
-        qWarning() << "[UIManager] No ProjectManager available for"
-                   << paths.size() << "file(s)";
-        return;
+    UI::ProjectManager* target = nullptr;
+    for (auto* pm : projectManagers_) {
+        if (!pm->isLightEditor()) {
+            target = pm;
+            break;
+        }
     }
 
-    UI::ProjectManager* target = projectManagers_.first();
-    if (auto* active = qobject_cast<UI::ProjectManager*>(QApplication::activeWindow()))
-        target = active;
+    if (!target) return;
 
     for (const QString& path : paths) {
-        if (path.trimmed().isEmpty())
-            continue;
-        openFileByPath(path, target, /*newWindow=*/false);
+        if (path.trimmed().isEmpty()) continue;
+        openFileByPath(path, target, false);
     }
 }
 
@@ -99,15 +85,14 @@ void UIManager::openFile(qint64 fileId, UI::ProjectManager *currentManager, bool
     UI::FileData fd{data.id, data.name};
 
     if (newWindow || !currentManager) {
-        auto *newManager = createManager(createEditorContext());
-        newManager->addTabInEditor(fd);
+        auto *newManager = createBaseManager(createEditorContext());
+        newManager->showEditorWindow(fd);
         newManager->addNotification("📄 File opened in new window: " + data.name);
     } else {
-        currentManager->addTabInEditor(fd);
+        currentManager->showEditorWindow(fd);
         currentManager->addNotification("📄 File opened: " + data.name);
     }
 }
-
 
 void UIManager::openFileByPath(const QString& path, UI::ProjectManager *currentManager, bool newWindow) {
     if (path.trimmed().isEmpty()) return;
@@ -121,7 +106,6 @@ void UIManager::openFileByPath(const QString& path, UI::ProjectManager *currentM
 
     openFile(fileId, currentManager, newWindow);
 }
-
 
 void UIManager::createFile(const QString& fileName, UI::ProjectManager *currentManager, bool newWindow) {
     qint64 fileId = -1;
@@ -147,15 +131,14 @@ void UIManager::createFile(const QString& fileName, UI::ProjectManager *currentM
     UI::FileData fd{data.id, data.name};
 
     if (newWindow || !currentManager) {
-        auto *newManager = createManager(createEditorContext());
-        newManager->addTabInEditor(fd);
+        auto *newManager = createBaseManager(createEditorContext());
+        newManager->showEditorWindow(fd);
         newManager->addNotification("✨ File created in new window: " + data.name);
     } else {
-        currentManager->addTabInEditor(fd);
+        currentManager->showEditorWindow(fd);
         currentManager->addNotification("✨ File created: " + data.name);
     }
 }
-
 
 void UIManager::renameFile(UI::FileData& data) {
     if (data.name.isEmpty()) return;
@@ -167,7 +150,6 @@ void UIManager::renameFile(UI::FileData& data) {
     }
 }
 
-
 void UIManager::deleteFile(UI::ProjectManager *manager, qint64 fileId) {
     UI::FileSystem::ProjectData data;
     const bool hasData = fs_.getProject(fileId, data) == UI::FileSystem::FsResult::Ok;
@@ -178,79 +160,114 @@ void UIManager::deleteFile(UI::ProjectManager *manager, qint64 fileId) {
         return;
     }
 
-    for (auto *m: projectManagers_) {
+    for (auto *m : projectManagers_) {
         if (m) m->deleteTabSlot(fileId);
     }
     if (manager) manager->addNotification("🗑️ File removed: " + name);
 }
 
-
-void UIManager::closeTab(qint64 fileId) {
-    for (auto *m: projectManagers_) {
-        m->deleteTabSlot(fileId);
+void UIManager::closeTab(UI::ProjectManager *currentManager, qint64 fileId) {
+    if (currentManager) {
+        currentManager->closeTabSlot(fileId);
     }
 }
 
+void UIManager::closeLightEditorWindow(const qint64 fileId, UI::ProjectManager *currentManager) {
+    Q_UNUSED(fileId);
+    Q_UNUSED(currentManager);
+}
 
-// (LightEditor)
-
-
-void UIManager::openLightEditor(UI::ProjectManager *manager, UI::FileData& data) {
-    if (!manager) return;
+void UIManager::openLightEditor(UI::ProjectManager *currentManager, UI::FileData& data) {
+    if (!currentManager) return;
 
     auto ctx = createLightEditorContext();
-    manager->openLightEditor(ctx, data);
+    auto* lightManager = createLightManager(ctx);
 
-    manager->addNotification("Opened light editor: " + data.name);
+    lightManager->showLightEditorWindow(data);
+    currentManager->closeTabSlot(data.id);
+
+    lightManager->addNotification("Opened light editor: " + data.name);
 }
-
 
 void UIManager::returnTabFromLight(UI::ProjectManager *manager, qint64 fileId) {
-    if (!manager) return;
-    UI::FileSystem::ProjectData data;
-    if (fs_.getProject(fileId, data) != UI::FileSystem::FsResult::Ok) return;
+    UI::FileSystem::ProjectData pd;
+    if (fs_.getProject(fileId, pd) != UI::FileSystem::FsResult::Ok) return;
 
-    UI::FileData fd{data.id, data.name};
-    manager->addTabInEditor(fd);
-    manager->addNotification("Returned tab from light editor: " + data.name);
+    UI::FileData fd{pd.id, pd.name};
+
+    UI::ProjectManager* targetManager = nullptr;
+    for (auto* pm : projectManagers_) {
+        if (!pm->isLightEditor() && pm != manager) {
+            targetManager = pm;
+            break;
+        }
+    }
+
+    if (!targetManager) {
+        targetManager = createBaseManager(createEditorContext());
+    }
+
+    targetManager->showEditorWindow(fd);
+    targetManager->addNotification("Returned tab from light editor: " + fd.name);
+
+    if (manager) {
+        manager->deleteLater();
+    }
 }
 
+void UIManager::handleTabMove(UI::ProjectManager* sourceManager, qint64 fileId, quintptr targetWindowPtr) {
+    if (!sourceManager) return;
 
-// slots
+    UI::ProjectManager* targetManager = nullptr;
+    for (auto* pm : projectManagers_) {
+        if (!pm || pm == sourceManager) continue;
 
+        QWidget* win = pm->windowWidget();
+        if (win && reinterpret_cast<quintptr>(win) == targetWindowPtr) {
+            targetManager = pm;
+            break;
+        }
+    }
+
+    if (!targetManager) {
+        return;
+    }
+
+    UI::FileSystem::ProjectData pd;
+    if (fs_.getProject(fileId, pd) != UI::FileSystem::FsResult::Ok) return;
+    UI::FileData fd{pd.id, pd.name};
+
+    // 3. Переносим: убираем из ОТКУДА, добавляем в КУДА
+    sourceManager->closeTabSlot(fileId);
+    targetManager->showEditorWindow(fd);
+}
 
 void UIManager::setActiveTab(UI::ProjectManager *manager, qint64 fileId) const {
     if (manager) manager->setActiveTab(fileId);
 }
 
-
 void UIManager::sentCommandFromConsole(UI::ProjectManager *manager, qint64 fileId, const QString& command) const {
     if (manager) manager->addNotification(fileId, "Console command received: " + command);
 }
-
 
 void UIManager::primitiveSlot(UI::ProjectManager *manager, UI::PrimitiveType& type, qint64 fileId) {
     Q_UNUSED(type);
     if (manager) manager->addNotification(fileId, "Primitive selected for file " + QString::number(fileId));
 }
 
-
 void UIManager::constraintSlot(UI::ProjectManager *manager, UI::ConstraintType& type, qint64 fileId) {
     Q_UNUSED(type);
     if (manager) manager->addNotification(fileId, "Constraint selected for file " + QString::number(fileId));
 }
-
 
 void UIManager::toolsSlot(UI::ProjectManager *manager, UI::ToolsType& type, qint64 fileId) {
     Q_UNUSED(type);
     if (manager) manager->addNotification(fileId, "Tool selected for file " + QString::number(fileId));
 }
 
-
 void UIManager::scriptSlot(UI::ProjectManager *manager, const QString& path) {
     if (manager) manager->addNotification("Script: " + path);
 }
-
 
 void UIManager::settingsChangedSlot(UI::ProjectManager *) {
     const auto d = settingsSystem_.loadChanges();
@@ -267,7 +284,6 @@ void UIManager::settingsChangedSlot(UI::ProjectManager *) {
     if (d.language) applyLanguage(*d.language);
 }
 
-
 void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
     if (translator_) {
         qApp->removeTranslator(translator_);
@@ -278,7 +294,6 @@ void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
     currentLanguage_ = lang;
 
     if (lang == UI::SettingsSystem::Language::English) {
-        qDebug() << "[UIManager] Language set to English (base)";
         return;
     }
 
@@ -290,18 +305,12 @@ void UIManager::applyLanguage(UI::SettingsSystem::Language lang) {
     if (tr->load(path)) {
         qApp->installTranslator(tr);
         translator_ = tr;
-        qDebug() << "[UIManager] Change translation:" << path;
     } else {
-        qWarning() << "[UIManager] Failed to load:" << path;
         delete tr;
     }
 }
 
-
-//  (initSignals)
-
-
-void UIManager::initSignals(UI::ProjectManager& manager) {
+void UIManager::initBaseSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::openFileByIDTriggered, this,
             [this, &manager](qint64 fileId, bool newWindow) { openFile(fileId, &manager, newWindow); });
 
@@ -318,12 +327,10 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
             [this, &manager](qint64 fileId) { deleteFile(&manager, fileId); });
 
     connect(&manager, &UI::ProjectManager::closeFileTriggered, this,
-            [this](const qint64 fileId) { closeTab(fileId); });
-
+            [this, &manager](const qint64 fileId) { closeTab(&manager, fileId); });
 
     connect(&manager, &UI::ProjectManager::setActiveFileTriggered, this,
             [this, &manager](qint64 fileId) { setActiveTab(&manager, fileId); });
-
 
     connect(&manager, &UI::ProjectManager::lightEditorRequested, this,
             [this, &manager](qint64 fileId) {
@@ -332,15 +339,16 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
                 UI::FileData fd{pd.id, pd.name};
                 openLightEditor(&manager, fd);
             });
+    connect(&manager, &UI::ProjectManager::tabMovedToAnotherWindow, this,
+        [this, &manager](qint64 fileId, quintptr targetWindowPtr) {
+            handleTabMove(&manager, fileId, targetWindowPtr);
+        });
 
-    connect(&manager, &UI::ProjectManager::lightEditorReturned, this,
-            [this, &manager](qint64 fileId) { returnTabFromLight(&manager, fileId); });
-
+    connect(&manager, &UI::ProjectManager::saveFullProjectTriggered, this,
+            []() { std::cout << "Saving full project..." << std::endl; });
 
     connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
-            [this, &manager](qint64 fileId, const QString& command) {
-                sentCommandFromConsole(&manager, fileId, command);
-            });
+            [this, &manager](qint64 fileId, const QString& command) { sentCommandFromConsole(&manager, fileId, command); });
 
     connect(&manager, &UI::ProjectManager::primitiveTriggered, this,
             [this, &manager](qint64 fileId, UI::PrimitiveType type) { primitiveSlot(&manager, type, fileId); });
@@ -351,18 +359,40 @@ void UIManager::initSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::toolsTriggered, this,
             [this, &manager](qint64 fileId, UI::ToolsType type) { toolsSlot(&manager, type, fileId); });
 
-
     connect(&manager, &UI::ProjectManager::scriptTriggered, this,
             [this, &manager](const QString& path) { scriptSlot(&manager, path); });
-
 
     connect(&manager, &UI::ProjectManager::settingsChanged, this,
             [this, &manager]() { settingsChangedSlot(&manager); });
 
+    connect(&manager, &QObject::destroyed, this,
+            [this, &manager] { deleteSlot(&manager); });
+}
 
-    connect(&manager, &UI::ProjectManager::saveFullProjectTriggered, this,
-            []() { std::cout << "Saving full project..." << std::endl; });
+void UIManager::initLightManager(UI::ProjectManager& manager) {
+    connect(&manager, &UI::ProjectManager::returnTabToEditorRequested, this,
+            [this, &manager](qint64 fileId) { returnTabFromLight(&manager, fileId); });
 
+    connect(&manager, &UI::ProjectManager::closeLightEditorWindowTriggered, this,
+            [this, &manager](qint64 fileId) { closeLightEditorWindow(fileId, &manager); });
+
+    connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
+            [this, &manager](qint64 fileId, const QString& command) { sentCommandFromConsole(&manager, fileId, command); });
+
+    connect(&manager, &UI::ProjectManager::primitiveTriggered, this,
+            [this, &manager](qint64 fileId, UI::PrimitiveType type) { primitiveSlot(&manager, type, fileId); });
+
+    connect(&manager, &UI::ProjectManager::constraintTriggered, this,
+            [this, &manager](qint64 fileId, UI::ConstraintType type) { constraintSlot(&manager, type, fileId); });
+
+    connect(&manager, &UI::ProjectManager::toolsTriggered, this,
+            [this, &manager](qint64 fileId, UI::ToolsType type) { toolsSlot(&manager, type, fileId); });
+
+    connect(&manager, &UI::ProjectManager::scriptTriggered, this,
+            [this, &manager](const QString& path) { scriptSlot(&manager, path); });
+
+    connect(&manager, &UI::ProjectManager::settingsChanged, this,
+            [this, &manager]() { settingsChangedSlot(&manager); });
 
     connect(&manager, &QObject::destroyed, this,
             [this, &manager] { deleteSlot(&manager); });
