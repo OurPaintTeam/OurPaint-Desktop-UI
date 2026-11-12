@@ -10,6 +10,7 @@
 class QHBoxLayout;
 class QPushButton;
 class QScrollArea;
+class QDropEvent;
 
 namespace UI {
     class TabMenu;
@@ -52,9 +53,12 @@ namespace UI {
         void dragMoveEvent(QDragMoveEvent *event) override;
         void dropEvent(QDropEvent *event) override;
         void changeEvent(QEvent *e) override;
+        bool eventFilter(QObject *obj, QEvent *event) override;
 
     private:
         void translate() const;
+        void handleDrop(QDropEvent *event, const QPoint& position);
+        void reorderTab(TabWidget *tab, int targetIndex);
 
         QWidget *tabBar_{nullptr};
         QHBoxLayout *tabLayout_{nullptr};

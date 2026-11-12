@@ -1,6 +1,7 @@
 #include "TabWidget.h"
 
 #include <QApplication>
+#include <QCursor>
 #include <QDrag>
 #include <QHBoxLayout>
 #include <QMimeData>
@@ -23,7 +24,7 @@ namespace {
     constexpr int K_TAB_HORIZONTAL_PADDING_PX = 8;
     constexpr int K_TAB_LAYOUT_SPACING_PX = 4;
     constexpr int K_CLOSE_BUTTON_WIDTH_PX = 16;
-    constexpr auto K_TAB_MIME_TYPE = "application/x-tabwidget";
+    constexpr auto K_TAB_MIME_TYPE = "application/x-tab-id";
 } // namespace
 
 
@@ -81,6 +82,22 @@ bool UI::TabWidget::eventFilter(QObject *obj, QEvent *event) {
             startRename();
             return true;
         }
+
+        if (event->type() == QEvent::MouseButtonPress) {
+            auto *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                dragStartPos_ = mouseEvent->pos();
+            }
+        }
+
+        if (event->type() == QEvent::MouseMove) {
+            auto *mouseEvent = static_cast<QMouseEvent*>(event);
+            if ((mouseEvent->buttons() & Qt::LeftButton)
+                && (mouseEvent->pos() - dragStartPos_).manhattanLength() >= QApplication::startDragDistance()) {
+                startDrag();
+                return true;
+            }
+        }
     }
 
     return QWidget::eventFilter(obj, event);
@@ -118,16 +135,20 @@ void UI::TabWidget::mousePressEvent(QMouseEvent *e) {
 void UI::TabWidget::mouseMoveEvent(QMouseEvent *e) {
     if (!(e->buttons() & Qt::LeftButton)) return;
     if ((e->pos() - dragStartPos_).manhattanLength() < QApplication::startDragDistance()) return;
+    startDrag();
+}
 
+void UI::TabWidget::startDrag() {
     auto drag = std::make_unique<QDrag>(this);
     auto mime = std::make_unique<QMimeData>();
 
-    mime->setData("application/x-tab-id", QByteArray::number(fileData_.id));
+    mime->setData(K_TAB_MIME_TYPE, QByteArray::number(fileData_.id));
     mime->setData("application/x-window-id", QByteArray::number(reinterpret_cast<quintptr>(ownerWindow_)));
 
     drag->setMimeData(mime.release());
 
-    if (const auto action = drag->exec(Qt::MoveAction); action == Qt::IgnoreAction) {
+    if (const auto action = drag->exec(Qt::MoveAction); action == Qt::IgnoreAction
+        && QApplication::widgetAt(QCursor::pos()) == nullptr) {
         emit draggedOutTriggered(this);
     }
 }

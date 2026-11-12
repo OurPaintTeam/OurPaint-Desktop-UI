@@ -1,6 +1,8 @@
 #include "TabBar.h"
 
 #include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QMimeData>
 #include <QPushButton>
@@ -59,6 +61,9 @@ UI::TabBar::TabBar(QWidget *parent)
     // viewport
     scrollArea_->viewport()->setObjectName(QStringLiteral("ViewportScrollAreaTabBar"));
     scrollArea_->viewport()->setAttribute(Qt::WA_StyledBackground, true);
+    scrollArea_->viewport()->setAcceptDrops(true);
+    scrollArea_->viewport()->installEventFilter(this);
+    tabBar_->setAcceptDrops(true);
 
     scrollArea_->horizontalScrollBar()->setObjectName(QStringLiteral("TabBarHScroll"));
     scrollArea_->verticalScrollBar()->setObjectName(QStringLiteral("TabBarVScroll"));
@@ -144,6 +149,7 @@ void UI::TabBar::onTabMenuAction(UI::tabMenuType type) {
 
 
 void UI::TabBar::addTabSlot(const FileData& data) {
+    ownerWindow_ = window();
     auto *tab = new UI::TabWidget(tabBar_, data);
     tab->setOwnerWindow(ownerWindow_);
     tabs_.append(tab);
@@ -287,14 +293,36 @@ void UI::TabBar::dragMoveEvent(QDragMoveEvent *event) {
     }
 }
 
-
 void UI::TabBar::dropEvent(QDropEvent *event) {
+    handleDrop(event, tabBar_->mapFrom(this, event->position().toPoint()));
+}
+
+bool UI::TabBar::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == scrollArea_->viewport()) {
+        if (event->type() == QEvent::DragEnter || event->type() == QEvent::DragMove) {
+            auto *dragEvent = static_cast<QDragMoveEvent*>(event);
+            if (dragEvent->mimeData()->hasFormat("application/x-tab-id")) {
+                dragEvent->acceptProposedAction();
+                return true;
+            }
+        }
+
+        if (event->type() == QEvent::Drop) {
+            auto *drop = static_cast<QDropEvent*>(event);
+            handleDrop(drop, tabBar_->mapFrom(scrollArea_->viewport(), drop->position().toPoint()));
+            return drop->isAccepted();
+        }
+    }
+
+    return QWidget::eventFilter(obj, event);
+}
+
+void UI::TabBar::handleDrop(QDropEvent *event, const QPoint& position) {
     if (!event->mimeData()->hasFormat("application/x-tab-id")) return;
 
-    qint64 fileId = event->mimeData()->data("application/x-tab-id").toLongLong();
-    quintptr sourceWindowPtr = event->mimeData()->data("application/x-window-id").toULongLong();
-
-    quintptr targetWindowPtr = reinterpret_cast<quintptr>(ownerWindow_);
+    const qint64 fileId = event->mimeData()->data("application/x-tab-id").toLongLong();
+    const quintptr sourceWindowPtr = event->mimeData()->data("application/x-window-id").toULongLong();
+    const quintptr targetWindowPtr = reinterpret_cast<quintptr>(window());
 
     if (sourceWindowPtr != targetWindowPtr) {
         emit tabMovedToAnotherWindow(fileId, targetWindowPtr);
@@ -302,13 +330,40 @@ void UI::TabBar::dropEvent(QDropEvent *event) {
         return;
     }
 
-    TabWidget* tab = nullptr;
-    for (auto* t : tabs_) {
-        if (t->getFileId() == fileId) { tab = t; break; }
+    TabWidget *tab = nullptr;
+    for (auto *candidate : tabs_) {
+        if (candidate->getFileId() == fileId) {
+            tab = candidate;
+            break;
+        }
     }
+
     if (!tab) return;
 
-    const auto localPos = tabBar_->mapFrom(this, event->position().toPoint());
+    int targetIndex = 0;
+    for (auto *candidate : tabs_) {
+        if (candidate == tab) continue;
+        if (position.x() >= candidate->geometry().center().x()) {
+            ++targetIndex;
+        }
+    }
+
+    reorderTab(tab, targetIndex);
+    event->acceptProposedAction();
+}
+
+void UI::TabBar::reorderTab(TabWidget *tab, int targetIndex) {
+    const int sourceIndex = tabs_.indexOf(tab);
+    if (sourceIndex < 0) return;
+
+    targetIndex = qBound(0, targetIndex, tabs_.size() - 1);
+    if (sourceIndex == targetIndex) return;
+
+    tabs_.move(sourceIndex, targetIndex);
+    tabLayout_->removeWidget(tab);
+    tabLayout_->insertWidget(targetIndex, tab);
+
+    if (activeTab_) setActiveTabSlot(activeTab_);
 }
 
 
