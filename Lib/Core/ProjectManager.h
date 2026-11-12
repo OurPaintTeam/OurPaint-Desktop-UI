@@ -35,6 +35,7 @@ namespace UI {
         ~ProjectManager() override;
 
         void showStartWindow();
+        void addTabSlot(FileData& data);
         void showEditorWindow(FileData& data);
         void showLightEditorWindow(const FileData& data);
         bool isLightEditor() const;

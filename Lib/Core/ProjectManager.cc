@@ -37,6 +37,12 @@ void UI::ProjectManager::showStartWindow() {
     }
 }
 
+void UI::ProjectManager::addTabSlot(FileData& data) {
+    if (mainWindow_) {
+        mainWindow_->addTabSlot(data);
+    }
+}
+
 void UI::ProjectManager::showEditorWindow(FileData& data) {
     ensureMainWindow();
     if (mainWindow_) {

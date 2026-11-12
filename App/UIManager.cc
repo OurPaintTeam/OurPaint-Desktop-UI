@@ -97,7 +97,7 @@ void UIManager::openFile(qint64 fileId, UI::ProjectManager *currentManager, bool
         newManager->showEditorWindow(fd);
         newManager->addNotification("📄 File opened in new window: " + data.name);
     } else {
-        currentManager->showEditorWindow(fd);
+        currentManager->addTabSlot(fd);
         currentManager->addNotification("📄 File opened: " + data.name);
     }
 }
@@ -143,7 +143,7 @@ void UIManager::createFile(const QString& fileName, UI::ProjectManager *currentM
         newManager->showEditorWindow(fd);
         newManager->addNotification("✨ File created in new window: " + data.name);
     } else {
-        currentManager->showEditorWindow(fd);
+        currentManager->addTabSlot(fd);
         currentManager->addNotification("✨ File created: " + data.name);
     }
 }
@@ -213,9 +213,11 @@ void UIManager::returnTabFromLight(UI::ProjectManager *manager, qint64 fileId) {
 
     if (!targetManager) {
         targetManager = createBaseManager(createEditorContext());
+        targetManager->showEditorWindow(fd);
+    }else {
+        targetManager->addTabSlot(fd);
     }
 
-    targetManager->showEditorWindow(fd);
     targetManager->addNotification("Returned tab from light editor: " + fd.name);
 
     if (manager) {
@@ -245,7 +247,7 @@ void UIManager::handleTabMove(qint64 fileId, quintptr sourceWindowPtr, quintptr 
 
     UI::FileData fd{pd.id, pd.name};
     sourceManager->closeTabSlot(fileId);
-    targetManager->showEditorWindow(fd);
+    targetManager->addTabSlot(fd);
 }
 
 void UIManager::setActiveTab(UI::ProjectManager *manager, qint64 fileId) const {
