@@ -38,8 +38,13 @@ void UI::ProjectManager::showStartWindow() {
 }
 
 void UI::ProjectManager::addTabSlot(FileData& data) {
+    ensureMainWindow();
     if (mainWindow_) {
         mainWindow_->addTabSlot(data);
+        if (!mainWindow_->isVisible()) mainWindow_->show();
+        if (mainWindow_->isMinimized()) mainWindow_->showNormal();
+        mainWindow_->raise();
+        mainWindow_->activateWindow();
     }
 }
 
@@ -48,8 +53,10 @@ void UI::ProjectManager::showEditorWindow(FileData& data) {
     if (mainWindow_) {
         mainWindow_->addTabSlot(data);
         mainWindow_->showEditorPage();
+
         loadSettings();
-        mainWindow_->show();
+        if (!mainWindow_->isVisible()) mainWindow_->show();
+        if (mainWindow_->isMinimized()) mainWindow_->showNormal();
         mainWindow_->raise();
         mainWindow_->activateWindow();
     }
