@@ -325,7 +325,7 @@ void UI::TabBar::handleDrop(QDropEvent *event, const QPoint& position) {
     const quintptr targetWindowPtr = reinterpret_cast<quintptr>(window());
 
     if (sourceWindowPtr != targetWindowPtr) {
-        emit tabMovedToAnotherWindow(fileId, targetWindowPtr);
+        emit tabMovedToAnotherWindow(fileId, sourceWindowPtr, targetWindowPtr);
         event->acceptProposedAction();
         return;
     }

@@ -42,4 +42,7 @@ void UI::LightEditorPage::initUI() {
     connect(topBar_,&TopBarLightEditor::returnLightEditorWindowTriggered,this,[this] {
         emit returnLightEditorWindowTriggered();
     });
+
+    leftTool_->hide();
+    rightTool_->hide();
 }

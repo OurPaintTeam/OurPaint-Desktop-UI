@@ -34,7 +34,7 @@ namespace UI {
         void openLightEditorWindowTriggered(const qint64 id);
         void closeTabTriggered(const qint64 id);
         void allTabsCloseTriggered();
-        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr);
 
     public slots:
         void renameTab(UI::FileData& data);

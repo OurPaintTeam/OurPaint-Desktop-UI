@@ -63,7 +63,7 @@ namespace UI {
         void removeFileTriggered(const qint64 id);
         void closeFileTriggered(const qint64 id);
         void setActiveFileTriggered(const qint64 id);
-        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr);
 
         void sentCommandTriggered(const qint64 id, const QString command);
         void primitiveTriggered(const qint64 id, PrimitiveType type);

@@ -46,7 +46,7 @@ private:
 
     void openLightEditor(UI::ProjectManager* manager, UI::FileData& data);
     void returnTabFromLight(UI::ProjectManager* manager, qint64 fileId);
-    void handleTabMove(UI::ProjectManager *sourceManager, qint64 fileId, quintptr targetWindowPtr);
+    void handleTabMove(qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr);
     void closeLightEditorWindow(const qint64 fileId, UI::ProjectManager* currentManager);
 
     void setActiveTab(UI::ProjectManager* manager, qint64 fileId) const;

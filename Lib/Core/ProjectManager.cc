@@ -34,8 +34,6 @@ UI::ProjectManager::~ProjectManager() {
         lightEditorWindow_ = nullptr;
     }
 
-    delete context_.renderEngine;
-    delete context_.consoleEngine;
 }
 
 void UI::ProjectManager::showStartWindow() {

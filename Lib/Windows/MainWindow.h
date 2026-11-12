@@ -44,7 +44,7 @@ namespace UI {
         void openFileByIDTriggered(qint64 id, bool newWindow);
         void openFileTriggered(const QString& path, bool newWindow);
         void createFileTriggered(const QString& path, bool newWindow);
-        void tabMovedToAnotherWindow(qint64 fileId, quintptr targetWindowPtr);
+        void tabMovedToAnotherWindow(qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr);
         void renameFileTriggered(FileData& data);
         void deleteFileTriggered(qint64 id);
         void renameTabTriggered(FileData& data);

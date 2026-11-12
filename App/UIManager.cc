@@ -215,29 +215,27 @@ void UIManager::returnTabFromLight(UI::ProjectManager *manager, qint64 fileId) {
     }
 }
 
-void UIManager::handleTabMove(UI::ProjectManager* sourceManager, qint64 fileId, quintptr targetWindowPtr) {
-    if (!sourceManager) return;
-
+void UIManager::handleTabMove(qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr) {
+    UI::ProjectManager* sourceManager = nullptr;
     UI::ProjectManager* targetManager = nullptr;
+
     for (auto* pm : projectManagers_) {
-        if (!pm || pm == sourceManager) continue;
+        if (!pm) continue;
 
         QWidget* win = pm->windowWidget();
-        if (win && reinterpret_cast<quintptr>(win) == targetWindowPtr) {
-            targetManager = pm;
-            break;
-        }
+        if (!win) continue;
+
+        const quintptr windowPtr = reinterpret_cast<quintptr>(win);
+        if (windowPtr == sourceWindowPtr) sourceManager = pm;
+        if (windowPtr == targetWindowPtr) targetManager = pm;
     }
 
-    if (!targetManager) {
-        return;
-    }
+    if (!sourceManager || !targetManager || sourceManager == targetManager) return;
 
     UI::FileSystem::ProjectData pd;
     if (fs_.getProject(fileId, pd) != UI::FileSystem::FsResult::Ok) return;
-    UI::FileData fd{pd.id, pd.name};
 
-    // 3. Переносим: убираем из ОТКУДА, добавляем в КУДА
+    UI::FileData fd{pd.id, pd.name};
     sourceManager->closeTabSlot(fileId);
     targetManager->showEditorWindow(fd);
 }
@@ -340,9 +338,9 @@ void UIManager::initBaseSignals(UI::ProjectManager& manager) {
                 openLightEditor(&manager, fd);
             });
     connect(&manager, &UI::ProjectManager::tabMovedToAnotherWindow, this,
-        [this, &manager](qint64 fileId, quintptr targetWindowPtr) {
-            handleTabMove(&manager, fileId, targetWindowPtr);
-        });
+            [this](qint64 fileId, quintptr sourceWindowPtr, quintptr targetWindowPtr) {
+                handleTabMove(fileId, sourceWindowPtr, targetWindowPtr);
+            });
 
     connect(&manager, &UI::ProjectManager::saveFullProjectTriggered, this,
             []() { std::cout << "Saving full project..." << std::endl; });
