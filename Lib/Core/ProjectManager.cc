@@ -115,7 +115,7 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
        });
 
     connect(lightEditorWindow_, &QObject::destroyed, this, [this]() {
-            emit closeLightEditorWindowTriggered(lightEditorWindow_->id());
+            emit windowClosed();
             lightEditorWindow_ = nullptr;
             context_.renderEngine = nullptr;
             context_.consoleEngine = nullptr;
@@ -161,7 +161,7 @@ void UI::ProjectManager::connectMainWindowSignals() {
     if (!mainWindow_) return;
 
     connect(mainWindow_, &MainWindow::saveTriggered, this, &ProjectManager::saveTriggered);
-    connect(mainWindow_, &MainWindow::closeApplicationTriggered, this, &ProjectManager::closeEditorTriggered);
+    connect(mainWindow_, &MainWindow::closeApplicationTriggered, this, &ProjectManager::windowClosed);
     connect(mainWindow_, &BaseEditorWindow::sentCommandTriggered, this, &ProjectManager::sentCommandTriggered);
     connect(mainWindow_, &BaseEditorWindow::primitiveTriggered, this, &ProjectManager::primitiveTriggered);
     connect(mainWindow_, &BaseEditorWindow::constraintTriggered, this, &ProjectManager::constraintTriggered);

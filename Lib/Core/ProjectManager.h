@@ -56,6 +56,7 @@ namespace UI {
 
         BaseWindow* activeWindow() const;
         QWidget* windowWidget() const;
+
     signals:
         void createFileTriggered(const QString& path, bool newWindow);
         void openFileTriggered(const QString& path, bool newWindow);
@@ -73,12 +74,11 @@ namespace UI {
         void scriptTriggered(const QString& text);
 
         void settingsChanged();
-        void saveTriggered();
-        void closeEditorTriggered();
 
+        void saveTriggered();
+        void windowClosed();
         void lightEditorRequested(const qint64 id);
         void returnTabToEditorRequested(qint64 id);
-        void closeLightEditorWindowTriggered(const qint64 id);
 
     private:
         void ensureMainWindow();
@@ -90,7 +90,6 @@ namespace UI {
         void returnToStartWindow();
 
         EditorContext context_;
-
         MainWindow* mainWindow_{nullptr};
         LightEditorWindow* lightEditorWindow_{nullptr};
     };

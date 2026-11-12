@@ -180,7 +180,7 @@ void UIManager::closeTab(UI::ProjectManager *currentManager, qint64 fileId) {
     }
 }
 
-void UIManager::closeLightEditorWindow(const qint64 fileId, UI::ProjectManager *currentManager) {
+void UIManager::closeLightEditorWindow(UI::ProjectManager *currentManager) {
     Q_UNUSED(fileId);
     Q_UNUSED(currentManager);
 }
@@ -355,7 +355,7 @@ void UIManager::initBaseSignals(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::saveTriggered, this,
             []() { std::cout << "Saving full project..." << std::endl; });
 
-    connect(&manager, &UI::ProjectManager::closeEditorTriggered, this,
+    connect(&manager, &UI::ProjectManager::windowClosed, this,
            []() { std::cout << "Saving full project..." << std::endl; });
 
     connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
@@ -384,8 +384,8 @@ void UIManager::initLightManager(UI::ProjectManager& manager) {
     connect(&manager, &UI::ProjectManager::returnTabToEditorRequested, this,
             [this, &manager](qint64 fileId) { returnTabFromLight(&manager, fileId); });
 
-    connect(&manager, &UI::ProjectManager::closeLightEditorWindowTriggered, this,
-            [this, &manager](qint64 fileId) { closeLightEditorWindow(fileId, &manager); });
+    connect(&manager, &UI::ProjectManager::windowClosed, this,
+            [this, &manager]() { closeLightEditorWindow( &manager); });
 
     connect(&manager, &UI::ProjectManager::sentCommandTriggered, this,
             [this, &manager](qint64 fileId, const QString& command) { sentCommandFromConsole(&manager, fileId, command); });
