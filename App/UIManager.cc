@@ -25,6 +25,14 @@ UIManager::UIManager() : settingsSystem_(fs_.settingsPath()) {
     m->showStartWindow();
 }
 
+UIManager::~UIManager() {
+    for (auto* pm : projectManagers_) {
+        if (pm) {
+            disconnect(pm, nullptr, this, nullptr);
+        }
+    }
+}
+
 UI::EditorContext UIManager::createEditorContext() const {
     UI::EditorContext ctx;
     ctx.fileSystem = const_cast<UI::FileSystem*>(&fs_);

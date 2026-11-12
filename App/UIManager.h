@@ -16,7 +16,7 @@ class UIManager final : public QObject {
 
 public:
     UIManager();
-    ~UIManager() override = default;
+    ~UIManager() override;
 
     void openFilesFromCommandLine(const QStringList& paths);
 

@@ -17,23 +17,14 @@ UI::ProjectManager::ProjectManager(const EditorContext& context, QObject* parent
 
 UI::ProjectManager::~ProjectManager() {
     if (mainWindow_) {
-        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
-        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
-
-        mainWindow_->close();
         mainWindow_->deleteLater();
         mainWindow_ = nullptr;
     }
 
     if (lightEditorWindow_) {
-        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
-        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
-
-        lightEditorWindow_->close();
         lightEditorWindow_->deleteLater();
         lightEditorWindow_ = nullptr;
     }
-
 }
 
 void UI::ProjectManager::showStartWindow() {
@@ -95,6 +86,10 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
     connect(lightEditorWindow_, &QObject::destroyed, this, [this]() {
         emit closeLightEditorWindowTriggered(lightEditorWindow_->id());
         lightEditorWindow_ = nullptr;
+
+        context_.renderEngine = nullptr;
+        context_.consoleEngine = nullptr;
+
         deleteLater();
     });
 
