@@ -8,29 +8,29 @@
 class QKeyEvent;
 class QPaintEvent;
 
+namespace AppUI{
+    class CustomConsole final : public QLineEdit {
+        Q_OBJECT
 
-class CustomConsole final : public QLineEdit {
-    Q_OBJECT
+    public:
+        explicit CustomConsole(QWidget* parent = nullptr);
+        void setCommands(const QStringList& commands);
 
-public:
-    explicit CustomConsole(QWidget* parent = nullptr);
-    void setCommands(const QStringList& commands);
+        signals:
+            void sentCommandTriggered(const QString& command);
 
-signals:
-    void sentCommandTriggered(const QString& command);
+    protected:
+        void paintEvent(QPaintEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
+        bool focusNextPrevChild(bool next);
 
-protected:
-    void paintEvent(QPaintEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    bool focusNextPrevChild(bool next);
+    private:
+        void updateAutocomplete(const QString& text);
 
-private:
-    void updateAutocomplete(const QString& text);
-
-    QStringList commands_;
-    QString currentCommands_;
-    QVector<QString> commandsArray_;
-    long long index_ = -1;
-};
-
+        QStringList commands_;
+        QString currentCommands_;
+        QVector<QString> commandsArray_;
+        long long index_ = -1;
+    };
+}
 #endif // OURPAINT_HEADERS_GUI_CUSTOMCONSOLE_H_

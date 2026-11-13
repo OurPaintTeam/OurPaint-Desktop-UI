@@ -1,59 +1,60 @@
 #include "RenderEngine.h"
 #include <QPainter>
 
-
-RenderEngine::RenderEngine(QWindow* parent)
-    : QWindow(parent), backingStore_(this) {
-    setSurfaceType(QSurface::RasterSurface);
-}
-
-
-void RenderEngine::renderNow() {
-    if (!isExposed())
-        return;
-    render();
-}
-
-
-void RenderEngine::renderLater() {
-    requestUpdate();
-}
-
-
-bool RenderEngine::event(QEvent* event) {
-    if (event->type() == QEvent::UpdateRequest) {
-        renderNow();
-        return true;
+namespace AppUI {
+    RenderEngine::RenderEngine(QWindow* parent)
+        : QWindow(parent), backingStore_(this) {
+        setSurfaceType(QSurface::RasterSurface);
     }
-    return QWindow::event(event);
-}
 
 
-void RenderEngine::exposeEvent(QExposeEvent*) {
-    renderNow();
-}
+    void RenderEngine::renderNow() {
+        if (!isExposed())
+            return;
+        render();
+    }
 
 
-void RenderEngine::resizeEvent(QResizeEvent*) {
-    backingStore_.resize(size());
-    if (isExposed())
+    void RenderEngine::renderLater() {
+        requestUpdate();
+    }
+
+
+    bool RenderEngine::event(QEvent* event) {
+        if (event->type() == QEvent::UpdateRequest) {
+            renderNow();
+            return true;
+        }
+        return QWindow::event(event);
+    }
+
+
+    void RenderEngine::exposeEvent(QExposeEvent*) {
         renderNow();
-}
+    }
 
 
-void RenderEngine::render() {
-    if (size().isEmpty())
-        return;
+    void RenderEngine::resizeEvent(QResizeEvent*) {
+        backingStore_.resize(size());
+        if (isExposed())
+            renderNow();
+    }
 
-    backingStore_.beginPaint(QRect(QPoint(0, 0), size()));
 
-    QPaintDevice* device = backingStore_.paintDevice();
-    QPainter painter(device);
+    void RenderEngine::render() {
+        if (size().isEmpty())
+            return;
 
-    painter.fillRect(QRect(QPoint(0, 0), size()), Qt::white);
+        backingStore_.beginPaint(QRect(QPoint(0, 0), size()));
 
-    painter.end();
-    backingStore_.endPaint();
+        QPaintDevice* device = backingStore_.paintDevice();
+        QPainter painter(device);
 
-    backingStore_.flush(QRect(QPoint(0, 0), size()));
+        painter.fillRect(QRect(QPoint(0, 0), size()), Qt::white);
+
+        painter.end();
+        backingStore_.endPaint();
+
+        backingStore_.flush(QRect(QPoint(0, 0), size()));
+    }
 }

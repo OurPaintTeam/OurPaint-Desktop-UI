@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
 #ifdef Q_OS_WIN
     QSettings appSettings;
     if (!appSettings.value("fileAssociationRegistered", false).toBool()) {
-        registerFileAssociation();
+        AppUI::registerFileAssociation();
         appSettings.setValue("fileAssociationRegistered", true);
     }
 #endif
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    UIManager uiManager;
+    AppUI::UIManager uiManager;
 
     if (isServer) {
         QObject::connect(&server, &QLocalServer::newConnection, [&server, &uiManager]() {

@@ -1,7 +1,8 @@
 #ifndef OURPAINT_DESKTOP_UI_RENDERENGINE_H
 #define OURPAINT_DESKTOP_UI_RENDERENGINE_H
-
 #include <QBackingStore>
+
+namespace AppUI {
 
 
     class RenderEngine : public QWindow {
@@ -23,6 +24,6 @@
 
         QBackingStore backingStore_;
     };
-
+}
 
 #endif
