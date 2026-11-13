@@ -12,6 +12,7 @@ UI::LightEditorPage::LightEditorPage(QWidget* parent, FileData data)
     : BaseEditorPage(parent),fileData_(data) {
     setObjectName(QStringLiteral("TabPage"));
     initUI();
+    setActiveID(data.id);
 }
 
 void UI::LightEditorPage::setName(const QString& name) {
