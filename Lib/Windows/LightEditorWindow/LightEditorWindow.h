@@ -23,6 +23,11 @@ namespace UI {
         void setSettings(SettingsSystem *settings);
         void setNotificationsEnabled(bool enable);
         qint64 id() const;
+        void setActiveTool(ToolsType tool) const;
+        void setActiveTool(PrimitiveType tool) const;
+        void setActiveTool(ConstraintType tool) const;
+        void setHintConstraintTools(const QVector<ConstraintType>& vecTools) const;
+        void takeOffHintConstraintTools() const;
         void setName(const QString& name);
         signals:
             void returnTabTriggered(qint64 fileId);

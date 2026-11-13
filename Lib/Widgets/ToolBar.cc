@@ -277,13 +277,13 @@ void UI::ToolBar::handlePrimitiveActionSlot(const QAction *action) {
 
 // ACTIVE TOOL
 void UI::ToolBar::setActiveTool(const ToolsType tool) {
-    // switch (tool) {
-    //     case ToolsType::Cursor: setActiveTool(cursorTool_);
-    //         break;
-    //     // case ToolsType::Size: setActiveTool(sizeTool_);
-    //     //     break;
-    //     default: break;
-    // }
+    switch (tool) {
+        case ToolsType::None:
+        case ToolsType::Size:
+            takeOffHint();
+            break;
+        default: break;
+    }
 }
 
 

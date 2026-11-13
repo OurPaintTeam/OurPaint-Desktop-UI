@@ -46,6 +46,26 @@ qint64 UI::LightEditorWindow::id() const {
     return fileData_.id;
 }
 
+void UI::LightEditorWindow::setActiveTool(ToolsType tool) const {
+        lightEditorPage_->setActiveTool(tool);
+}
+
+void UI::LightEditorWindow::setActiveTool(PrimitiveType tool) const {
+        lightEditorPage_->setActiveTool(tool);
+}
+
+void UI::LightEditorWindow::setActiveTool(ConstraintType tool) const {
+        lightEditorPage_->setActiveTool(tool);
+}
+
+void UI::LightEditorWindow::setHintConstraintTools(const QVector<ConstraintType>& vecTools) const {
+        lightEditorPage_->setHintConstraintTools(vecTools);
+}
+
+void UI::LightEditorWindow::takeOffHintConstraintTools() const {
+        lightEditorPage_->takeOffHint();
+}
+
 void UI::LightEditorWindow::closeEvent(QCloseEvent* event) {
     BaseEditorWindow::closeEvent(event);
 }
