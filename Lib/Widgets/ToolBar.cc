@@ -280,7 +280,7 @@ void UI::ToolBar::setActiveTool(const ToolsType tool) {
     switch (tool) {
         case ToolsType::None:
         case ToolsType::Size:
-            takeOffHint();
+            clearActiveTool();
             break;
         default: break;
     }
@@ -334,6 +334,17 @@ void UI::ToolBar::takeOffHint()
     hints_.clear();
 }
 
+void UI::ToolBar::clearActiveTool() {
+    if (!activeTool_) return;
+
+    activeTool_->setObjectName("NoActiveTool");
+    activeTool_->style()->unpolish(activeTool_);
+    activeTool_->style()->polish(activeTool_);
+    activeTool_->update();
+
+    activeTool_ = nullptr;
+    update();
+}
 
 void UI::ToolBar::setHintConstraintTools(const QVector<ConstraintType>& vecTools)
 {
@@ -366,11 +377,7 @@ void UI::ToolBar::setActiveTool(QPushButton *tool) {
 
     takeOffHint();
 
-    if (activeTool_) {
-        activeTool_->setObjectName("NoActiveTool");
-        activeTool_->style()->unpolish(activeTool_);
-        activeTool_->style()->polish(activeTool_);
-    }
+    clearActiveTool();
 
     activeTool_ = tool;
     tool->setObjectName("ActiveTool");

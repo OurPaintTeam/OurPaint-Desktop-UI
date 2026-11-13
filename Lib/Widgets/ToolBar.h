@@ -35,6 +35,7 @@ namespace UI {
         void setActiveTool(ToolsType tool);
         void setActiveTool(PrimitiveType tool);
         void takeOffHint();
+        void clearActiveTool();
         void setActiveTool(ConstraintType vecTools);
         void setHintConstraintTools(const QVector<ConstraintType>& vecTools);
 
