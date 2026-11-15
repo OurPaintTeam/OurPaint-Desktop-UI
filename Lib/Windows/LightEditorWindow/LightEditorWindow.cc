@@ -68,4 +68,5 @@ void UI::LightEditorWindow::takeOffHintConstraintTools() const {
 
 void UI::LightEditorWindow::closeEvent(QCloseEvent* event) {
     BaseEditorWindow::closeEvent(event);
+    if (event->isAccepted()) emit windowClosed();
 }

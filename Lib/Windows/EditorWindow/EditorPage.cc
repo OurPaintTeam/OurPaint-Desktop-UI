@@ -49,6 +49,10 @@ qint64  UI::EditorPage::getActiveTabId() const {
     return tabBar_->getActiveTabId();
 }
 
+void UI::EditorPage::setActiveTabId(qint64 id) {
+    tabBar_->setActiveTabId(id);
+}
+
 void UI::EditorPage::initUI() {
     initBaseEditorPage();
     createTopBar();
@@ -290,8 +294,8 @@ void UI::EditorPage::openFileSlot() {
 
 
 void UI::EditorPage::createFileSlot() {
-    auto* prompt = new PathInputWidget(tr("File Name:"), this, UI::PathMode::Folder);
-    prompt->setDefaultText(defaultProjectPath_);
+    auto* prompt = new NameInputWidget(tr("Document name:"), this);
+    prompt->setDefaultText(QStringLiteral("Untitled"));
     prompt->setCheckBoxQuestion(tr("Open in new window"));
 
     prompt->setAttribute(Qt::WA_DeleteOnClose, true);

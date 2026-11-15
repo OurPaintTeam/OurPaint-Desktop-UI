@@ -31,6 +31,7 @@ namespace UI {
         void showStartPage();
         void showEditorPage();
         qint64 getActiveTabId() const;
+        void setActiveTabId(qint64 id);
 
         void closeApplicationSlot();
 

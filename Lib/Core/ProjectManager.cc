@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QOpenGLWindow>
 #include <QWindow>
+#include <QStandardPaths>
 
 UI::ProjectManager::ProjectManager(const EditorContext& context, QObject* parent)
     : QObject(parent)
@@ -16,20 +17,22 @@ UI::ProjectManager::ProjectManager(const EditorContext& context, QObject* parent
 }
 
 UI::ProjectManager::~ProjectManager() {
+    // Containers own their embedded QWindows. The client releases GPU resources
+    // before destroying this manager, while each context is still alive.
     if (mainWindow_) {
-        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
-        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
-
-        mainWindow_->deleteLater();
-        mainWindow_ = nullptr;
+        mainWindow_->disconnect(this);
+        delete mainWindow_;
     }
-
     if (lightEditorWindow_) {
-        if (context_.renderEngine) context_.renderEngine->setParent(nullptr);
-        if (context_.consoleEngine) context_.consoleEngine->setParent(nullptr);
+        lightEditorWindow_->disconnect(this);
+        delete lightEditorWindow_;
+    }
+}
 
-        lightEditorWindow_->deleteLater();
-        lightEditorWindow_ = nullptr;
+void UI::ProjectManager::setRecentDocuments(const QVector<ProjectData>& documents) {
+    recentDocuments_ = documents;
+    if (mainWindow_) {
+        mainWindow_->setFilesList(recentDocuments_);
     }
 }
 
@@ -80,12 +83,13 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
     if (lightEditorWindow_) return;
 
     lightEditorWindow_ = new LightEditorWindow(data, nullptr);
-    lightEditorWindow_->setAttribute(Qt::WA_DeleteOnClose, true);
+    lightEditorWindow_->setAttribute(Qt::WA_DeleteOnClose, false);
 
     if (context_.renderEngine) lightEditorWindow_->setQWindowRender(context_.renderEngine);
     if (context_.consoleEngine) lightEditorWindow_->setCommandConsoleEngine(context_.consoleEngine);
     if (context_.settings) lightEditorWindow_->setSettings(context_.settings);
 
+    connect(lightEditorWindow_, &LightEditorWindow::windowClosed, this, &ProjectManager::windowClosed);
     connect(lightEditorWindow_, &LightEditorWindow::saveTriggered, this, &ProjectManager::saveTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::sentCommandTriggered, this, &ProjectManager::sentCommandTriggered);
     connect(lightEditorWindow_, &LightEditorWindow::primitiveTriggered, this, &ProjectManager::primitiveTriggered);
@@ -94,33 +98,14 @@ void UI::ProjectManager::ensureLightEditorWindow(const FileData& data) {
     connect(lightEditorWindow_, &LightEditorWindow::settingsChanged, this, [this]() {
            if (context_.settings) {
                const bool notif = context_.settings->isNotificationsEnabled();
-               mainWindow_->setNotificationsEnabled(notif);
+               if (mainWindow_) mainWindow_->setNotificationsEnabled(notif);
                if (lightEditorWindow_) lightEditorWindow_->setNotificationsEnabled(notif);
            }
            emit settingsChanged();
        });
 
-    connect(lightEditorWindow_, &LightEditorWindow::returnTabTriggered, this, [this](const qint64 id) {
-           QObject::disconnect(lightEditorWindow_, &QObject::destroyed, this, nullptr);
-
-           emit returnTabToEditorRequested(id);
-
-           lightEditorWindow_->hide();
-           lightEditorWindow_->close();
-
-           lightEditorWindow_ = nullptr;
-           context_.renderEngine = nullptr;
-           context_.consoleEngine = nullptr;
-           deleteLater();
-       });
-
-    connect(lightEditorWindow_, &QObject::destroyed, this, [this]() {
-            emit windowClosed();
-            lightEditorWindow_ = nullptr;
-            context_.renderEngine = nullptr;
-            context_.consoleEngine = nullptr;
-            deleteLater();
-        });
+    // A move is a request. The client transfers the view and then closes the source.
+    connect(lightEditorWindow_, &LightEditorWindow::returnTabTriggered, this, &ProjectManager::returnTabToEditorRequested);
 
     lightEditorWindow_->move(QCursor::pos());
 }
@@ -140,13 +125,16 @@ void UI::ProjectManager::ensureMainWindow() {
         mainWindow_->setFilesList(data);
     }
 
+    if (!context_.fileSystem) mainWindow_->setFilesList(recentDocuments_);
+
     if (context_.renderEngine) mainWindow_->setQWindowRender(context_.renderEngine);
     if (context_.consoleEngine) mainWindow_->setCommandConsoleEngine(context_.consoleEngine);
     if (context_.settings) mainWindow_->setSettings(context_.settings);
 
-    mainWindow_->setDefaultFilesPath(context_.fileSystem->projectsPath());
-    mainWindow_->setDefaultProjectPath(context_.fileSystem->projectsPath());
-    mainWindow_->setDefaultScriptPath(context_.fileSystem->scriptsPath());
+    const auto documents = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    mainWindow_->setDefaultFilesPath(context_.fileSystem ? context_.fileSystem->projectsPath() : documents);
+    mainWindow_->setDefaultProjectPath(context_.fileSystem ? context_.fileSystem->projectsPath() : documents);
+    mainWindow_->setDefaultScriptPath(context_.fileSystem ? context_.fileSystem->scriptsPath() : documents);
 }
 
 void UI::ProjectManager::loadSettings() const {
@@ -228,7 +216,10 @@ void UI::ProjectManager::renameTabSlot(FileData& data) {
 }
 
 void UI::ProjectManager::setActiveTab(const qint64 id) {
-    if (mainWindow_) mainWindow_->setActiveID(id);
+    if (mainWindow_) {
+        mainWindow_->setActiveTabId(id);
+        mainWindow_->showEditorPage();
+    }
 }
 
 qint64 UI::ProjectManager::getActiveTabId() const {
@@ -313,7 +304,7 @@ void UI::ProjectManager::takeOffHintConstraintTools() const {
 }
 
 void UI::ProjectManager::returnToStartWindow() {
-    QVector<ProjectData> data;
+    QVector<ProjectData> data = recentDocuments_;
     if (context_.fileSystem) {
         for (const auto& p : context_.fileSystem->projects()) {
             data.append({p.id, p.name, p.path});
@@ -327,7 +318,9 @@ void UI::ProjectManager::showStartWindow(const QVector<ProjectData>& data) {
     if (!mainWindow_) return;
 
     mainWindow_->setFilesList(data);
-    mainWindow_->setDefaultFilesPath(context_.fileSystem->projectsPath());
+    if (context_.fileSystem) {
+        mainWindow_->setDefaultFilesPath(context_.fileSystem->projectsPath());
+    }
     mainWindow_->showStartPage();
 
     if (!mainWindow_->isVisible()) mainWindow_->show();

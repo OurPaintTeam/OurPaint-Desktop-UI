@@ -23,6 +23,7 @@ namespace UI {
     struct EditorContext {
         FileSystem* fileSystem{nullptr};
         SettingsSystem* settings{nullptr};
+        // Ownership transfers to the window container when the first window is shown.
         QWindow* renderEngine{nullptr};
         QLineEdit* consoleEngine{nullptr};
     };
@@ -34,6 +35,8 @@ namespace UI {
         explicit ProjectManager(const EditorContext& context, QObject* parent = nullptr);
         ~ProjectManager() override;
 
+        // External catalogs let the application own document persistence without FileSystem/SQLite.
+        void setRecentDocuments(const QVector<ProjectData>& documents);
         void showStartWindow();
         void addTabSlot(FileData& data);
         void showEditorWindow(FileData& data);
@@ -90,6 +93,7 @@ namespace UI {
         void showStartWindow(const QVector<ProjectData>& data);
         void returnToStartWindow();
 
+        QVector<ProjectData> recentDocuments_;
         EditorContext context_;
         MainWindow* mainWindow_{nullptr};
         LightEditorWindow* lightEditorWindow_{nullptr};

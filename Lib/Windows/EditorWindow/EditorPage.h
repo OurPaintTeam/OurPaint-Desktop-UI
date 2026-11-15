@@ -29,6 +29,7 @@ namespace UI {
         void setDefaultProjectPath(const QString& path);
         void setDefaultScriptPath(const QString& path);
         qint64 getActiveTabId() const;
+        void setActiveTabId(qint64 id);
 
     signals:
         void createFileTriggered(const QString& path,bool newWindow);

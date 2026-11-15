@@ -131,7 +131,7 @@ QWidget* UI::BaseEditorPage::createWorkspacePage(QWidget *parent) {
 
     connect(console_, &CommandConsole::sentCommandTriggered,
             this, [this](const QString command) {
-                if (activeID_!=-1) {
+                if (activeID_==-1) {
                     return;
                 }
 

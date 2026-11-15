@@ -39,6 +39,7 @@ namespace UI {
     public slots:
         void renameTab(UI::FileData& data);
         qint64 getActiveTabId() const;
+        void setActiveTabId(qint64 id);
         void deleteTabSlot(const qint64 id);
         UI::TabWidget* closeTabSlot(const qint64 id);
         void addTabSlot(const FileData& data);

@@ -191,7 +191,17 @@ void UI::TabBar::renameTab(FileData& data) {
 }
 
 qint64 UI::TabBar::getActiveTabId() const {
-    return activeTab_->getFileId();
+    return activeTab_ ? activeTab_->getFileId() : -1;
+}
+
+void UI::TabBar::setActiveTabId(qint64 id) {
+    if (activeTab_ && activeTab_->getFileId() == id) return;
+    for (auto* tab : tabs_) {
+        if (tab->getFileId() == id) {
+            setActiveTabSlot(tab);
+            return;
+        }
+    }
 }
 
 void UI::TabBar::deleteTabSlot(const qint64 id) {

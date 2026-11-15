@@ -13,6 +13,7 @@
 #include <QScreen>
 
 #include "PathInputWidget.h"
+#include "NameInputWidget.h"
 
 
 UI::StartPage::StartPage(QWidget* parent)
@@ -81,8 +82,8 @@ void UI::StartPage::onOpenFileSlot() {
 
 
 void UI::StartPage::onCreateFileSlot() {
-    auto* prompt = new PathInputWidget(tr("Folder Path:"), this, UI::PathMode::Folder);
-    prompt->setDefaultText(defaultFilesPath_);
+    auto* prompt = new NameInputWidget(tr("Document name:"), this);
+    prompt->setDefaultText(QStringLiteral("Untitled"));
 
     const QSize size = prompt->sizeHint();
 

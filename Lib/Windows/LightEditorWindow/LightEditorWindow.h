@@ -33,6 +33,7 @@ namespace UI {
             void returnTabTriggered(qint64 fileId);
             void settingsChanged();
             void saveTriggered();
+            void windowClosed();
     protected:
         void closeEvent(QCloseEvent* event) override;
 

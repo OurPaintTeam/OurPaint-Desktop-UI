@@ -181,7 +181,10 @@ namespace AppUI {
     }
 
     void UIManager::closeLightEditorWindow(UI::ProjectManager *currentManager) {
-        Q_UNUSED(currentManager);
+        // Window lifetime belongs to the client; defer destruction past closeEvent.
+        if (currentManager) {
+            currentManager->deleteLater();
+        }
     }
 
     void UIManager::openLightEditor(UI::ProjectManager *currentManager, UI::FileData& data) {

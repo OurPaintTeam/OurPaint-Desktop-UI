@@ -104,7 +104,6 @@ void UI::MainWindow::deleteTabSlot(const qint64 id) const {
 void UI::MainWindow::renameTabSlot(FileData& data) const {
     if (editorPageWidget_) {
         editorPageWidget_->onRenameTabSlot(data);
-        editorPageWidget_->setActiveID(data.id);
     }
 }
 
@@ -123,6 +122,10 @@ qint64 UI::MainWindow::getActiveTabId() const {
     return editorPageWidget_->getActiveTabId();
 }
 
+void UI::MainWindow::setActiveTabId(qint64 id) {
+    editorPageWidget_->setActiveTabId(id);
+}
+
 QStackedWidget* UI::MainWindow::stack() const { return stack_; }
 UI::StartPage* UI::MainWindow::startPage() const { return startPage_; }
 UI::EditorPage* UI::MainWindow::editorPage() const { return editorPageWidget_; }
@@ -135,6 +138,5 @@ void UI::MainWindow::closeEvent(QCloseEvent *event) {
 
 
 void UI::MainWindow::closeApplicationSlot() {
-    emit closeApplicationTriggered();
     close();
 }
