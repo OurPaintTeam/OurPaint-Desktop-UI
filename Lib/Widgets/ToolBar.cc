@@ -178,7 +178,7 @@ void UI::ToolBar::initSignals() {
         {":/Assets/icons/constraints/Perpendicular.svg", new QAction("", this), nullptr, ConstraintType::Perpendicular},
         {":/Assets/icons/constraints/Tangent.svg", new QAction("", this), nullptr, ConstraintType::Tangent},
         {":/Assets/icons/constraints/Equal.svg", new QAction("", this), nullptr, ConstraintType::Equal},
-        {":/Assets/icons/constraints/FixUnfix.svg", new QAction("", this), nullptr, ConstraintType::FixUnfix},
+        {":/Assets/icons/constraints/FixUnfix.svg", new QAction("", this), nullptr, ConstraintType::Fix},
         {":/Assets/icons/constraints/Concentric.svg", new QAction("", this), nullptr, ConstraintType::Concentric},
         {":/Assets/icons/constraints/Collinear.svg", new QAction("", this), nullptr, ConstraintType::Collinear},
         {":/Assets/icons/constraints/Midpoint.svg", new QAction("", this), nullptr, ConstraintType::Midpoint},

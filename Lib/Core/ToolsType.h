@@ -40,7 +40,7 @@ namespace UI {
         Perpendicular,
         Tangent,
         Equal,
-        FixUnfix,
+        Fix,
         Concentric,
         Collinear,
         Midpoint,
